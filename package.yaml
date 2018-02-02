@@ -18,14 +18,12 @@ library:
   source-dirs: src
   dependencies:
     - aeson
-    - bytestring
-    - exceptions
     - http-client
     - http-client-tls
     - http-conduit
     - template-haskell
-    - th-lift-instances
     - text
+    - th-lift-instances
     - time
 
 executables:
@@ -34,3 +32,11 @@ executables:
     main: simple.hs
     dependencies:
       - bugsnag-reporter
+
+tests:
+  doctest:
+    main: DocTest.hs
+    source-dirs: .
+    ghc-options: -Wall
+    dependencies:
+      - doctest
