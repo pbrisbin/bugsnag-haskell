@@ -1,0 +1,36 @@
+---
+name: bugsnag-reporter
+version: 0.0.1.0
+synopsis: Bugsnag reporter
+description: Please see README.md
+homepage: https://github.com/pbrisbin/bugsnag-reporter#readme
+author: Patrick Brisbin
+maintainer: pbrisbin@gmail.com
+category: Web
+license: MIT
+
+dependencies:
+  - base >= 4.8.0 && < 5
+
+ghc-options: -Wall
+
+library:
+  source-dirs: src
+  dependencies:
+    - aeson
+    - bytestring
+    - exceptions
+    - http-client
+    - http-client-tls
+    - http-conduit
+    - template-haskell
+    - th-lift-instances
+    - text
+    - time
+
+executables:
+  example-simple:
+    source-dirs: examples
+    main: simple.hs
+    dependencies:
+      - bugsnag-reporter
