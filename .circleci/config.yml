@@ -23,7 +23,7 @@ jobs:
           name: Build
           command: make build
       - save_cache:
-          key: 1-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+          key: 1-{{ .Branch }}-{{ checksum "digest" }}
           paths:
             - ~/.stack
             - ./.stack-work
