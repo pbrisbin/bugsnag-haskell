@@ -32,3 +32,11 @@ executables:
     main: simple.hs
     dependencies:
       - bugsnag-reporter
+
+tests:
+  doctest:
+    main: DocTest.hs
+    source-dirs: .
+    ghc-options: -Wall
+    dependencies:
+      - doctest

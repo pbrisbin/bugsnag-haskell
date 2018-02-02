@@ -12,7 +12,7 @@ build:
 
 .PHONY: test
 test:
-	stack test
+	stack build --pedantic --test
 
 .PHONY: lint
 lint:
