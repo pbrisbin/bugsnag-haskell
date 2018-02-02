@@ -11,7 +11,6 @@ import Data.Aeson.Ext
 import Data.ByteString (ByteString)
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
-import Data.Text (Text)
 import GHC.Generics
 import Network.HTTP.Types
 import Network.Socket
@@ -31,6 +30,7 @@ instance ToJSON BugsnagRequest where
     toJSON = genericToJSON $ lowerDroppingPrefix "br"
     toEncoding = genericToEncoding $ lowerDroppingPrefix "br"
 
+-- | Constructs an empty @'BugsnagRequest'@
 bugsnagRequest :: BugsnagRequest
 bugsnagRequest = BugsnagRequest
     { brClientIp = Nothing
@@ -40,9 +40,9 @@ bugsnagRequest = BugsnagRequest
     , brReferer = Nothing
     }
 
+-- | Constructs a @'BugsnagRequest'@ from a WAI @'Request'@
 bugsnagRequestFromWaiRequest :: Request -> BugsnagRequest
 bugsnagRequestFromWaiRequest request = bugsnagRequest
-    -- TODO: we might have to look for headers in the proxy case
     { brClientIp = Just $ remoteHost request
     , brHeaders = Just $ requestHeaders request
     , brHttpMethod = Just $ requestMethod request
