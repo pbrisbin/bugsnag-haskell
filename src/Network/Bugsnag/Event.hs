@@ -6,8 +6,7 @@
 -- <https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports>
 --
 module Network.Bugsnag.Event
-    ( BugsnagRequest(..)
-    , BugsnagThread(..)
+    ( BugsnagThread(..)
     , BugsnagApp(..)
     , BugsnagDevice(..)
 
@@ -25,6 +24,7 @@ module Network.Bugsnag.Event
     , BugsnagEvent(..)
     , bugsnagEvent
     , updateEventFromSession
+    , updateEventFromRequest
     ) where
 
 import Data.Aeson
@@ -33,6 +33,7 @@ import Data.Text (Text)
 import Data.Time
 import GHC.Generics
 import Network.Bugsnag.Exception
+import Network.Bugsnag.Request
 import Network.Bugsnag.Session
 import Network.Bugsnag.Settings
 import Network.Bugsnag.User
@@ -70,19 +71,6 @@ instance ToJSON BugsnagBreadcrumb where
     toJSON = genericToJSON $ lowerDroppingPrefix "bb"
     toEncoding = genericToEncoding $ lowerDroppingPrefix "bb"
 
--- | The web request being handled when the error was encountered
-data BugsnagRequest = BugsnagRequest
-    { brClientIp :: Maybe Text
-    , brHeaders :: Maybe [(Text, Text)] -- FIXME: [Header]
-    , brHttpMethod :: Maybe Text -- FIXME: Method
-    , brUrl :: Maybe Text -- FIXME: URI
-    , brReferer :: Maybe Text
-    }
-    deriving Generic
-
-instance ToJSON BugsnagRequest where
-    toJSON = genericToJSON $ lowerDroppingPrefix "br"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "br"
 
 data BugsnagThread = BugsnagThread
     { btId :: Maybe Text
@@ -248,3 +236,6 @@ updateEventFromSession session event = event
     { beContext = bsContext session
     , beUser = bsUser session
     }
+
+updateEventFromRequest :: BugsnagRequest -> BugsnagEvent -> BugsnagEvent
+updateEventFromRequest request event = event { beRequest = Just request }

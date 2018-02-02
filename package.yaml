@@ -18,13 +18,19 @@ library:
   source-dirs: src
   dependencies:
     - aeson
+    - bytestring
+    - case-insensitive
     - http-client
     - http-client-tls
     - http-conduit
+    - http-types
+    - iproute
+    - network
     - template-haskell
     - text
     - th-lift-instances
     - time
+    - wai
 
 executables:
   example-simple:
