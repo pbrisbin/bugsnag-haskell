@@ -130,7 +130,7 @@ fullySpecified = notifyBugsnagEvents
         , beContext
         , beGroupingHash
         , beUnhandled
-        , beSeverity =
+        , beSeverity
         , beSeverityReason = Just BugsnagSeverityReason
             { bsrType
             , bsrAttributes = BugsnagSeverityReasonAttributes
@@ -178,7 +178,7 @@ fullySpecified = notifyBugsnagEvents
     ]
 ```
 
-Please see the [Haddock documentation][#todo] for information on each type.
+Please see the [Haddock documentation](#todo) for information on each type.
 
 ## Development & Tests
 
