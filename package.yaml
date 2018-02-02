@@ -40,6 +40,12 @@ executables:
       - bugsnag-reporter
 
 tests:
+  spec:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - hspec
+      - bugsnag-reporter
   doctest:
     main: DocTest.hs
     source-dirs: .
