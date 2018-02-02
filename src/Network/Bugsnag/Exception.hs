@@ -63,21 +63,9 @@ instance ToJSON BugsnagException where
 
 instance Exception BugsnagException
 
--- | Construct a throwable exception, taking location information into account
+-- | Construct a throwable @'BugsnagException'@
 --
--- Such a value can be notified directly, or thrown and notified later.
---
--- > main :: IO
--- > main =
--- >     notifyBugsnag settings session $(bugsnagException "errorCall" "Oops")
---
--- It's expected you have an outer handler for this exception type.
---
--- > myFunc :: IO a
--- > myFunc = throwIO $(bugsnagException "myFunc" "Uh-oh")
--- >
--- > main :: IO ()
--- > main = myFunc `catch` notifyBugsnag settings session
+-- Adds one @'BugsnagStackFrame'@ using the location where spliced.
 --
 bugsnagException :: Text -> Text -> Q Exp
 bugsnagException errorClass errorMessage = [|

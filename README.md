@@ -4,7 +4,7 @@ Bugsnag error reporter/notifier for Haskell applications.
 
 ## Usage
 
-### Simple
+Notify immediately and directly:
 
 ```hs
 {-# LANGUAGE TemplateHaskell #-}
@@ -12,57 +12,173 @@ module Main where
 
 import Network.Bugsnag
 
-testNotifyBugsnag :: IO ()
-testNotifyBugsnag = do
+main :: IO ()
+main = do
     settings <- newBugsnagSettings "NOTIFIER_API_KEY"
-    notifyBugsnag settings bugsnagSession $(bugsnagException "userError" "Oops")
+    notifyBugsnag settings bugsnagSession $(bugsnagException "main" "Oops")
 ```
 
-### Rescued Exception
+Catch a thrown `BugsnagException` and notify:
 
-_TODO_
+```hs
+main :: IO ()
+main = do
+    settings <- newBugsnagSettings "NOTIFIER_API_KEY"
+    brokenFunction `catch` notifyBugsnag settings bugsnagSession
 
-### Rescued Asynchronous Exception (`HasCallstack`)
+brokenFunction :: IO ()
+brokenFunction = throwIO $(bugsnagException "brokenFunction" "Oops")
+```
 
-_TODO_
+Notify of all 500s from a Yesod error-handler, including request and user
+session information:
 
-### Yesod Error Handler
+**NOTE: this example is aspirational, not yet implemented.**
 
-_TODO: maybe separate package._
+```hs
+customErrorHandler (InternalError e) = do
+    $(logError) e
 
-### Wai Middleware
+    -- Don't block the error response. Bugsnag should be best-effort
+    forkHandler $ do
+        request <- waiRequest
+        session <- getBugsnagSession -- perhaps reading YesodAuth data
+        settings <- appBugsnag <$> getsYesod appSettings
 
-_TODO: maybe separate package._
+        liftIO
+            $ notifyBugsnagEvent settings event
+            $ updateEventFromSession session
+            $ updateEventFromWaiRequest request
+            $ bugsnagEvent [bugsnagExceptionFromError e]
 
-## Design
+    -- Rest of 500 response
+```
 
-### Types
+## Library Design
 
-This library aims to cover the entire [reporting API][api-docs] with types. It
-enforces sum types for enumerations and record types for all objects. Object
-fields are `Maybe` for non-required values. All defaulting is left to the
-server, so consult the documentation if omitting fields.
+This library aims to cover the _entire_ [reporting API][api-docs] with complete
+types. The only things omitted are record fields specific to platforms that
+won't (realistically) be written in Haskell (e.g. iOS).
 
 [api-docs]: https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports
 
-We try to use descriptive types (e.g. `Natural` for values that must be
-non-negative) but make concessions for infrequently used fields that lack
-available types with `ToJSON` instances (e.g. we use `Text` not `Version`).
+Fields which are not required in the payload are typed `Maybe`. Same-named
+constructor functions are provided which accept all non-`Maybe` fields
+positionally and give back a value with `Nothing` everywhere else. Sometimes
 
-### Notify Interface
+```hs
+myEvent :: BugsnagEvent
+myEvent = bugsnagEvent
+    [ $(bugsnagException "errorClass" "errorMessage")
+        { beSeverity = Just WarningSeverity
+        }
+    ]
+```
 
-The interface for notifying is in terms of these types. Therefore, at the
-boundaries of this package, one must construct full `BugsnagException`s,
-`BugsnagSession`s, and so on. Functions are provided to make this easy in the
-common case.
+It's recommend to use the constructor functions and override the fields via
+record-update syntax. (Lenses would be a welcome addition, but are not a
+priority for me right now.) The following example attempts to enumerate all the
+possibilities for reference:
 
-This means you would be required to build your stacktraces at this level.
-Functions are again provided to make this easy in the context of from `Reader`
-environment or `HasCallstack` function. See [TODO][#].
+```hs
+fullySpecified :: IO ()
+fullySpecified = notifyBugsnagEvents
+    ( BugsnagSettings
+        { bsApiKey
+        , bsHttpManager
+        }
+    )
+    [ BugsnagEvent
+        { beExceptions =
+            [ BugsnagException
+                { beErrorClass
+                , beMessage
+                , beStacktrace =
+                    [ BugsnagStackFrame
+                        { bsfFile
+                        , bsfLineNumber
+                        , bsfColumnNumber
+                        , bsfMethod
+                        , bsfInProject
+                        , bsfCode
+                        }
+                    ]
+                }
+            ]
+        , beBreadcrumbs = Just
+            [ BugsnagBreadcrumb
+                { bbTimestamp
+                , bbName
+                , bbType
+                , bbMetaData
+                }
+            ]
+        , beRequest = Just BugsnagRequest
+            { brClientIp
+            , brHeaders
+            , brHttpMethod
+            , brUrl
+            , brReferer
+            }
+        , beThreads = Just
+            [ BugsnagThread
+                { btId
+                , btName
+                , btStacktrace
+                }
+            ]
+        , beContext
+        , beGroupingHash
+        , beUnhandled
+        , beSeverity =
+        , beSeverityReason = Just BugsnagSeverityReason
+            { bsrType
+            , bsrAttributes = BugsnagSeverityReasonAttributes
+                { bsraErrorType
+                , bsraLevel
+                , bsraSignalType
+                , bsraViolationType
+                , bsraErrorClass
+                }
+            }
+        , beUser = Just BugsnagUser
+            { buId
+            , buEmailAddress
+            , buUsername
+            }
+        , beApp = Just BugsnagApp
+            { baId
+            , baVersion
+            , baBuildUUID
+            , baReleaseStage
+            , baType
+            , baDsymUUIDs
+            , baDuration
+            , baDurationInForeground
+            , baInForeground
+            }
+        , beDevice = Just BugsnagDevice { .. }
+            { bdHostname
+            , bdId
+            , bdManufacturer
+            , bdModel
+            , bdModelNumber
+            , bdOsName
+            , bdOsVersion
+            , bdFreeMemory
+            , bdTotalMemory
+            , bdFreeDisk
+            , bdBrowserName
+            , bdBrowserVersion
+            , bdJailBroken
+            , bdOrientation
+            }
+        , beMetaData = Just $ object [ ... ]
+        }
+    ]
+```
 
-In _very_ stable and common context, such as a Yesod application, separate
-packages are available to build these values for you out of information readily
-at hand. See [TODO][#].
+Please see the [Haddock documentation][#todo] for information on each type.
 
 ## Development & Tests
 

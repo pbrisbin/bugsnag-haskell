@@ -189,7 +189,7 @@ data BugsnagDevice = BugsnagDevice
     , bdModelNumber :: Maybe Text
     , bdOsName :: Maybe Text
     , bdOsVersion :: Maybe Text
-    , bdFreeMemory:: Maybe Bytes
+    , bdFreeMemory :: Maybe Bytes
     , bdTotalMemory :: Maybe Bytes
     , bdFreeDisk :: Maybe Bytes
     , bdBrowserName :: Maybe Text
