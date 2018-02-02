@@ -15,7 +15,7 @@ import Network.Bugsnag
 main :: IO ()
 main = do
     settings <- newBugsnagSettings "NOTIFIER_API_KEY"
-    notifyBugsnag settings bugsnagSession $(bugsnagException "main" "Oops")
+    notifyBugsnag settings bugsnagSession $ $(bugsnagException) "main" "Oops"
 ```
 
 Catch a thrown `BugsnagException` and notify:
@@ -27,7 +27,7 @@ main = do
     brokenFunction `catch` notifyBugsnag settings bugsnagSession
 
 brokenFunction :: IO ()
-brokenFunction = throwIO $(bugsnagException "brokenFunction" "Oops")
+brokenFunction = throwIO $ $(bugsnagException) "brokenFunction" "Oops"
 ```
 
 Notify of all 500s from a Yesod error-handler, including request and user
@@ -69,7 +69,7 @@ positionally and give back a value with `Nothing` everywhere else:
 ```hs
 myEvent :: BugsnagEvent
 myEvent = bugsnagEvent
-    [ $(bugsnagException "errorClass" "errorMessage")
+    [ ($(bugsnagException) "errorClass" "errorMessage")
         { beSeverity = Just WarningSeverity
         }
     ]

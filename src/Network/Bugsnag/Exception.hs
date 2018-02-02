@@ -67,13 +67,15 @@ instance Exception BugsnagException
 --
 -- Adds one @'BugsnagStackFrame'@ using the location where spliced.
 --
-bugsnagException :: Text -> Text -> Q Exp
-bugsnagException errorClass errorMessage = [|
-    BugsnagException
-        { beErrorClass = $(lift errorClass)
-        , beMessage = Just $(lift errorMessage)
-        , beStacktrace = [locStackFrame $(qLocation >>= liftLoc)]
-        }
+bugsnagException :: Q Exp
+bugsnagException = [|
+        (\errorClass errorMessage ->
+            BugsnagException
+                { beErrorClass = errorClass
+                , beMessage = Just errorMessage
+                , beStacktrace = [locStackFrame $(qLocation >>= liftLoc)]
+                }
+        )
     |]
 
 locStackFrame :: Loc -> BugsnagStackFrame

@@ -11,4 +11,4 @@ main = do
     brokenFunction `catch` notifyBugsnag settings bugsnagSession
 
 brokenFunction :: IO ()
-brokenFunction = throwIO $(bugsnagException "brokenFunction" "Oops")
+brokenFunction = throwIO $ $(bugsnagException) "brokenFunction" "Oops"
