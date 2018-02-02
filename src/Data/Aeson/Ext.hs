@@ -8,11 +8,11 @@ import Data.List (stripPrefix)
 
 -- | Convert fields as we need (the name's not quite right)
 --
--- >>> lowerDroppingPrefix "bsFooBar" "bs"
+-- >>> fieldLabelModifier (lowerDroppingPrefix "bs") "bsFooBar"
 -- "fooBar"
 --
--- >>> lowerDroppingPrefix "bsFooBar" "oops"
--- "bsFooBar"
+-- >>> fieldLabelModifier (lowerDroppingPrefix "bs") "oopsOops"
+-- "oopsOops"
 --
 lowerDroppingPrefix :: String -> Options
 lowerDroppingPrefix prefix = defaultOptions
