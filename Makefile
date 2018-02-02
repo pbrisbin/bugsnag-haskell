@@ -18,3 +18,7 @@ test:
 lint:
 	hlint .
 	weeder .
+
+.PHONY: clean
+clean:
+	stack clean
