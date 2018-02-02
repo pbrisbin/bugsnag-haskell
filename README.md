@@ -64,7 +64,7 @@ won't (realistically) be written in Haskell (e.g. iOS).
 
 Fields which are not required in the payload are typed `Maybe`. Same-named
 constructor functions are provided which accept all non-`Maybe` fields
-positionally and give back a value with `Nothing` everywhere else. Sometimes
+positionally and give back a value with `Nothing` everywhere else:
 
 ```hs
 myEvent :: BugsnagEvent
@@ -77,8 +77,8 @@ myEvent = bugsnagEvent
 
 It's recommend to use the constructor functions and override the fields via
 record-update syntax. (Lenses would be a welcome addition, but are not a
-priority for me right now.) The following example attempts to enumerate all the
-possibilities for reference:
+priority for me right now.) The following enumerates all the possibilities, for
+reference:
 
 ```hs
 fullySpecified :: IO ()
