@@ -7,7 +7,7 @@ import Network.Bugsnag
 
 main :: IO ()
 main = do
-    settings <- newBugsnagSettings "b240eccd3a4b8fe14e221ef62c00a58f"
+    settings <- newBugsnagSettings "xxx"
     brokenFunction `catch` notifyBugsnag settings bugsnagSession
 
 brokenFunction :: IO ()
