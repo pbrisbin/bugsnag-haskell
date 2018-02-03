@@ -2,14 +2,13 @@
 module Network.Bugsnag.App
     ( BugsnagApp(..)
     , bugsnagApp
-    , updateAppFromSettings
     ) where
 
 import Data.Aeson
 import Data.Aeson.Ext
 import Data.Text (Text)
 import GHC.Generics
-import Network.Bugsnag.Settings
+import Network.Bugsnag.ReleaseStage
 import Numeric.Natural
 
 data BugsnagApp = BugsnagApp
@@ -40,9 +39,4 @@ bugsnagApp = BugsnagApp
     , baDuration = Nothing
     , baDurationInForeground = Nothing
     , baInForeground = Nothing
-    }
-
-updateAppFromSettings :: BugsnagSettings -> BugsnagApp -> BugsnagApp
-updateAppFromSettings settings app = app
-    { baReleaseStage = Just $ bsReleaseStage settings
     }

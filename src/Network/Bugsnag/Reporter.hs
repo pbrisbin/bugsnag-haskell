@@ -13,23 +13,20 @@ module Network.Bugsnag.Reporter
     ) where
 
 import Control.Monad (void)
-import Data.Aeson
 import Data.Text.Encoding (encodeUtf8)
-import Network.Bugsnag.Event
-import Network.Bugsnag.Notifier
+import Network.Bugsnag.Report
 import Network.Bugsnag.Settings
 import Network.HTTP.Client
 import Network.HTTP.Simple (setRequestBodyJSON, setRequestHeader)
 
-reportError :: Manager -> BugsnagApiKey -> [BugsnagEvent] -> IO ()
-reportError manager apiKey events = do
+reportError :: Manager -> BugsnagApiKey -> BugsnagReport -> IO ()
+reportError manager apiKey report = do
     request <- setupRequest <$> parseRequest "POST https://notify.bugsnag.com"
     void $ httpNoBody request manager
   where
+    key = encodeUtf8 $ unBugsnagApiKey apiKey
     setupRequest
-        = setRequestBodyJSON payload
+        = setRequestBodyJSON report
         . setRequestHeader "Bugsnag-Api-Key" [key]
         . setRequestHeader "Bugsnag-Payload-Version" ["4"]
 
-    key = encodeUtf8 $ unBugsnagApiKey apiKey
-    payload = object ["notifier" .= bugsnagNotifier, "events" .= events]

@@ -8,7 +8,7 @@ import Data.Aeson
 import Data.Aeson.Ext
 import Data.Text (Text)
 import GHC.Generics
-import Network.Bugsnag.Exception
+import Network.Bugsnag.StackFrame
 
 data BugsnagThread = BugsnagThread
     { btId :: Maybe Text

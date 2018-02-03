@@ -7,9 +7,6 @@
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
-    , updateEventFromSettings
-    , updateEventFromSession
-    , updateEventFromRequest
     ) where
 
 import Data.Aeson
@@ -21,8 +18,6 @@ import Network.Bugsnag.Breadcrumb
 import Network.Bugsnag.Device
 import Network.Bugsnag.Exception
 import Network.Bugsnag.Request
-import Network.Bugsnag.Session
-import Network.Bugsnag.Settings
 import Network.Bugsnag.Severity
 import Network.Bugsnag.Thread
 import Network.Bugsnag.User
@@ -42,7 +37,7 @@ data BugsnagEvent = BugsnagEvent
     , beDevice :: Maybe BugsnagDevice
     --, beSession
     -- N.B. omitted because it's an object specific to the Session Tracking API,
-    -- and I'm not sure yet how to resolve the clash with BugsnagSession.
+    -- and I'm not sure yet how to resolve the naming clash with BugsnagSession.
     , beMetaData :: Maybe Value
     }
     deriving Generic
@@ -67,17 +62,3 @@ bugsnagEvent exceptions = BugsnagEvent
     , beDevice = Nothing
     , beMetaData = Nothing
     }
-
-updateEventFromSettings :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
-updateEventFromSettings settings event = event
-    { beApp = updateAppFromSettings settings <$> beApp event
-    }
-
-updateEventFromSession :: BugsnagSession -> BugsnagEvent -> BugsnagEvent
-updateEventFromSession session event = event
-    { beContext = bsContext session
-    , beUser = bsUser session
-    }
-
-updateEventFromRequest :: BugsnagRequest -> BugsnagEvent -> BugsnagEvent
-updateEventFromRequest request event = event { beRequest = Just request }
