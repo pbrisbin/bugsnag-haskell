@@ -7,6 +7,11 @@
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
+
+    -- * Update helpers, useful as before-notify arguments
+    , errorSeverity
+    , warningSeverity
+    , infoSeverity
     ) where
 
 import Data.Aeson
@@ -62,3 +67,16 @@ bugsnagEvent exceptions = BugsnagEvent
     , beDevice = Nothing
     , beMetaData = Nothing
     }
+
+
+errorSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+errorSeverity = setSeverity ErrorSeverity
+
+warningSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+warningSeverity = setSeverity WarningSeverity
+
+infoSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+infoSeverity = setSeverity InfoSeverity
+
+setSeverity :: Applicative m => BugsnagSeverity -> BugsnagEvent -> m BugsnagEvent
+setSeverity severity event = pure $ event { beSeverity = Just severity }

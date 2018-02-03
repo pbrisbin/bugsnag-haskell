@@ -23,160 +23,115 @@ notifyBugsnag settings
     $ bugsnagException "Error" [$(currentStackFrame) "myFunction"]
 ```
 
-*N.B.*: a `message` is optional in the reporting API (which I find odd), so it's
-not required or given in the above examples. It can be provided via
-record-update syntax and the `beMessage` field, but that can be cumbersome (it
-requires clarifying parenthesis). Most higher-level APIs (see below) will accept
-a message argument and do this for you.
+Including an error message:
 
-## `BugsnagSettings`
+```hs
+notifyBugsnag settings
+    $ (bugsnagException "Error" [$(currentStackFrame) "myFunction"])
+    { beMessage = Just "Some error message" }
+```
 
-*TODO*
+Modifying the Event before reporting it, e.g. to set a severity:
 
-## `notifyBugsnag`
+```hs
+notifyBugsnagWith warningSeverity settings
+    $ (bugsnagException "Error" [$(currentStackFrame) "myFunction"])
+    { beMessage = Just "Some error message" }
+```
 
-*TODO*
-
-## `notifyBugsnagWith`
-
-*TODO*
-
-## `BugsnagException`
-
-*TODO*
+*NOTE: a global before-notify can be defined in settings too.*
 
 ## Throwing & Catching
 
-*TODO*
+A `BugsnagException` can be used with anything in
+[`Control.Monad.Catch`][exceptions]:
+
+[exceptions]: http://hackage.haskell.org/package/exceptions
+
+```hs
+throwM $ bugsnagException "Error" []
+```
+
+```hs
+possiblyErroringCode `catch` notifyBugsnag settings
+```
+
+We also provide our own functions with more useful behaviors:
 
 ### `throwBugsnag`
 
-*TODO*
-
-### `catchBugsnag`
-
-*TODO*
-
-## Web Applications
-
-### App startup
-
-### App error handler
-
-### Point of error
-
-## Library Design
-
-This library aims to cover the _entire_ [reporting API][api-docs] with complete
-types. The only things omitted are record fields specific to platforms that
-won't (realistically) be written in Haskell (e.g. iOS).
-
-[api-docs]: https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports
-
-The following enumerates all the possibilities:
-
 ```hs
-fullySpecifiedReport :: BugsnagReport
-fullySpecifiedReport = BugsnagReport
-    { brNotifier = BugsnagNotifier
-        { bnName
-        , bnUrl
-        , bnVersion
-        }
-    , brEvents =
-        [ BugsnagEvent
-            { beExceptions =
-                [ BugsnagException
-                    { beErrorClass
-                    , beMessage
-                    , beStacktrace =
-                        [ BugsnagStackFrame
-                            { bsfFile
-                            , bsfLineNumber
-                            , bsfColumnNumber
-                            , bsfMethod
-                            , bsfInProject
-                            , bsfCode
-                            }
-                        ]
-                    }
-                ]
-            , beBreadcrumbs = Just
-                [ BugsnagBreadcrumb
-                    { bbTimestamp
-                    , bbName
-                    , bbType
-                    , bbMetaData
-                    }
-                ]
-            , beRequest = Just BugsnagRequest
-                { brClientIp
-                , brHeaders
-                , brHttpMethod
-                , brUrl
-                , brReferer
-                }
-            , beThreads = Just
-                [ BugsnagThread
-                    { btId
-                    , btName
-                    , btStacktrace
-                    }
-                ]
-            , beContext
-            , beGroupingHash
-            , beUnhandled
-            , beSeverity
-            , beSeverityReason = Just BugsnagSeverityReason
-                { bsrType
-                , bsrAttributes = BugsnagSeverityReasonAttributes
-                    { bsraErrorType
-                    , bsraLevel
-                    , bsraSignalType
-                    , bsraViolationType
-                    , bsraErrorClass
-                    }
-                }
-            , beUser = Just BugsnagUser
-                { buId
-                , buEmailAddress
-                , buUsername
-                }
-            , beApp = Just BugsnagApp
-                { baId
-                , baVersion
-                , baBuildUUID
-                , baReleaseStage
-                , baType
-                , baDsymUUIDs
-                , baDuration
-                , baDurationInForeground
-                , baInForeground
-                }
-            , beDevice = Just BugsnagDevice { .. }
-                { bdHostname
-                , bdId
-                , bdManufacturer
-                , bdModel
-                , bdModelNumber
-                , bdOsName
-                , bdOsVersion
-                , bdFreeMemory
-                , bdTotalMemory
-                , bdFreeDisk
-                , bdBrowserName
-                , bdBrowserVersion
-                , bdJailBroken
-                , bdOrientation
-                }
-            , beMetaData = Just $ object [ ... ]
-            }
-        ]
-    }
+sillyHead :: MonadThrow m => [a] -> m a
+sillyHead (x:_) = pure x
+sillyHead _ = throwBugsnag
+    "InvalidArgument"           -- errorClass
+    "empty list"                -- message
+    "sillyHead"                 -- method (sic) in the stacktrace
+    $(currentStackFrame)        -- stacktrace
 ```
 
-Please see the [Haddock documentation](#todo) for more details. The above may
-fall out of date from time to time.
+### `catchBugsnag` / `catchesBugsnag`
+
+```hs
+sillyHead [] `catchBugsnag` settings
+```
+
+This function catches all exceptions defined in `Control.Exception`, notifies
+Bugsnag, then re-throws. It handles two cases specially:
+
+1. A caught `BugsnagException` is notified as-is, hopefully with a `stacktrace`
+1. A caught `ErrorCall` is checked for `HasCallStack` information, which ends up
+   in the notified `stacktrace`
+
+If you have exceptions outside of those in `Control.Exception`, and you don't
+want them to come through with `SomeException` as their `errorClass`, you can
+use `catchesBugsnag` to supply your own handlers which will run before ours:
+
+```hs
+(possiblyErroringCode `catchesBugsnag` settings)
+    [ Handler (\(ex :: MyException) -> {- ... -})
+    , Handler (\(ex :: AWSException) -> {- ... -})
+    ]
+```
+
+## Frameworks
+
+The following uses Yesod as an example, but the ideas should apply to any
+framework that has an obvious place for (1) constructing some app-wide state at
+startup and (2) handling any per-request errors.
+
+When handling request errors, add a notification to bugsnag:
+
+```hs
+errorHandler e@(InternalError msg) = do
+    forkHandler $ do
+        settings <- getsYesod appBugsnag
+        notifyBugsnag settings "InternalError"
+            $ bugsnagExceptionFromMessage
+            $ T.unpack msg
+
+    defaultErrorHandler e
+
+errorHandler other = defaultErrorHandler other
+```
+
+At startup, set a `BugsnagSettings` value that's accessible as seen above:
+
+```hs
+let appBugsnag :: BugsnagSettings Handler
+    appBugsnag = bugsnagSettings "..." manager
+        { bsReleaseStage = ...
+        , bsBeforeNotify = \event -> do
+            request <- bugsnagRequestFromWaiRequest =<< waiRequest
+            session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
+
+            pure
+                $ updateEventFromRequest request
+                $ updateEventFromSession session event
+        }
+
+pure App{..}
+```
 
 ## Development & Tests
 

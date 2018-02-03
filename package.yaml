@@ -20,12 +20,14 @@ library:
     - aeson
     - bytestring
     - case-insensitive
+    - exceptions
     - http-client
     - http-client-tls
     - http-conduit
     - http-types
     - iproute
     - network
+    - parsec
     - template-haskell
     - text
     - th-lift-instances

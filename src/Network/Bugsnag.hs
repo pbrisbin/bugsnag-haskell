@@ -1,37 +1,23 @@
 module Network.Bugsnag
-    ( notifyBugsnag
-    , module X
+    ( module X
     ) where
 
-import Control.Monad (when)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Network.Bugsnag.Event
+import Network.Bugsnag.App as X
+import Network.Bugsnag.Breadcrumb as X
+import Network.Bugsnag.Catch as X
+import Network.Bugsnag.Device as X
+import Network.Bugsnag.Event as X
 import Network.Bugsnag.Exception as X
-import Network.Bugsnag.Report
-import Network.Bugsnag.Reporter
+import Network.Bugsnag.Notifier as X
+import Network.Bugsnag.Notify as X
+import Network.Bugsnag.ReleaseStage as X
+import Network.Bugsnag.Report as X
+import Network.Bugsnag.Reporter as X
+import Network.Bugsnag.Request as X
+import Network.Bugsnag.Session as X
 import Network.Bugsnag.Settings as X
+import Network.Bugsnag.Severity as X
 import Network.Bugsnag.StackFrame as X
-
--- | Notify Bugsnag of a single exception
-notifyBugsnag :: MonadIO m => BugsnagSettings m -> BugsnagException -> m ()
-notifyBugsnag = notifyBugsnagWith pure
-
--- | Notify Bugsnag of a single exception, modifying the event
---
--- This is used to (e.g.) change severity for a specific error. Note that the
--- given function runs after any configured @'bsBeforeNotify'@.
---
-notifyBugsnagWith
-    :: MonadIO m
-    => (BugsnagEvent -> m BugsnagEvent)
-    -> BugsnagSettings m
-    -> BugsnagException
-    -> m ()
-notifyBugsnagWith f settings exception = when (bugsnagShouldNotify settings) $ do
-    event <- f =<< bsBeforeNotify settings (bugsnagEvent [exception])
-
-    let manager = bsHttpManager settings
-        apiKey = bsApiKey settings
-        report = bugsnagReport [event]
-
-    liftIO $ reportError manager apiKey report
+import Network.Bugsnag.Thread as X
+import Network.Bugsnag.Throw as X
+import Network.Bugsnag.User as X
