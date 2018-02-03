@@ -1,5 +1,10 @@
 # Bugsnag Reporter
 
+**NOTE: this is an early draft, not in production use yet, and will change at
+great frequency.**
+
+---
+
 Bugsnag error reporter/notifier for Haskell applications.
 
 ## Quick Start
