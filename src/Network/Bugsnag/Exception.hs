@@ -33,20 +33,20 @@ instance Exception BugsnagException
 
 -- | Construct a throwable @'BugsnagException'@
 --
+-- Note that Message is optional in the API, but we consider it required because
+-- that's just silly.
+--
 -- To include a stack frame from the location of construction via Template
 -- Haskell, see @'currentStackFrame'@.
 --
--- Note that Message is optional in the API so it's not required in this
--- function, even though that seems odd. Use record update syntax to add one:
---
 -- >>> :set -XOverloadedStrings
--- >>> (bugsnagException "errorClass" []) { beMessage = Just "Some message" }
--- BugsnagException {beErrorClass = "errorClass", beMessage = Just "Some message", beStacktrace = []}
+-- >>> bugsnagException "errorClass" "message" []
+-- BugsnagException {beErrorClass = "errorClass", beMessage = Just "message", beStacktrace = []}
 --
-bugsnagException :: Text -> [BugsnagStackFrame] -> BugsnagException
-bugsnagException errorClass stacktrace = BugsnagException
+bugsnagException :: Text -> Text -> [BugsnagStackFrame] -> BugsnagException
+bugsnagException errorClass message stacktrace = BugsnagException
     { beErrorClass = errorClass
-    , beMessage = Nothing
+    , beMessage = Just message
     , beStacktrace = stacktrace
     }
 
@@ -65,16 +65,13 @@ bugsnagExceptionFromException errorClass ex = BugsnagException
 bugsnagExceptionFromErrorCall :: ErrorCall -> BugsnagException
 bugsnagExceptionFromErrorCall e = case parseErrorCall e of
     Left _ -> bugsnagExceptionFromException "ErrorCall" e
-    Right (MessageWithStackFrames message stacktrace) -> BugsnagException
-        { beErrorClass = "ErrorCall"
-        , beMessage = Just message
-        , beStacktrace = stacktrace
-        }
+    Right (MessageWithStackFrames message stacktrace) ->
+        bugsnagException "ErrorCall" message stacktrace
 
 bugsnagExceptionFromMessage :: Text -> String -> BugsnagException
 bugsnagExceptionFromMessage errorClass msg =
     case parseErrorCallMessage msg of
-        Left _ -> (bugsnagException errorClass []) { beMessage = Just $ T.pack msg }
+        Left _ -> bugsnagException errorClass (T.pack msg) []
         Right (MessageWithStackFrames message stacktrace) -> BugsnagException
             { beErrorClass = errorClass
             , beMessage = Just message

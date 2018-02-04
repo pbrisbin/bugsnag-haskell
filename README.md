@@ -1,10 +1,5 @@
 # Bugsnag Reporter
 
-**NOTE: this is an early draft, not in production use yet, and will change at
-great frequency.**
-
----
-
 Bugsnag error reporter/notifier for Haskell applications.
 
 ## Quick Start
@@ -13,30 +8,21 @@ Minimal example:
 
 ```hs
 settings <- newBugsnagSettings "NOTIFIER_API_KEY"
-notifyBugsnag settings $ bugsnagException "Error" []
+notifyBugsnag settings $ bugsnagException "Error" "message" []
 ```
 
 Including a stack frame for the location of notification:
 
 ```hs
 notifyBugsnag settings
-    $ bugsnagException "Error" [$(currentStackFrame) "myFunction"]
-```
-
-Including an error message:
-
-```hs
-notifyBugsnag settings
-    $ (bugsnagException "Error" [$(currentStackFrame) "myFunction"])
-    { beMessage = Just "Some error message" }
+    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
 Modifying the Event before reporting it, e.g. to set a severity:
 
 ```hs
 notifyBugsnagWith warningSeverity settings
-    $ (bugsnagException "Error" [$(currentStackFrame) "myFunction"])
-    { beMessage = Just "Some error message" }
+    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"])
 ```
 
 *NOTE: a global before-notify can be defined in settings too.*
@@ -49,31 +35,20 @@ A `BugsnagException` can be used with anything in
 [exceptions]: http://hackage.haskell.org/package/exceptions
 
 ```hs
-throwM $ bugsnagException "Error" []
+throwM $ bugsnagException "Error" "message" []
 ```
 
 ```hs
 possiblyErroringCode `catch` notifyBugsnag settings
 ```
 
-We also provide our own functions with more useful behaviors:
-
-### `throwBugsnag`
-
-```hs
-sillyHead :: MonadThrow m => [a] -> m a
-sillyHead (x:_) = pure x
-sillyHead _ = throwBugsnag
-    "InvalidArgument"           -- errorClass
-    "empty list"                -- message
-    "sillyHead"                 -- method (sic) in the stacktrace
-    $(currentStackFrame)        -- stacktrace
-```
+This would be enough if `BugsnagException` exceptions were the only things ever
+thrown in your applications. Since that's unlikely, there is `catchBugsnag`.
 
 ### `catchBugsnag` / `catchesBugsnag`
 
 ```hs
-sillyHead [] `catchBugsnag` settings
+possiblyErroringCode [] `catchBugsnag` settings
 ```
 
 This function catches all exceptions defined in `Control.Exception`, notifies
@@ -94,7 +69,15 @@ use `catchesBugsnag` to supply your own handlers which will run before ours:
     ]
 ```
 
-## Frameworks
+## Settings
+
+*TODO: document.*
+
+## Requests, Sessions, Users, & Apps
+
+*TODO: document.*
+
+## Web Frameworks
 
 The following uses Yesod as an example, but the ideas should apply to any
 framework that has an obvious place for (1) constructing some app-wide state at

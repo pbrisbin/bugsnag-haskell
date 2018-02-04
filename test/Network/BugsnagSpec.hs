@@ -9,27 +9,25 @@ module Network.BugsnagSpec
 import Test.Hspec
 
 import Control.Exception
+import Control.Monad.Catch (throwM)
 import Network.Bugsnag
 
-brokenFunction :: IO a
-brokenFunction = throwBugsnag
-    "IOException"
-    "Something exploded"
-    "brokenFunction"
-    $(currentStackFrame)
+brokenFunctionIO :: IO a
+brokenFunctionIO = throwM $ bugsnagException
+    "IOException" "Something exploded" [$(currentStackFrame) "brokenFunctionIO"]
 
-brokenPureFunction :: HasCallStack => a
-brokenPureFunction = brokenHead [] `seq` undefined
+brokenFunction :: HasCallStack => a
+brokenFunction = sillyHead [] `seq` undefined
 
-brokenHead :: HasCallStack => [a] -> a
-brokenHead (x:_) = x
-brokenHead _ = error "empty list"
+sillyHead :: HasCallStack => [a] -> a
+sillyHead (x:_) = x
+sillyHead _ = error "empty list"
 
 spec :: Spec
 spec = do
-    describe "throwBugsnag" $ do
-        it "includes location of the splice as a stack frame" $ do
-            ex <- brokenFunction `catch` pure
+    describe "BugsnagException" $ do
+        it "can be thrown and caught" $ do
+            ex <- brokenFunctionIO `catch` pure
 
             beErrorClass ex `shouldBe` "IOException"
             beMessage ex `shouldBe` Just "Something exploded"
@@ -37,14 +35,14 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 19
-            bsfColumnNumber frame `shouldBe` Just 7
-            bsfMethod frame `shouldBe` "brokenFunction"
+            bsfLineNumber frame `shouldBe` 17
+            bsfColumnNumber frame `shouldBe` Just 43
+            bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
 
     describe "parseBugsnagException" $ do
         it "can parse errors with callstacks" $ do
-            e <- evaluate brokenPureFunction `catch` pure
+            e <- evaluate brokenFunction `catch` pure
 
             let ex = bugsnagExceptionFromErrorCall e
             beErrorClass ex `shouldBe` "ErrorCall"
@@ -53,9 +51,9 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 26
+            bsfLineNumber frame `shouldBe` 24
             bsfColumnNumber frame `shouldBe` Just 16
             bsfMethod frame `shouldBe` "error"
 
             map bsfMethod (beStacktrace ex)
-                `shouldBe` ["error", "brokenHead", "brokenPureFunction"]
+                `shouldBe` ["error", "sillyHead", "brokenFunction"]

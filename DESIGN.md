@@ -128,9 +128,10 @@ newBugsnagSettings "NOTIFIER_API_KEY"
 bugsnagReport
     -- An Event only requires exceptions
     [ bugsnagEvent
-        -- An Exception only requires errorClass and stacktrace
+        -- An Exception requires errorClass, message, and stacktrace
         [ bugsnagException
             "errorClass"
+            "message"
             -- A StackFrame only requires files, lineNumber, and method
             [ bugsnagStackFrame "src/Foo/Bar.hs" 10 "myFunction"
             ]

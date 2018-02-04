@@ -19,5 +19,4 @@ import Network.Bugsnag.Settings as X
 import Network.Bugsnag.Severity as X
 import Network.Bugsnag.StackFrame as X
 import Network.Bugsnag.Thread as X
-import Network.Bugsnag.Throw as X
 import Network.Bugsnag.User as X
