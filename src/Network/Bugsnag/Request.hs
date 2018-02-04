@@ -6,9 +6,12 @@ module Network.Bugsnag.Request
     , bugsnagRequestFromWaiRequest
     ) where
 
+import Control.Applicative ((<|>))
 import Data.Aeson
 import Data.Aeson.Ext
 import Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as C8
+import Data.IP
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import GHC.Generics
@@ -18,7 +21,7 @@ import Network.Wai
 
 -- | The web request being handled when the error was encountered
 data BugsnagRequest = BugsnagRequest
-    { brClientIp :: Maybe SockAddr
+    { brClientIp :: Maybe ByteString
     , brHeaders :: Maybe RequestHeaders
     , brHttpMethod :: Maybe Method
     , brUrl :: Maybe ByteString
@@ -43,15 +46,32 @@ bugsnagRequest = BugsnagRequest
 -- | Constructs a @'BugsnagRequest'@ from a WAI @'Request'@
 bugsnagRequestFromWaiRequest :: Request -> BugsnagRequest
 bugsnagRequestFromWaiRequest request = bugsnagRequest
-    { brClientIp = Just $ remoteHost request
+    { brClientIp = requestRealIp request
+        <|> Just (sockAddrToIp $ remoteHost request)
     , brHeaders = Just $ requestHeaders request
     , brHttpMethod = Just $ requestMethod request
-    , brUrl = Just requestUrl
+    , brUrl = Just $ requestUrl request
     , brReferer = requestHeaderReferer request
     }
+
+requestRealIp :: Request -> Maybe ByteString
+requestRealIp request = lookup "X-Real-IP" $ requestHeaders request
+
+requestUrl :: Request -> ByteString
+requestUrl request = requestProtocol
+    <> "://"
+    <> requestHost request
+    <> rawPathInfo request
+    <> rawQueryString request
   where
+    clientProtocol = if isSecure request then "https" else "http"
     requestHost = fromMaybe "<unknown>" . requestHeaderHost
-    requestUrl = "://"
-        <> requestHost request
-        <> rawPathInfo request
-        <> rawQueryString request
+    requestProtocol = fromMaybe clientProtocol
+        $ lookup "X-Forwarded-Proto"
+        $ requestHeaders request
+
+sockAddrToIp :: SockAddr -> ByteString
+sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
+sockAddrToIp (SockAddrInet6 _ _ h _) = C8.pack $ show $ fromHostAddress6 h
+sockAddrToIp (SockAddrUnix _) = "<socket>"
+sockAddrToIp (SockAddrCan _) = "<invalid>"
