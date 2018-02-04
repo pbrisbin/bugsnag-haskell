@@ -43,9 +43,7 @@ possiblyErroringCode `catch` notifyBugsnag settings
 ```
 
 This would be enough if `BugsnagException` exceptions were the only things ever
-thrown in your applications. Since that's unlikely, there is `catchBugsnag`.
-
-### `catchBugsnag` / `catchesBugsnag`
+thrown in your applications. Since that's unlikely, there is `catchBugsnag`:
 
 ```hs
 possiblyErroringCode [] `catchBugsnag` settings
