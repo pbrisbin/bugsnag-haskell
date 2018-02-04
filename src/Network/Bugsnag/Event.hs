@@ -1,14 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
--- |
---
--- <https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports>
---
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
 
     -- * Update helpers, useful as before-notify arguments
+    , updateEventFromRequest
+    , updateEventFromSession
     , errorSeverity
     , warningSeverity
     , infoSeverity
@@ -23,6 +21,7 @@ import Network.Bugsnag.Breadcrumb
 import Network.Bugsnag.Device
 import Network.Bugsnag.Exception
 import Network.Bugsnag.Request
+import Network.Bugsnag.Session
 import Network.Bugsnag.Severity
 import Network.Bugsnag.Thread
 import Network.Bugsnag.User
@@ -68,6 +67,14 @@ bugsnagEvent exceptions = BugsnagEvent
     , beMetaData = Nothing
     }
 
+updateEventFromRequest :: Applicative m => BugsnagRequest -> BugsnagEvent -> m BugsnagEvent
+updateEventFromRequest request event = pure $ event { beRequest = Just request }
+
+updateEventFromSession :: Applicative m => BugsnagSession -> BugsnagEvent -> m BugsnagEvent
+updateEventFromSession session event = pure $ event
+    { beContext = bsContext session
+    , beUser = bsUser session
+    }
 
 errorSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
 errorSeverity = setSeverity ErrorSeverity
