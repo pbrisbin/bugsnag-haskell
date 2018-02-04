@@ -67,23 +67,23 @@ bugsnagEvent exceptions = BugsnagEvent
     , beMetaData = Nothing
     }
 
-updateEventFromRequest :: Applicative m => BugsnagRequest -> BugsnagEvent -> m BugsnagEvent
-updateEventFromRequest request event = pure $ event { beRequest = Just request }
+updateEventFromRequest :: BugsnagRequest -> BugsnagEvent -> BugsnagEvent
+updateEventFromRequest request event = event { beRequest = Just request }
 
-updateEventFromSession :: Applicative m => BugsnagSession -> BugsnagEvent -> m BugsnagEvent
-updateEventFromSession session event = pure $ event
+updateEventFromSession :: BugsnagSession -> BugsnagEvent -> BugsnagEvent
+updateEventFromSession session event = event
     { beContext = bsContext session
     , beUser = bsUser session
     }
 
-errorSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+errorSeverity :: BugsnagEvent -> BugsnagEvent
 errorSeverity = setSeverity ErrorSeverity
 
-warningSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+warningSeverity :: BugsnagEvent -> BugsnagEvent
 warningSeverity = setSeverity WarningSeverity
 
-infoSeverity :: Applicative m => BugsnagEvent -> m BugsnagEvent
+infoSeverity :: BugsnagEvent -> BugsnagEvent
 infoSeverity = setSeverity InfoSeverity
 
-setSeverity :: Applicative m => BugsnagSeverity -> BugsnagEvent -> m BugsnagEvent
-setSeverity severity event = pure $ event { beSeverity = Just severity }
+setSeverity :: BugsnagSeverity -> BugsnagEvent -> BugsnagEvent
+setSeverity severity event = event { beSeverity = Just severity }

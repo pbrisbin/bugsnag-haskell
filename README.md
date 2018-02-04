@@ -21,7 +21,7 @@ notifyBugsnag settings
 Modifying the Event before reporting it, e.g. to set a severity:
 
 ```hs
-notifyBugsnagWith warningSeverity settings
+notifyBugsnagWith (pure . warningSeverity) settings
     $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
