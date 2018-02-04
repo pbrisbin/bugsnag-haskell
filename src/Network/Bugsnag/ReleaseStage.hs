@@ -3,7 +3,6 @@ module Network.Bugsnag.ReleaseStage
     ( BugsnagReleaseStage(..)
     ) where
 
-
 import Data.Aeson
 import Data.Text (Text)
 
