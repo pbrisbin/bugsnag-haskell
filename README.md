@@ -86,7 +86,7 @@ When handling request errors, add a notification to bugsnag:
 
 ```hs
 errorHandler e@(InternalError msg) = do
-    forkHandler $ do
+    forkHandler ($logErrorS "errorHandler" . tshow) $ do
         settings <- getsYesod appBugsnag
         notifyBugsnag settings
             $ bugsnagExceptionFromMessage "InternalError"
