@@ -87,8 +87,8 @@ When handling request errors, add a notification to bugsnag:
 errorHandler e@(InternalError msg) = do
     forkHandler $ do
         settings <- getsYesod appBugsnag
-        notifyBugsnag settings "InternalError"
-            $ bugsnagExceptionFromMessage
+        notifyBugsnag settings
+            $ bugsnagExceptionFromMessage "InternalError"
             $ T.unpack msg
 
     defaultErrorHandler e
