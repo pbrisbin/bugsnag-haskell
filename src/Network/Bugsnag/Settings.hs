@@ -16,6 +16,7 @@ import Data.String
 import Data.Text (Text)
 import Network.Bugsnag.Event
 import Network.Bugsnag.ReleaseStage
+import Network.Bugsnag.StackFrame
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 
@@ -29,6 +30,9 @@ data BugsnagSettings m = BugsnagSettings
     , bsReleaseStage :: BugsnagReleaseStage
     , bsNotifyReleaseStages :: [BugsnagReleaseStage]
     , bsBeforeNotify :: BugsnagEvent -> m BugsnagEvent
+    , bsGroupingHash :: BugsnagEvent -> Maybe Text
+    , bsIsInProject :: FilePath -> Bool
+    , bsFilterStackFrames :: BugsnagStackFrame -> Bool
     , bsHttpManager :: Manager
     }
 
@@ -39,6 +43,9 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsReleaseStage = ProductionReleaseStage
     , bsNotifyReleaseStages = [ProductionReleaseStage]
     , bsBeforeNotify = pure
+    , bsGroupingHash = const Nothing
+    , bsIsInProject = const True
+    , bsFilterStackFrames = const True
     , bsHttpManager = manager
     }
 

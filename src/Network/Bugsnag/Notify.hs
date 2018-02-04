@@ -12,6 +12,7 @@ import Network.Bugsnag.Exception
 import Network.Bugsnag.Report
 import Network.Bugsnag.Reporter
 import Network.Bugsnag.Settings
+import Network.Bugsnag.StackFrame
 
 -- | Notify Bugsnag of a single exception
 notifyBugsnag :: MonadIO m => BugsnagSettings m -> BugsnagException -> m ()
@@ -29,8 +30,15 @@ notifyBugsnagWith
     -> BugsnagException
     -> m ()
 notifyBugsnagWith f settings exception =
+    -- N.B. all notify functions should go through here. We need to maintain
+    -- this as the single point where (e.g.) should-notify is checked,
+    -- before-notify is applied, stack-frame filtering, etc.
     when (bugsnagShouldNotify settings) $ do
-        event <- f =<< bsBeforeNotify settings (bugsnagEvent [exception])
+        event <- f
+            . updateGroupingHash settings
+            . updateStackFramesInProject settings
+            . filterStackFrames settings
+            =<< bsBeforeNotify settings (bugsnagEvent [exception])
 
         let manager = bsHttpManager settings
             apiKey = bsApiKey settings
@@ -42,3 +50,33 @@ notifyBugsnagWith f settings exception =
 notifyBugsnagThrow
     :: (MonadIO m, MonadThrow m) => BugsnagSettings m -> BugsnagException -> m a
 notifyBugsnagThrow settings ex = notifyBugsnag settings ex >> throwM ex
+
+updateGroupingHash :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateGroupingHash settings event = event
+    { beGroupingHash = bsGroupingHash settings event
+    }
+
+updateStackFramesInProject :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateStackFramesInProject settings event = event
+    { beExceptions = map updateExceptions $ beExceptions event
+    }
+  where
+    updateExceptions :: BugsnagException -> BugsnagException
+    updateExceptions ex = ex
+        { beStacktrace = map updateStackFrames $ beStacktrace ex
+        }
+
+    updateStackFrames :: BugsnagStackFrame -> BugsnagStackFrame
+    updateStackFrames sf = sf
+        { bsfInProject = Just $ bsIsInProject settings $ bsfFile sf
+        }
+
+filterStackFrames :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+filterStackFrames settings event = event
+    { beExceptions = map updateExceptions $ beExceptions event
+    }
+  where
+    updateExceptions :: BugsnagException -> BugsnagException
+    updateExceptions ex = ex
+        { beStacktrace = filter (bsFilterStackFrames settings) $ beStacktrace ex
+        }

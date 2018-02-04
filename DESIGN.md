@@ -10,6 +10,9 @@ BugsnagSettings
     , bsReleaseStage
     , bsNotifyReleaseStages
     , bsBeforeNotify
+    , bsGroupingHash
+    , bsIsInProject
+    , bsFilterStackFrames
     , bsHttpManager
     }
 
