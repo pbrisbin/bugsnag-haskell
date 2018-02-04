@@ -22,14 +22,15 @@ Modifying the Event before reporting it, e.g. to set a severity:
 
 ```hs
 notifyBugsnagWith warningSeverity settings
-    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"])
+    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
 *NOTE: a global before-notify can be defined in settings too.*
 
 ## Throwing & Catching
 
-A `BugsnagException` can be used with anything in
+A `BugsnagException` is a proper `Exception`, so it can be thrown and caught.
+Note that our notification function is `MonadIO`, so you'll want to bring in
 [`Control.Monad.Catch`][exceptions]:
 
 [exceptions]: http://hackage.haskell.org/package/exceptions
@@ -42,8 +43,8 @@ throwM $ bugsnagException "Error" "message" []
 possiblyErroringCode `catch` notifyBugsnag settings
 ```
 
-This would be enough if `BugsnagException` exceptions were the only things ever
-thrown in your applications. Since that's unlikely, there is `catchBugsnag`:
+This would be enough if `BugsnagException`s were the only things ever thrown in
+your applications. Since that's unlikely, there is `catchBugsnag`:
 
 ```hs
 possiblyErroringCode `catchBugsnag` settings
