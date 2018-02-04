@@ -18,6 +18,11 @@ import Network.Bugsnag.StackFrame
 notifyBugsnag :: MonadIO m => BugsnagSettings m -> BugsnagException -> m ()
 notifyBugsnag = notifyBugsnagWith pure
 
+-- | Notify Bugsnag of a single exception and re-throw it
+notifyBugsnagThrow
+    :: (MonadIO m, MonadThrow m) => BugsnagSettings m -> BugsnagException -> m a
+notifyBugsnagThrow settings ex = notifyBugsnag settings ex >> throwM ex
+
 -- | Notify Bugsnag of a single exception, modifying the event
 --
 -- This is used to (e.g.) change severity for a specific error. Note that the
@@ -45,11 +50,6 @@ notifyBugsnagWith f settings exception =
             report = bugsnagReport [event]
 
         liftIO $ reportError manager apiKey report
-
--- | Notify Bugsnag of a single exception and re-throw it
-notifyBugsnagThrow
-    :: (MonadIO m, MonadThrow m) => BugsnagSettings m -> BugsnagException -> m a
-notifyBugsnagThrow settings ex = notifyBugsnag settings ex >> throwM ex
 
 updateGroupingHash :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
 updateGroupingHash settings event = event
