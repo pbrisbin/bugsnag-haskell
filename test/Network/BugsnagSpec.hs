@@ -52,7 +52,7 @@ spec = do
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
             bsfLineNumber frame `shouldBe` 24
-            bsfColumnNumber frame `shouldBe` Just 16
+            bsfColumnNumber frame `shouldBe` Just 15
             bsfMethod frame `shouldBe` "error"
 
             map bsfMethod (beStacktrace ex)
