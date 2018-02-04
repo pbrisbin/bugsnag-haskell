@@ -104,7 +104,7 @@ let appBugsnag :: BugsnagSettings Handler
     appBugsnag = bugsnagSettings "..." manager
         { bsReleaseStage = ...
         , bsBeforeNotify = \event -> do
-            request <- bugsnagRequestFromWaiRequest =<< waiRequest
+            request <- bugsnagRequestFromWaiRequest <$> waiRequest
             session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
 
             pure
