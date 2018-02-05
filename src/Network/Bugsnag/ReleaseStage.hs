@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.ReleaseStage
     ( BugsnagReleaseStage(..)
@@ -12,6 +13,13 @@ data BugsnagReleaseStage
     | ProductionReleaseStage
     | CustomReleaseStage Text
     deriving Eq
+
+instance FromJSON BugsnagReleaseStage where
+    parseJSON = withText "ReleaseStage" $ \case
+        "development" -> pure DevelopmentReleaseStage
+        "staging" -> pure StagingReleaseStage
+        "production" -> pure ProductionReleaseStage
+        t -> pure $ CustomReleaseStage t
 
 instance ToJSON BugsnagReleaseStage where
     toJSON DevelopmentReleaseStage = String "development"

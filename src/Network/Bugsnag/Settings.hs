@@ -12,6 +12,7 @@ module Network.Bugsnag.Settings
     ) where
 
 import Control.Monad.IO.Class (MonadIO)
+import Data.Aeson (FromJSON)
 import Data.String
 import Data.Text (Text)
 import Network.Bugsnag.Event
@@ -23,7 +24,7 @@ import Network.HTTP.Client.TLS
 newtype BugsnagApiKey = BugsnagApiKey
     { unBugsnagApiKey :: Text
     }
-    deriving IsString
+    deriving (FromJSON, IsString)
 
 data BugsnagSettings m = BugsnagSettings
     { bsApiKey :: BugsnagApiKey
