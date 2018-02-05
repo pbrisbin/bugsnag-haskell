@@ -38,9 +38,9 @@ data BugsnagSettings m = BugsnagSettings
     }
 
 -- | Construct settings purely, given an existing @'Manager'@
-bugsnagSettings :: Applicative m => Text -> Manager -> BugsnagSettings m
+bugsnagSettings :: Applicative m => BugsnagApiKey -> Manager -> BugsnagSettings m
 bugsnagSettings apiKey manager = BugsnagSettings
-    { bsApiKey = BugsnagApiKey apiKey
+    { bsApiKey = apiKey
     , bsReleaseStage = ProductionReleaseStage
     , bsNotifyReleaseStages = [ProductionReleaseStage]
     , bsBeforeNotify = pure
@@ -57,5 +57,5 @@ bugsnagShouldNotify settings =
     bsNotifyReleaseStages settings
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
-newBugsnagSettings :: MonadIO m => Text -> m (BugsnagSettings m)
+newBugsnagSettings :: MonadIO m => BugsnagApiKey -> m (BugsnagSettings m)
 newBugsnagSettings apiKey = bugsnagSettings apiKey <$> newTlsManager
