@@ -15,6 +15,8 @@ import Data.Text (Text)
 import Data.Version
 import GHC.Generics
 
+import qualified Paths_bugsnag_reporter as Pkg
+
 data BugsnagNotifier = BugsnagNotifier
     { bnName :: Text
     , bnVersion :: Version
@@ -29,6 +31,6 @@ instance ToJSON BugsnagNotifier where
 bugsnagNotifier :: BugsnagNotifier
 bugsnagNotifier = BugsnagNotifier
     { bnName = "haskell-bugsnag-reporter"
-    , bnVersion = makeVersion [0, 0, 1, 0]
+    , bnVersion = Pkg.version
     , bnUrl = "https://github.com/pbrisbin/bugsnag-reporter"
     }
