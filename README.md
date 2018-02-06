@@ -50,11 +50,12 @@ See [`Network.Bugsnag.Catch`](#todo).
 module Main (main) where
 
 import App (appMain) -- Actual program logic
+import qualified Data.Text as T
 import Network.Bugsnag
 
 main :: IO ()
 main = do
-    apiKey <- BugsnagApiKey <$> getEnv "BUGSNAG_API_KEY"
+    apiKey <- BugsnagApiKey . T.pack <$> getEnv "BUGSNAG_API_KEY"
     settings <- newBugsnagSettings apiKey
     appMain `catchBugsnag` settings
 ```
