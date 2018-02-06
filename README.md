@@ -2,107 +2,69 @@
 
 Bugsnag error reporter/notifier for Haskell applications.
 
-## Quick Start
-
-Minimal example:
+## Report an Error
 
 ```hs
-settings <- newBugsnagSettings "NOTIFIER_API_KEY"
-notifyBugsnag settings $ bugsnagException "Error" "message" []
+settings <- newBugsnagSettings "BUGSNAG_API_KEY"
+notifyBugsnag settings $ bugsnagException
+    "ErrorClass" "Some message" [$(currentStackFrame) "myFunction"]
 ```
-
-Including a stack frame for the location of notification:
-
-```hs
-notifyBugsnag settings
-    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
-```
-
-Modifying the Event before reporting it, e.g. to set a severity:
-
-```hs
-notifyBugsnagWith (pure . warningSeverity) settings
-    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
-```
-
-*NOTE: a global before-notify can be defined in settings too.*
 
 ## Throwing & Catching
 
-A `BugsnagException` is a proper `Exception`, so it can be thrown and caught.
-Note that our notification function is `MonadIO`, so you'll want to bring in
-[`Control.Monad.Catch`][exceptions]:
-
-[exceptions]: http://hackage.haskell.org/package/exceptions
+Throw a `BugsnagException` yourself:
 
 ```hs
-throwM $ bugsnagException "Error" "message" []
+throwM $ bugsnagException
+    "ErrorClass" "Some message" [$(currentStackFrame) "myFunction"]
 ```
 
+And catch (only) it:
+
 ```hs
-possiblyErroringCode `catch` notifyBugsnag settings
+myFunction `catch` notifyBugsnag settings
 ```
 
-This would be enough if `BugsnagException`s were the only things ever thrown in
-your applications. Since that's unlikely, there is `catchBugsnag`:
+Catch any exceptions, notify, and re-throw it:
 
 ```hs
-possiblyErroringCode `catchBugsnag` settings
+myFunction `catchBugsnag` settings
 ```
 
-This function catches all exceptions defined in `Control.Exception`, notifies
-Bugsnag, then re-throws. It handles two cases specially:
+See [`Network.Bugsnag.Catch`](#todo) for more details.
 
-1. A caught `BugsnagException` is notified as-is, hopefully with a `stacktrace`
-1. A caught `ErrorCall` is checked for `HasCallStack` information, which ends up
-   in the notified `stacktrace`
+## Configuration
 
-If you have exceptions outside of those in `Control.Exception`, and you don't
-want them to come through with `SomeException` as their `errorClass`, you can
-use `catchesBugsnag` to supply your own handlers which will run before ours:
+See [`Network.Bugsnag.Settings`](#todo) for details.
 
-```hs
-(possiblyErroringCode `catchesBugsnag` settings)
-    [ Handler (\(ex :: MyException) -> {- ... -})
-    , Handler (\(ex :: AWSException) -> {- ... -})
-    ]
-```
+## Yesod
 
-## Settings
-
-*TODO: document.*
-
-## Requests, Sessions, Users, & Apps
-
-*TODO: document.*
-
-## Web Frameworks
-
-The following uses Yesod as an example, but the ideas should apply to any
-framework that has an obvious place for (1) constructing some app-wide state at
-startup and (2) handling any per-request errors.
-
-When handling request errors, add a notification to bugsnag:
+In `Foundation.hs`, your `Yesod` instance:
 
 ```hs
+data App = App
+  { -- ...
+  , appBugsnag :: BugsnagSettings (HandlerT App IO)
+  }
+
 errorHandler e@(InternalError msg) = do
     forkHandler ($logErrorS "errorHandler" . tshow) $ do
         settings <- getsYesod appBugsnag
         notifyBugsnag settings
             $ bugsnagExceptionFromMessage "InternalError"
             $ T.unpack msg
-
     defaultErrorHandler e
 
-errorHandler other = defaultErrorHandler other
+errorHandler e = defaultErrorHandler e
 ```
 
-At startup, set a `BugsnagSettings` value that's accessible as seen above:
+In `Application.hs`, `makeFoundation`:
 
 ```hs
 let appBugsnag :: BugsnagSettings Handler
-    appBugsnag = bugsnagSettings "..." manager
-        { bsReleaseStage = ...
+    appBugsnag = (bugsnagSettings "..." manager)
+        { bsAppVersion = ...
+        , bsReleaseStage = ...
         , bsBeforeNotify = \event -> do
             request <- bugsnagRequestFromWaiRequest <$> waiRequest
             session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
