@@ -1,12 +1,11 @@
-# Library Design
-
-**NOTE**: This document is a work in progress.
+## API Coverage
 
 https://bugsnagerrorreportingapi.docs.apiary.io/#reference/0/notify/send-error-reports
 
 ```hs
 BugsnagSettings
     { bsApiKey
+    , bsAppVersion
     , bsReleaseStage
     , bsNotifyReleaseStages
     , bsBeforeNotify
@@ -124,24 +123,16 @@ BugsnagReport
     }
 ```
 
-```hs
-newBugsnagSettings "NOTIFIER_API_KEY"
+## Minimum Required Payload
 
--- A Report only requires events
+```hs
 bugsnagReport
-    -- An Event only requires exceptions
     [ bugsnagEvent
-        -- An Exception requires errorClass, message, and stacktrace
         [ bugsnagException
             "errorClass"
             "message"
-            -- A StackFrame only requires files, lineNumber, and method
             [ bugsnagStackFrame "src/Foo/Bar.hs" 10 "myFunction"
             ]
         ]
     ]
-```
-
-```hs
-reportError :: Manager -> BugsnagApiKey -> BugsnagReport -> IO ()
 ```

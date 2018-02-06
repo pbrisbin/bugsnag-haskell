@@ -2,24 +2,33 @@
 
 Bugsnag error reporter/notifier for Haskell applications.
 
-## Report an Error
+## Configuration
 
 ```hs
 settings <- newBugsnagSettings "BUGSNAG_API_KEY"
-notifyBugsnag settings $ bugsnagException
-    "ErrorClass" "Some message" [$(currentStackFrame) "myFunction"]
 ```
+
+See [`Network.Bugsnag.Settings`](#todo).
+
+## Reporting an Error
+
+```hs
+notifyBugsnag settings
+  $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
+```
+
+See [`Network.Bugsnag.Notify`](#todo).
 
 ## Throwing & Catching
 
 Throw a `BugsnagException` yourself:
 
 ```hs
-throwM $ bugsnagException
-    "ErrorClass" "Some message" [$(currentStackFrame) "myFunction"]
+throwM
+  $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
-And catch (only) it:
+Catch (only) it:
 
 ```hs
 myFunction `catch` notifyBugsnag settings
@@ -31,59 +40,74 @@ Catch any exceptions, notify, and re-throw it:
 myFunction `catchBugsnag` settings
 ```
 
-See [`Network.Bugsnag.Catch`](#todo) for more details.
+See [`Network.Bugsnag.Catch`](#todo).
 
-## Configuration
+## Examples
 
-See [`Network.Bugsnag.Settings`](#todo) for details.
-
-## Yesod
-
-In `Foundation.hs`, your `Yesod` instance:
+### Command-Line
 
 ```hs
+module Main (main) where
+
+import App (appMain) -- Actual program logic
+import Network.Bugsnag
+
+main :: IO ()
+main = do
+    apiKey <- BugsnagApiKey <$> getEnv "BUGSNAG_API_KEY"
+    settings <- newBugsnagSettings apiKey
+    appMain `catchBugsnag` settings
+```
+
+### Yesod
+
+```hs
+--
+-- Foundation.hs
+--
 data App = App
   { -- ...
   , appBugsnag :: BugsnagSettings (HandlerT App IO)
   }
 
-errorHandler e@(InternalError msg) = do
-    forkHandler ($logErrorS "errorHandler" . tshow) $ do
-        settings <- getsYesod appBugsnag
-        notifyBugsnag settings
-            $ bugsnagExceptionFromMessage "InternalError"
-            $ T.unpack msg
-    defaultErrorHandler e
+instance YesodApp where
+    -- ...
 
-errorHandler e = defaultErrorHandler e
+    errorHandler e@(InternalError msg) = do
+        forkHandler ($logErrorS "errorHandler" . tshow) $ do
+            settings <- getsYesod appBugsnag
+            notifyBugsnag settings
+                $ bugsnagExceptionFromMessage "InternalError"
+                $ T.unpack msg
+        defaultErrorHandler e
+
+    errorHandler e = defaultErrorHandler e
+
+--
+-- Application.hs
+--
+makeFoundation = do
+    -- ...
+
+    let appBugsnag :: BugsnagSettings Handler
+        appBugsnag = (bugsnagSettings "..." manager)
+            { bsAppVersion = ...
+            , bsReleaseStage = ...
+            , bsBeforeNotify = \event -> do
+                request <- bugsnagRequestFromWaiRequest <$> waiRequest
+                session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
+
+                pure
+                    $ updateEventFromRequest request
+                    $ updateEventFromSession session event
+            }
+
+    pure App{..}
 ```
 
-In `Application.hs`, `makeFoundation`:
+## Contributing
 
-```hs
-let appBugsnag :: BugsnagSettings Handler
-    appBugsnag = (bugsnagSettings "..." manager)
-        { bsAppVersion = ...
-        , bsReleaseStage = ...
-        , bsBeforeNotify = \event -> do
-            request <- bugsnagRequestFromWaiRequest <$> waiRequest
-            session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
-
-            pure
-                $ updateEventFromRequest request
-                $ updateEventFromSession session event
-        }
-
-pure App{..}
-```
-
-## Development & Tests
-
-```console
-stack setup
-stack build --dependencies-only
-stack build --pedantic --test
-```
+See [CONTRIBUTING](./CONTRIBUTING.md).
 
 ---
 
