@@ -36,7 +36,7 @@ notifyBugsnagWith f settings exception =
             . updateGroupingHash settings
             . updateStackFramesInProject settings
             . filterStackFrames settings
-            =<< bsBeforeNotify settings (bugsnagEvent [exception])
+            =<< bsBeforeNotify settings (bugsnagEvent $ pure exception)
 
         let manager = bsHttpManager settings
             apiKey = bsApiKey settings
@@ -51,7 +51,7 @@ updateGroupingHash settings event = event
 
 updateStackFramesInProject :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
 updateStackFramesInProject settings event = event
-    { beExceptions = map updateExceptions $ beExceptions event
+    { beExceptions = updateExceptions <$> beExceptions event
     }
   where
     updateExceptions :: BugsnagException -> BugsnagException
@@ -66,7 +66,7 @@ updateStackFramesInProject settings event = event
 
 filterStackFrames :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
 filterStackFrames settings event = event
-    { beExceptions = map updateExceptions $ beExceptions event
+    { beExceptions = updateExceptions <$> beExceptions event
     }
   where
     updateExceptions :: BugsnagException -> BugsnagException

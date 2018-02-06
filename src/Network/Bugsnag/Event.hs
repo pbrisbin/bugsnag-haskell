@@ -14,6 +14,7 @@ module Network.Bugsnag.Event
 
 import Data.Aeson
 import Data.Aeson.Ext
+import Data.List.NonEmpty (NonEmpty)
 import Data.Text (Text)
 import GHC.Generics
 import Network.Bugsnag.App
@@ -27,7 +28,7 @@ import Network.Bugsnag.Thread
 import Network.Bugsnag.User
 
 data BugsnagEvent = BugsnagEvent
-    { beExceptions :: [BugsnagException]
+    { beExceptions :: NonEmpty BugsnagException
     , beBreadcrumbs :: Maybe [BugsnagBreadcrumb]
     , beRequest :: Maybe BugsnagRequest
     , beThreads :: Maybe [BugsnagThread]
@@ -50,7 +51,7 @@ instance ToJSON BugsnagEvent where
     toJSON = genericToJSON $ lowerDroppingPrefix "be"
     toEncoding = genericToEncoding $ lowerDroppingPrefix "be"
 
-bugsnagEvent :: [BugsnagException] -> BugsnagEvent
+bugsnagEvent :: NonEmpty BugsnagException -> BugsnagEvent
 bugsnagEvent exceptions = BugsnagEvent
     { beExceptions = exceptions
     , beBreadcrumbs = Nothing
