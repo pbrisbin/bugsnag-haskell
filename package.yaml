@@ -34,13 +34,6 @@ library:
     - time
     - wai
 
-executables:
-  example-simple:
-    source-dirs: examples
-    main: simple.hs
-    dependencies:
-      - bugsnag-reporter
-
 tests:
   spec:
     main: Spec.hs
