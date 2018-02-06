@@ -3,8 +3,10 @@ module Network.Bugsnag.Notify
     , notifyBugsnagWith
     ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Network.Bugsnag.App
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.Report
@@ -36,6 +38,7 @@ notifyBugsnagWith f settings exception =
             . updateGroupingHash settings
             . updateStackFramesInProject settings
             . filterStackFrames settings
+            . updateAppVersion settings
             =<< bsBeforeNotify settings (bugsnagEvent $ pure exception)
 
         let manager = bsHttpManager settings
@@ -73,3 +76,10 @@ filterStackFrames settings event = event
     updateExceptions ex = ex
         { beStacktrace = filter (bsFilterStackFrames settings) $ beStacktrace ex
         }
+
+updateAppVersion :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateAppVersion settings event = event
+    { beApp = beApp event <|> settingsApp
+    }
+  where
+    settingsApp = bugsnagAppWithVersion <$> bsAppVersion settings
