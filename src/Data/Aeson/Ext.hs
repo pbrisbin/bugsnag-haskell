@@ -1,4 +1,8 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+-- |
+--
+-- Orphan instances and shared @'Generic'@ JSON options.
+--
 module Data.Aeson.Ext
     ( lowerDroppingPrefix
     ) where

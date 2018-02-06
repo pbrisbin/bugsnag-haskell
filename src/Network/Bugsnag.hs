@@ -1,3 +1,7 @@
+-- |
+--
+-- See <https://github.com/pbrisbin/bugsnag-reporter#readme>
+--
 module Network.Bugsnag
     ( module X
     ) where
