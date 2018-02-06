@@ -12,11 +12,12 @@ module Network.Bugsnag.Notifier
 import Data.Aeson
 import Data.Aeson.Ext
 import Data.Text (Text)
+import Data.Version
 import GHC.Generics
 
 data BugsnagNotifier = BugsnagNotifier
     { bnName :: Text
-    , bnVersion :: Text
+    , bnVersion :: Version
     , bnUrl :: Text
     }
     deriving Generic
@@ -28,6 +29,6 @@ instance ToJSON BugsnagNotifier where
 bugsnagNotifier :: BugsnagNotifier
 bugsnagNotifier = BugsnagNotifier
     { bnName = "haskell-bugsnag-reporter"
-    , bnVersion = "0.0.1.0"
+    , bnVersion = makeVersion [0, 0, 1, 0]
     , bnUrl = "https://github.com/pbrisbin/bugsnag-reporter"
     }

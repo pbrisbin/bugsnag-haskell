@@ -9,6 +9,7 @@ module Network.Bugsnag.Device
 import Data.Aeson
 import Data.Aeson.Ext
 import Data.Text (Text)
+import Data.Version
 import GHC.Generics
 import Numeric.Natural
 
@@ -21,12 +22,12 @@ data BugsnagDevice = BugsnagDevice
     , bdModel :: Maybe Text
     , bdModelNumber :: Maybe Text
     , bdOsName :: Maybe Text
-    , bdOsVersion :: Maybe Text
+    , bdOsVersion :: Maybe Version
     , bdFreeMemory :: Maybe Bytes
     , bdTotalMemory :: Maybe Bytes
     , bdFreeDisk :: Maybe Bytes
     , bdBrowserName :: Maybe Text
-    , bdBrowserVersion :: Maybe Text
+    , bdBrowserVersion :: Maybe Version
     , bdJailBroken :: Maybe Bool
     , bdOrientation :: Maybe Text
     }

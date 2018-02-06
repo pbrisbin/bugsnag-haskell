@@ -7,13 +7,14 @@ module Network.Bugsnag.App
 import Data.Aeson
 import Data.Aeson.Ext
 import Data.Text (Text)
+import Data.Version
 import GHC.Generics
 import Network.Bugsnag.ReleaseStage
 import Numeric.Natural
 
 data BugsnagApp = BugsnagApp
     { baId :: Maybe Text
-    , baVersion :: Maybe Text
+    , baVersion :: Maybe Version
     , baBuildUUID :: Maybe Text
     , baReleaseStage :: Maybe BugsnagReleaseStage
     , baType :: Maybe Text
