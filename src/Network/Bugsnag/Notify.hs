@@ -1,11 +1,9 @@
 module Network.Bugsnag.Notify
     ( notifyBugsnag
     , notifyBugsnagWith
-    , notifyBugsnagThrow
     ) where
 
 import Control.Monad (when)
-import Control.Monad.Catch
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
@@ -17,11 +15,6 @@ import Network.Bugsnag.StackFrame
 -- | Notify Bugsnag of a single exception
 notifyBugsnag :: MonadIO m => BugsnagSettings m -> BugsnagException -> m ()
 notifyBugsnag = notifyBugsnagWith pure
-
--- | Notify Bugsnag of a single exception and re-throw it
-notifyBugsnagThrow
-    :: (MonadIO m, MonadThrow m) => BugsnagSettings m -> BugsnagException -> m a
-notifyBugsnagThrow settings ex = notifyBugsnag settings ex >> throwM ex
 
 -- | Notify Bugsnag of a single exception, modifying the event
 --

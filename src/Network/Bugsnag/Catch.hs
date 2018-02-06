@@ -40,43 +40,31 @@ exceptionHandlers
     :: (MonadIO m, MonadThrow m)
     => BugsnagSettings m -> [Handler m a]
 exceptionHandlers settings =
-    [ Handler (notifyBugsnagThrow settings)
-    , Handler (notifyBugsnagThrow settings . bugsnagExceptionFromErrorCall)
-
-    -- I feel like there should be a way for me to write:
-    --
-    -- > , Handler $ genericHandler @IOException
-    -- > , Handler $ genericHandler @ArithException
-    -- > , etc
-    --
-    -- and have it:
-    --
-    -- - Monomorphize the function via TypeApplications, but *also*
-    -- - Use reflection to get type name as a String value, for errorClass
-    --
-    -- Instead, we just spell it out for now...
-    --
-    , Handler (\(ex :: IOException) -> genericHandler "IOException" ex)
-    , Handler (\(ex :: ArithException) -> genericHandler "ArithException" ex)
-    , Handler (\(ex :: ArrayException) -> genericHandler "ArrayException" ex)
-    , Handler (\(ex :: AssertionFailed) -> genericHandler "AssertionFailed" ex)
-    , Handler (\(ex :: SomeAsyncException) -> genericHandler "SomeAsyncException" ex)
-    , Handler (\(ex :: AsyncException) -> genericHandler "AsyncException" ex)
-    , Handler (\(ex :: NonTermination) -> genericHandler "NonTermination" ex)
-    , Handler (\(ex :: NestedAtomically) -> genericHandler "NestedAtomically" ex)
-    , Handler (\(ex :: BlockedIndefinitelyOnMVar) -> genericHandler "BlockedIndefinitelyOnMVar" ex)
-    , Handler (\(ex :: BlockedIndefinitelyOnSTM) -> genericHandler "BlockedIndefinitelyOnSTM" ex)
-    , Handler (\(ex :: AllocationLimitExceeded) -> genericHandler "AllocationLimitExceeded" ex)
-    , Handler (\(ex :: Deadlock) -> genericHandler "Deadlock" ex)
-    , Handler (\(ex :: NoMethodError) -> genericHandler "NoMethodError" ex)
-    , Handler (\(ex :: PatternMatchFail) -> genericHandler "PatternMatchFail" ex)
-    , Handler (\(ex :: RecConError) -> genericHandler "RecConError" ex)
-    , Handler (\(ex :: RecSelError) -> genericHandler "RecSelError" ex)
-    , Handler (\(ex :: RecUpdError) -> genericHandler "RecUpdError" ex)
-    , Handler (\(ex :: TypeError) -> genericHandler "TypeError" ex)
-    , Handler (\(ex :: SomeException) -> genericHandler "SomeException" ex)
+    [ Handler $ notifyThrow id
+    , Handler $ notifyThrow bugsnagExceptionFromErrorCall
+    , Handler $ \(ex :: IOException) -> genericHandler "IOException" ex
+    , Handler $ \(ex :: ArithException) -> genericHandler "ArithException" ex
+    , Handler $ \(ex :: ArrayException) -> genericHandler "ArrayException" ex
+    , Handler $ \(ex :: AssertionFailed) -> genericHandler "AssertionFailed" ex
+    , Handler $ \(ex :: SomeAsyncException) -> genericHandler "SomeAsyncException" ex
+    , Handler $ \(ex :: AsyncException) -> genericHandler "AsyncException" ex
+    , Handler $ \(ex :: NonTermination) -> genericHandler "NonTermination" ex
+    , Handler $ \(ex :: NestedAtomically) -> genericHandler "NestedAtomically" ex
+    , Handler $ \(ex :: BlockedIndefinitelyOnMVar) -> genericHandler "BlockedIndefinitelyOnMVar" ex
+    , Handler $ \(ex :: BlockedIndefinitelyOnSTM) -> genericHandler "BlockedIndefinitelyOnSTM" ex
+    , Handler $ \(ex :: AllocationLimitExceeded) -> genericHandler "AllocationLimitExceeded" ex
+    , Handler $ \(ex :: Deadlock) -> genericHandler "Deadlock" ex
+    , Handler $ \(ex :: NoMethodError) -> genericHandler "NoMethodError" ex
+    , Handler $ \(ex :: PatternMatchFail) -> genericHandler "PatternMatchFail" ex
+    , Handler $ \(ex :: RecConError) -> genericHandler "RecConError" ex
+    , Handler $ \(ex :: RecSelError) -> genericHandler "RecSelError" ex
+    , Handler $ \(ex :: RecUpdError) -> genericHandler "RecUpdError" ex
+    , Handler $ \(ex :: TypeError) -> genericHandler "TypeError" ex
+    , Handler $ \(ex :: SomeException) -> genericHandler "SomeException" ex
     ]
   where
     genericHandler errorClass
-        = notifyBugsnagThrow settings
-        . bugsnagExceptionFromException errorClass
+        = notifyThrow
+        $ bugsnagExceptionFromException errorClass
+
+    notifyThrow f ex = notifyBugsnag settings (f ex) >> throwM ex

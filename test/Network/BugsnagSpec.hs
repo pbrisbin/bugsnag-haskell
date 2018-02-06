@@ -44,12 +44,10 @@ spec = do
             bsfInProject frame `shouldBe` Just True
 
     describe "catchBugsnag" $ do
-        it "re-throws as a BugsnagException" $ do
+        it "re-throws the original exception" $ do
             settings <- disabledSettings
-            ex <- ioException `catchBugsnag` settings `catch` pure
-
-            beErrorClass ex `shouldBe` "IOException"
-            beMessage ex `shouldBe` Just "user error (Boom)"
+            ioException `catchBugsnag` settings
+                `shouldThrow` anyIOException
 
     describe "parseBugsnagException" $ do
         it "can parse errors with callstacks" $ do
