@@ -26,6 +26,8 @@ library:
     - http-conduit
     - http-types
     - iproute
+    - lifted-async
+    - monad-control
     - network
     - parsec
     - template-haskell
