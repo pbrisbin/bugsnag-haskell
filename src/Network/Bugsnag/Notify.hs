@@ -5,7 +5,6 @@ module Network.Bugsnag.Notify
 
 import Control.Applicative ((<|>))
 import Control.Monad (when)
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import Network.Bugsnag.App
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
@@ -15,44 +14,47 @@ import Network.Bugsnag.Settings
 import Network.Bugsnag.StackFrame
 
 -- | Notify Bugsnag of a single exception
-notifyBugsnag :: MonadIO m => BugsnagSettings m -> BugsnagException -> m ()
-notifyBugsnag = notifyBugsnagWith pure
+notifyBugsnag :: BugsnagSettings -> BugsnagException -> IO ()
+notifyBugsnag = notifyBugsnagWith id
 
 -- | Notify Bugsnag of a single exception, modifying the event
 --
 -- This is used to (e.g.) change severity for a specific error. Note that the
--- given function runs after any configured @'bsBeforeNotify'@.
+-- given function runs after any configured @'bsBeforeNotify'@, or changes
+-- caused by other aspects of setting (e.g. grouping hash).
 --
 notifyBugsnagWith
-    :: MonadIO m
-    => (BugsnagEvent -> m BugsnagEvent)
-    -> BugsnagSettings m
+    :: (BugsnagEvent -> BugsnagEvent)
+    -> BugsnagSettings
     -> BugsnagException
-    -> m ()
+    -> IO ()
 notifyBugsnagWith f settings exception =
     -- N.B. all notify functions should go through here. We need to maintain
     -- this as the single point where (e.g.) should-notify is checked,
     -- before-notify is applied, stack-frame filtering, etc.
     when (bugsnagShouldNotify settings) $ do
-        event <- f
-            . updateGroupingHash settings
-            . updateStackFramesInProject settings
-            . filterStackFrames settings
-            . updateAppVersion settings
-            =<< bsBeforeNotify settings (bugsnagEvent $ pure exception)
+        let event
+                = f
+                . updateGroupingHash settings
+                . updateStackFramesInProject settings
+                . filterStackFrames settings
+                . updateAppVersion settings
+                . bsBeforeNotify settings
+                . bugsnagEvent
+                $ pure exception
 
-        let manager = bsHttpManager settings
+            manager = bsHttpManager settings
             apiKey = bsApiKey settings
             report = bugsnagReport [event]
 
-        liftIO $ reportError manager apiKey report
+        reportError manager apiKey report
 
-updateGroupingHash :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateGroupingHash :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
 updateGroupingHash settings event = event
     { beGroupingHash = bsGroupingHash settings event
     }
 
-updateStackFramesInProject :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateStackFramesInProject :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
 updateStackFramesInProject settings event = event
     { beExceptions = updateExceptions <$> beExceptions event
     }
@@ -67,7 +69,7 @@ updateStackFramesInProject settings event = event
         { bsfInProject = Just $ bsIsInProject settings $ bsfFile sf
         }
 
-filterStackFrames :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+filterStackFrames :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
 filterStackFrames settings event = event
     { beExceptions = updateExceptions <$> beExceptions event
     }
@@ -77,7 +79,7 @@ filterStackFrames settings event = event
         { beStacktrace = filter (bsFilterStackFrames settings) $ beStacktrace ex
         }
 
-updateAppVersion :: BugsnagSettings m -> BugsnagEvent -> BugsnagEvent
+updateAppVersion :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
 updateAppVersion settings event = event
     { beApp = beApp event <|> settingsApp
     }

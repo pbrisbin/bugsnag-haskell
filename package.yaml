@@ -20,7 +20,6 @@ library:
     - aeson
     - bytestring
     - case-insensitive
-    - exceptions
     - http-client
     - http-client-tls
     - http-conduit
@@ -41,7 +40,6 @@ tests:
     dependencies:
       - hspec
       - bugsnag-reporter
-      - exceptions
   doctest:
     main: DocTest.hs
     source-dirs: .

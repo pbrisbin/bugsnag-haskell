@@ -11,7 +11,6 @@ module Network.Bugsnag.Settings
     , bugsnagShouldNotify
     ) where
 
-import Control.Monad.IO.Class (MonadIO)
 import Data.Aeson (FromJSON)
 import Data.String
 import Data.Text (Text)
@@ -31,7 +30,7 @@ newtype BugsnagApiKey = BugsnagApiKey
 --
 -- See @'newBugsnagSettings'@.
 --
-data BugsnagSettings m = BugsnagSettings
+data BugsnagSettings = BugsnagSettings
     { bsApiKey :: BugsnagApiKey
     -- ^ Your Integration API Key.
     , bsAppVersion :: Maybe Version
@@ -44,7 +43,7 @@ data BugsnagSettings m = BugsnagSettings
     -- ^ The current release-stage (Production, Development, etc)
     , bsNotifyReleaseStages :: [BugsnagReleaseStage]
     -- ^ Which release-stages to notify in. By default Production and Staging.
-    , bsBeforeNotify :: BugsnagEvent -> m BugsnagEvent
+    , bsBeforeNotify :: BugsnagEvent -> BugsnagEvent
     -- ^ Modify any events before they are sent
     --
     -- For example to attach a user, or set the context.
@@ -76,13 +75,13 @@ data BugsnagSettings m = BugsnagSettings
     }
 
 -- | Construct settings purely, given an existing @'Manager'@
-bugsnagSettings :: Applicative m => BugsnagApiKey -> Manager -> BugsnagSettings m
+bugsnagSettings :: BugsnagApiKey -> Manager -> BugsnagSettings
 bugsnagSettings apiKey manager = BugsnagSettings
     { bsApiKey = apiKey
     , bsAppVersion = Nothing
     , bsReleaseStage = ProductionReleaseStage
     , bsNotifyReleaseStages = [ProductionReleaseStage]
-    , bsBeforeNotify = pure
+    , bsBeforeNotify = id
     , bsGroupingHash = const Nothing
     , bsIsInProject = const True
     , bsFilterStackFrames = const True
@@ -90,11 +89,11 @@ bugsnagSettings apiKey manager = BugsnagSettings
     }
 
 -- | Should the @'BugsnagReleaseStage'@ should trigger notifications?
-bugsnagShouldNotify :: BugsnagSettings m -> Bool
+bugsnagShouldNotify :: BugsnagSettings -> Bool
 bugsnagShouldNotify settings =
     bsReleaseStage settings `elem`
     bsNotifyReleaseStages settings
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
-newBugsnagSettings :: MonadIO m => BugsnagApiKey -> m (BugsnagSettings m)
+newBugsnagSettings :: BugsnagApiKey -> IO BugsnagSettings
 newBugsnagSettings apiKey = bugsnagSettings apiKey <$> newTlsManager

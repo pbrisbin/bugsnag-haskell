@@ -9,11 +9,10 @@ module Network.BugsnagSpec
 import Test.Hspec
 
 import Control.Exception
-import Control.Monad.Catch (throwM)
 import Network.Bugsnag
 
 brokenFunctionIO :: IO a
-brokenFunctionIO = throwM $ bugsnagException
+brokenFunctionIO = throw $ bugsnagException
     "IOException" "Something exploded" [$(currentStackFrame) "brokenFunctionIO"]
 
 brokenFunction :: HasCallStack => a
@@ -38,7 +37,7 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 17
+            bsfLineNumber frame `shouldBe` 16
             bsfColumnNumber frame `shouldBe` Just 43
             bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
@@ -60,14 +59,14 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 24
+            bsfLineNumber frame `shouldBe` 23
             bsfColumnNumber frame `shouldBe` Just 15
             bsfMethod frame `shouldBe` "error"
 
             map bsfMethod (beStacktrace ex)
                 `shouldBe` ["error", "sillyHead", "brokenFunction"]
 
-disabledSettings :: IO (BugsnagSettings IO)
+disabledSettings :: IO BugsnagSettings
 disabledSettings = do
     settings <- newBugsnagSettings ""
     pure $ settings { bsNotifyReleaseStages = [] }
