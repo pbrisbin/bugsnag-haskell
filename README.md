@@ -24,7 +24,7 @@ See [`Network.Bugsnag.Notify`](#todo).
 Throw a `BugsnagException` yourself:
 
 ```hs
-throwM
+throw
   $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
@@ -67,22 +67,29 @@ main = do
 -- Foundation.hs
 --
 data App = App
-  { -- ...
-  , appBugsnag :: BugsnagSettings (HandlerT App IO)
-  }
+    { -- ...
+    , appBugsnag :: BugsnagSettings
+    }
 
 instance YesodApp where
     -- ...
 
-    errorHandler e@(InternalError msg) = do
-        forkHandler ($logErrorS "errorHandler" . tshow) $ do
-            settings <- getsYesod appBugsnag
-            notifyBugsnag settings
-                $ bugsnagExceptionFromMessage "InternalError"
-                $ T.unpack msg
-        defaultErrorHandler e
+    yesodMiddleware handler = do
+        settings <- getsYesod appBugsnag
 
-    errorHandler e = defaultErrorHandler e
+        -- Simple, synchronous, no request or session info:
+        defaultYesodMiddleware handler `catchBugsnag` settings
+
+        -- More complex, asynchronous, request info added:
+        request <- waiRequest
+
+        let beforeNotify = updateEventFromRequest
+                $ bugsnagRequestFromWaiRequest request
+
+        defaultYesodMiddleware handler `catch` \ex ->
+            void $ liftIO $ forkIO
+                $ notifyBugsnagWith beforeNotify settings
+                $ bugsnagExceptionFromSomeException ex
 
 --
 -- Application.hs
@@ -90,17 +97,9 @@ instance YesodApp where
 makeFoundation = do
     -- ...
 
-    let appBugsnag :: BugsnagSettings Handler
-        appBugsnag = (bugsnagSettings "..." manager)
+    let appBugsnag = (bugsnagSettings "..." manager)
             { bsAppVersion = ...
             , bsReleaseStage = ...
-            , bsBeforeNotify = \event -> do
-                request <- bugsnagRequestFromWaiRequest <$> waiRequest
-                session <- getBugsnagSession -- e.g. using Yesod.Auth stuff
-
-                pure
-                    $ updateEventFromRequest request
-                    $ updateEventFromSession session event
             }
 
     pure App{..}
