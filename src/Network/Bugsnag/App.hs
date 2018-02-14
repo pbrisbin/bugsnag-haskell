@@ -2,7 +2,6 @@
 module Network.Bugsnag.App
     ( BugsnagApp(..)
     , bugsnagApp
-    , bugsnagAppWithVersion
     ) where
 
 import Data.Aeson
@@ -41,9 +40,4 @@ bugsnagApp = BugsnagApp
     , baDuration = Nothing
     , baDurationInForeground = Nothing
     , baInForeground = Nothing
-    }
-
-bugsnagAppWithVersion :: Version -> BugsnagApp
-bugsnagAppWithVersion version = bugsnagApp
-    { baVersion = Just version
     }
