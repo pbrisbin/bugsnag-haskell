@@ -60,7 +60,29 @@ main = do
     appMain `catchBugsnag` settings
 ```
 
+### WAI / Warp
+
+```hs
+warpSettings :: BugsnagSettings -> Settings
+warpSettings settings = setOnException
+    (\mRequest ex ->
+        when (defaultShouldDisplayException ex) $ do
+            let beforeNotify = maybe id updateEventFromRequest mRequest
+
+            void $ forkIO
+                $ notifyBugsnagWith beforeNotify settings
+                $ bugsnagExceptionFromSomeException ex
+
+    ) defaultSettings
+```
+
 ### Yesod
+
+**NOTE**: the `yesodMiddleware` hook is the only way to handle things as actual
+exceptions. The alternative, using `errorHandler`, means you would only ever see
+`InternalError Text`. The main downside is that short-circuit responses also
+come through the middleware as exceptions too, and must be filtered. (Unless of
+course you *want* to notify Bugsnag of 404s and such.)
 
 ```hs
 --
@@ -87,9 +109,18 @@ instance YesodApp where
                 $ bugsnagRequestFromWaiRequest request
 
         defaultYesodMiddleware handler `catch` \ex ->
-            void $ liftIO $ forkIO
+            unless (isHandlerContents ex)
+                $ void $ liftIO $ forkIO
                 $ notifyBugsnagWith beforeNotify settings
                 $ bugsnagExceptionFromSomeException ex
+
+      where
+        isHandlerContents :: SomeException -> Bool
+        isHandlerContents ex =
+            -- There's a million ways to do this...
+            case (fromException ex :: Maybe HandlerContents) of
+                Just _ -> True
+                Nothing -> False
 
 --
 -- Application.hs
