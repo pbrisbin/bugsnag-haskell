@@ -6,7 +6,6 @@
 module Network.Bugsnag.Exception.Parse
     ( MessageWithStackFrames(..)
     , parseErrorCall
-    , parseErrorCallMessage
     ) where
 
 import Control.Exception (ErrorCall)
@@ -25,15 +24,7 @@ data MessageWithStackFrames = MessageWithStackFrames
 
 -- | Parse an @'ErrorCall'@ for @'HasCallStack'@ information
 parseErrorCall :: ErrorCall -> Either String MessageWithStackFrames
-parseErrorCall = parseErrorCallMessage . show
-
--- | The actual parse function
---
--- Exported in case you've been given a pre-@'show'@n value. For example, in
--- some over-eager web frameworks.
---
-parseErrorCallMessage :: String -> Either String MessageWithStackFrames
-parseErrorCallMessage = first show . parse (errorCallParser <* eof) "<error>"
+parseErrorCall = first show . parse (errorCallParser <* eof) "<error>" . show
 
 errorCallParser :: Parser MessageWithStackFrames
 errorCallParser = MessageWithStackFrames

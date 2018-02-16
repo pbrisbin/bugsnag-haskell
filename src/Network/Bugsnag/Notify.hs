@@ -1,8 +1,10 @@
 module Network.Bugsnag.Notify
     ( notifyBugsnag
     , notifyBugsnagWith
+    , BeforeNotify
     ) where
 
+import Control.Exception (SomeException)
 import Control.Monad (when)
 import Network.Bugsnag.App
 import Network.Bugsnag.Event
@@ -12,8 +14,10 @@ import Network.Bugsnag.Reporter
 import Network.Bugsnag.Settings
 import Network.Bugsnag.StackFrame
 
+type BeforeNotify = BugsnagEvent -> BugsnagEvent
+
 -- | Notify Bugsnag of a single exception
-notifyBugsnag :: BugsnagSettings -> BugsnagException -> IO ()
+notifyBugsnag :: BugsnagSettings -> SomeException -> IO ()
 notifyBugsnag = notifyBugsnagWith id
 
 -- | Notify Bugsnag of a single exception, modifying the event
@@ -22,12 +26,11 @@ notifyBugsnag = notifyBugsnagWith id
 -- given function runs after any configured @'bsBeforeNotify'@, or changes
 -- caused by other aspects of setting (e.g. grouping hash).
 --
-notifyBugsnagWith
-    :: (BugsnagEvent -> BugsnagEvent)
-    -> BugsnagSettings
-    -> BugsnagException
-    -> IO ()
-notifyBugsnagWith f settings exception =
+notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
+notifyBugsnagWith f settings ex = do
+    -- TODO: support local casters from settings
+    let exception = bugsnagExceptionFromSomeException ex
+
     -- N.B. all notify functions should go through here. We need to maintain
     -- this as the single point where (e.g.) should-notify is checked,
     -- before-notify is applied, stack-frame filtering, etc.

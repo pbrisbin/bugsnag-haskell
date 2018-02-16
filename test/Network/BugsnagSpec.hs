@@ -39,20 +39,20 @@ spec = do
             bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
 
-    describe "parseBugsnagException" $ do
-        it "can parse errors with callstacks" $ do
-            e <- evaluate brokenFunction `catch` pure
+        describe "bugsnagExceptionFromSomeException" $ do
+            it "can parse errors with callstacks" $ do
+                e <- evaluate brokenFunction `catch` pure
 
-            let ex = bugsnagExceptionFromErrorCall e
-            beErrorClass ex `shouldBe` "ErrorCall"
-            beMessage ex `shouldBe` Just "empty list"
-            beStacktrace ex `shouldSatisfy` ((== 3) . length)
+                let ex = bugsnagExceptionFromSomeException e
+                beErrorClass ex `shouldBe` "ErrorCall"
+                beMessage ex `shouldBe` Just "empty list"
+                beStacktrace ex `shouldSatisfy` ((== 3) . length)
 
-            let frame = head $ beStacktrace ex
-            bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 23
-            bsfColumnNumber frame `shouldBe` Just 15
-            bsfMethod frame `shouldBe` "error"
+                let frame = head $ beStacktrace ex
+                bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
+                bsfLineNumber frame `shouldBe` 23
+                bsfColumnNumber frame `shouldBe` Just 15
+                bsfMethod frame `shouldBe` "error"
 
-            map bsfMethod (beStacktrace ex)
-                `shouldBe` ["error", "sillyHead", "brokenFunction"]
+                map bsfMethod (beStacktrace ex)
+                    `shouldBe` ["error", "sillyHead", "brokenFunction"]

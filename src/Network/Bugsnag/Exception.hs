@@ -6,10 +6,7 @@
 module Network.Bugsnag.Exception
     ( BugsnagException(..)
     , bugsnagException
-    , bugsnagExceptionFromException
     , bugsnagExceptionFromSomeException
-    , bugsnagExceptionFromErrorCall
-    , bugsnagExceptionFromMessage
     ) where
 
 import Control.Exception
@@ -23,6 +20,14 @@ import GHC.Generics
 import Instances.TH.Lift ()
 import Network.Bugsnag.Exception.Parse
 import Network.Bugsnag.StackFrame
+
+-- | Opaque type for @'Exception' e => e -> 'BugsnagException'@
+--
+-- These can be placed in a heterogenious list and then tried in trun to find
+-- something better than @'SomeException'@. This is a shameless copy of the
+-- @'Handler'@ type (and general approach) used by @'catches'@.
+--
+data Caster = forall e. Exception e => Caster (e -> BugsnagException)
 
 data BugsnagException = BugsnagException
     { beErrorClass :: Text
@@ -52,6 +57,11 @@ bugsnagException errorClass message stacktrace = BugsnagException
 
 -- | Construct a @'BugsnagException'@ from a @'SomeException'@
 --
+-- @'BugsnagException'@s are left as-is, and @'ErrorCall'@ exceptions are parsed
+-- for @'HasCallStack'@ information to use as @stacktrace@. Otherwise, we
+-- attempt to determine @errorClass@ and we use the @'show'@ exception as
+-- @message@.
+--
 -- >>> :m +System.IO.Error
 -- >>> bugsnagExceptionFromSomeException $ toException $ userError "Oops"
 -- BugsnagException {beErrorClass = "IOException", beMessage = Just "user error (Oops)", beStacktrace = []}
@@ -62,38 +72,6 @@ bugsnagExceptionFromSomeException ex =
   where
     go :: Caster -> BugsnagException -> BugsnagException
     go (Caster caster) res = maybe res caster $ fromException ex
-
--- | Construct a @'BugsnagException'@ from an @'Exception'@
-bugsnagExceptionFromException :: Exception e => e -> BugsnagException
-bugsnagExceptionFromException ex =
-    bugsnagException (exErrorClass ex) (T.pack $ show ex) []
-
--- | Construct a @'BugsnagException'@ from an @'ErrorCall'@
---
--- This type of exception may have @'HasCallStack'@ information.
---
-bugsnagExceptionFromErrorCall :: ErrorCall -> BugsnagException
-bugsnagExceptionFromErrorCall ex =
-    case parseErrorCall ex of
-        Left _ -> bugsnagExceptionFromException ex
-        Right (MessageWithStackFrames message stacktrace) ->
-            bugsnagException (exErrorClass ex) message stacktrace
-
--- | Construct a @'BugsnagException'@ from an @'ErrorCall'@ /message/
---
--- This is exported in case you've been handed an already-@show@n value.
---
-bugsnagExceptionFromMessage :: String -> BugsnagException
-bugsnagExceptionFromMessage msg =
-    case parseErrorCallMessage msg of
-        Left _ -> bugsnagException "ErrorCall" (T.pack msg) []
-        Right (MessageWithStackFrames message stacktrace) ->
-            bugsnagException "ErrorCall" message stacktrace
-
---------------------------------------------------------------------------------
--- * Low-level machinery required to cast expections
---------------------------------------------------------------------------------
-data Caster = forall e. Exception e => Caster (e -> BugsnagException)
 
 exCasters :: [Caster]
 exCasters =
@@ -118,6 +96,27 @@ exCasters =
     , Caster $ bugsnagExceptionFromException @RecUpdError
     , Caster $ bugsnagExceptionFromException @TypeError
     ]
+
+-- | Construct a @'BugsnagException'@ from an @'ErrorCall'@
+--
+-- This type of exception may have @'HasCallStack'@ information.
+--
+bugsnagExceptionFromErrorCall :: ErrorCall -> BugsnagException
+bugsnagExceptionFromErrorCall ex =
+    case parseErrorCall ex of
+        Left _ -> bugsnagExceptionFromException ex
+        Right (MessageWithStackFrames message stacktrace) ->
+            bugsnagException (exErrorClass ex) message stacktrace
+
+-- | Construct a @'BugsnagException'@ from an @'Exception'@
+--
+-- This exists mostly as a way to provide the type hint.
+--
+-- > bugsnagExceptionFromException @IOException ex
+--
+bugsnagExceptionFromException :: Exception e => e -> BugsnagException
+bugsnagExceptionFromException ex =
+    bugsnagException (exErrorClass ex) (T.pack $ show ex) []
 
 -- | Show an exception's "error class"
 --
