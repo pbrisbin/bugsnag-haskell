@@ -9,6 +9,7 @@ BugsnagSettings
     , bsReleaseStage
     , bsNotifyReleaseStages
     , bsBeforeNotify
+    , bsIgnoreException
     , bsGroupingHash
     , bsIsInProject
     , bsFilterStackFrames

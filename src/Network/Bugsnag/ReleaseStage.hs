@@ -12,7 +12,7 @@ data BugsnagReleaseStage
     | StagingReleaseStage
     | ProductionReleaseStage
     | CustomReleaseStage Text
-    deriving Eq
+    deriving (Eq, Show)
 
 instance FromJSON BugsnagReleaseStage where
     parseJSON = withText "ReleaseStage" $ \case

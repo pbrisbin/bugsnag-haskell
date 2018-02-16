@@ -14,8 +14,10 @@ module Network.Bugsnag.Settings
 import Data.Aeson (FromJSON)
 import Data.String
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Version
 import Network.Bugsnag.Event
+import Network.Bugsnag.Exception
 import Network.Bugsnag.ReleaseStage
 import Network.Bugsnag.StackFrame
 import Network.HTTP.Client
@@ -25,6 +27,9 @@ newtype BugsnagApiKey = BugsnagApiKey
     { unBugsnagApiKey :: Text
     }
     deriving (FromJSON, IsString)
+
+instance Show BugsnagApiKey where
+    show = T.unpack . unBugsnagApiKey
 
 -- | Notifier settings
 --
@@ -47,6 +52,13 @@ data BugsnagSettings = BugsnagSettings
     -- ^ Modify any events before they are sent
     --
     -- For example to attach a user, or set the context.
+    --
+    , bsIgnoreException :: BugsnagException -> Bool
+    -- ^ Exception filtering
+    --
+    -- Functions like @'notifyBugsnag'@ will do nothing with exceptions that
+    -- pass this predicate. N.B. Something lower-level, like @'reportError'@
+    -- won't be aware of this.
     --
     , bsGroupingHash :: BugsnagEvent -> Maybe Text
     -- ^ The grouping hash to use for any specific event
@@ -82,18 +94,54 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsReleaseStage = ProductionReleaseStage
     , bsNotifyReleaseStages = [ProductionReleaseStage]
     , bsBeforeNotify = id
+    , bsIgnoreException = const False
     , bsGroupingHash = const Nothing
     , bsIsInProject = const True
     , bsFilterStackFrames = const True
     , bsHttpManager = manager
     }
 
--- | Should the @'BugsnagReleaseStage'@ should trigger notifications?
-bugsnagShouldNotify :: BugsnagSettings -> Bool
-bugsnagShouldNotify settings =
-    bsReleaseStage settings `elem`
-    bsNotifyReleaseStages settings
+-- | Should this @'BugsnagException'@ trigger notification?
+--
+-- >>> :set -XOverloadedStrings
+-- >>> settings <- newBugsnagSettings ""
+-- >>> let exception = bugsnagException "" "" []
+-- >>> bugsnagShouldNotify settings exception
+-- True
+--
+-- >>> let devSettings = settings { bsReleaseStage = DevelopmentReleaseStage }
+-- >>> bugsnagShouldNotify devSettings exception
+-- False
+--
+-- >>> bugsnagShouldNotify devSettings { bsNotifyReleaseStages = [DevelopmentReleaseStage] } exception
+-- True
+--
+-- >>> let ignore = (== "IgnoreMe") . beErrorClass
+-- >>> let ignoreSettings = settings { bsIgnoreException = ignore }
+-- >>> bugsnagShouldNotify ignoreSettings exception
+-- True
+--
+-- >>> bugsnagShouldNotify ignoreSettings exception { beErrorClass = "IgnoreMe" }
+-- False
+--
+bugsnagShouldNotify :: BugsnagSettings -> BugsnagException -> Bool
+bugsnagShouldNotify settings exception
+    | bsReleaseStage settings `notElem` bsNotifyReleaseStages settings = False
+    | bsIgnoreException settings exception = False
+    | otherwise = True
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
+--
+-- >>> :set -XOverloadedStrings
+-- >>> settings <- newBugsnagSettings "API_KEY"
+-- >>> bsApiKey settings
+-- API_KEY
+--
+-- >>> bsReleaseStage settings
+-- ProductionReleaseStage
+--
+-- >>> bsNotifyReleaseStages settings
+-- [ProductionReleaseStage]
+--
 newBugsnagSettings :: BugsnagApiKey -> IO BugsnagSettings
 newBugsnagSettings apiKey = bugsnagSettings apiKey <$> newTlsManager

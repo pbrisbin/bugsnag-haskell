@@ -31,7 +31,7 @@ notifyBugsnagWith f settings exception =
     -- N.B. all notify functions should go through here. We need to maintain
     -- this as the single point where (e.g.) should-notify is checked,
     -- before-notify is applied, stack-frame filtering, etc.
-    when (bugsnagShouldNotify settings) $ do
+    when (bugsnagShouldNotify settings exception) $ do
         let event
                 = f
                 . bsBeforeNotify settings
