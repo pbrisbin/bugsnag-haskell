@@ -22,9 +22,6 @@ sillyHead :: HasCallStack => [a] -> a
 sillyHead (x:_) = x
 sillyHead _ = error "empty list"
 
-ioException :: IO a
-ioException = throwIO $ userError "Boom"
-
 spec :: Spec
 spec = do
     describe "BugsnagException" $ do
@@ -41,12 +38,6 @@ spec = do
             bsfColumnNumber frame `shouldBe` Just 43
             bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
-
-    describe "catchBugsnag" $ do
-        it "re-throws the original exception" $ do
-            settings <- disabledSettings
-            ioException `catchBugsnag` settings
-                `shouldThrow` anyIOException
 
     describe "parseBugsnagException" $ do
         it "can parse errors with callstacks" $ do
@@ -65,8 +56,3 @@ spec = do
 
             map bsfMethod (beStacktrace ex)
                 `shouldBe` ["error", "sillyHead", "brokenFunction"]
-
-disabledSettings :: IO BugsnagSettings
-disabledSettings = do
-    settings <- newBugsnagSettings ""
-    pure $ settings { bsNotifyReleaseStages = [] }

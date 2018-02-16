@@ -28,19 +28,13 @@ throw
   $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
-Catch (only) it:
-
-```hs
-myFunction `catch` notifyBugsnag settings
-```
-
 Catch any exceptions, notify, and re-throw it:
 
 ```hs
-myFunction `catchBugsnag` settings
+myFunction `catch` \ex -> do
+  notifyBugsnag settings $ bugsnagExceptionFromSomeException ex
+  throw ex
 ```
-
-See [`Network.Bugsnag.Catch`](#todo).
 
 ## Examples
 

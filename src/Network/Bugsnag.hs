@@ -8,7 +8,6 @@ module Network.Bugsnag
 
 import Network.Bugsnag.App as X
 import Network.Bugsnag.Breadcrumb as X
-import Network.Bugsnag.Catch as X
 import Network.Bugsnag.Device as X
 import Network.Bugsnag.Event as X
 import Network.Bugsnag.Exception as X
