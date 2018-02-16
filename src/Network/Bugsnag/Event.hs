@@ -7,6 +7,7 @@ module Network.Bugsnag.Event
     -- * Update helpers, useful as before-notify arguments
     , updateEventFromRequest
     , updateEventFromSession
+    , setStackFrame
     , errorSeverity
     , warningSeverity
     , infoSeverity
@@ -24,6 +25,7 @@ import Network.Bugsnag.Exception
 import Network.Bugsnag.Request
 import Network.Bugsnag.Session
 import Network.Bugsnag.Severity
+import Network.Bugsnag.StackFrame
 import Network.Bugsnag.Thread
 import Network.Bugsnag.User
 
@@ -76,6 +78,22 @@ updateEventFromSession session event = event
     { beContext = bsContext session
     , beUser = bsUser session
     }
+
+-- | Set a stack frame on the reported exception
+--
+-- Sets the same stack frame on every Exception in the Event, but assuming
+-- you're using this library normally, there will be only one.
+--
+-- > notifyBugsnagWith (setStackFrame ($(currentStackFrame) "myFunc")) ...
+--
+-- N.B. this overrides any existing stacktrace.
+--
+setStackFrame :: BugsnagStackFrame -> BugsnagEvent -> BugsnagEvent
+setStackFrame stackFrame event = event
+    { beExceptions = setStackFrameEx <$> beExceptions event
+    }
+  where
+    setStackFrameEx ex = ex { beStacktrace = [stackFrame] }
 
 errorSeverity :: BugsnagEvent -> BugsnagEvent
 errorSeverity = setSeverity ErrorSeverity
