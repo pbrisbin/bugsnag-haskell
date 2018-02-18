@@ -70,9 +70,14 @@ bugsnagEvent exceptions = BugsnagEvent
     , beMetaData = Nothing
     }
 
+-- | Set the Event's Request
+--
+-- See also: @'bugsnagRequestFromWaiRequest'@
+--
 updateEventFromRequest :: BugsnagRequest -> BugsnagEvent -> BugsnagEvent
 updateEventFromRequest request event = event { beRequest = Just request }
 
+-- | Update the Event's Context and User from the Session
 updateEventFromSession :: BugsnagSession -> BugsnagEvent -> BugsnagEvent
 updateEventFromSession session event = event
     { beContext = bsContext session
@@ -89,12 +94,15 @@ setStacktrace stacktrace event = event
         <$> beExceptions event
     }
 
+-- | Set to @'ErrorSeverity'@
 errorSeverity :: BugsnagEvent -> BugsnagEvent
 errorSeverity = setSeverity ErrorSeverity
 
+-- | Set to @'WarningSeverity'@
 warningSeverity :: BugsnagEvent -> BugsnagEvent
 warningSeverity = setSeverity WarningSeverity
 
+-- | Set to @'InfoSeverity'@
 infoSeverity :: BugsnagEvent -> BugsnagEvent
 infoSeverity = setSeverity InfoSeverity
 
