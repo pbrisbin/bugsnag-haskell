@@ -32,7 +32,7 @@ Catch any exceptions, notify, and re-throw it:
 
 ```hs
 myFunction `catch` \ex -> do
-  notifyBugsnag settings $ bugsnagExceptionFromSomeException ex
+  notifyBugsnag settings ex
   throw ex
 ```
 
