@@ -73,7 +73,7 @@ data BugsnagSettings = BugsnagSettings
     -- By default, all are considered in-project.
     --
     , bsFilterStackFrames :: BugsnagStackFrame -> Bool
-    -- ^ Stack-fram filter
+    -- ^ Stack frame filter
     --
     -- Return @True@ for any stack-frames that should be omitted from
     -- notifications.
