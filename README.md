@@ -14,7 +14,7 @@ See [`Network.Bugsnag.Settings`](#todo).
 
 ```hs
 notifyBugsnag settings
-  $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
+    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
 See [`Network.Bugsnag.Notify`](#todo).
@@ -25,15 +25,15 @@ Throw a `BugsnagException` yourself:
 
 ```hs
 throw
-  $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
+    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
 ```
 
 Catch any exceptions, notify, and re-throw it:
 
 ```hs
 myFunction `catch` \ex -> do
-  notifyBugsnag settings ex
-  throw ex
+    notifyBugsnag settings ex
+    throw ex
 ```
 
 ## Examples
@@ -53,8 +53,8 @@ main = do
     apiKey <- BugsnagApiKey . T.pack <$> getEnv "BUGSNAG_API_KEY"
     settings <- newBugsnagSettings apiKey
     appMain `catch` \ex ->
-      notifyBugsnag settings ex
-      die $ show ex
+        notifyBugsnag settings ex
+        die $ show ex
 ```
 
 ### WAI / Warp
