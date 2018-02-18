@@ -23,7 +23,7 @@ import Network.Bugsnag.StackFrame
 
 -- | Opaque type for @'Exception' e => e -> 'BugsnagException'@
 --
--- These can be placed in a heterogenious list and then tried in trun to find
+-- These can be placed in a heterogenious list and then tried in turn to find
 -- something better than @'SomeException'@. This is a shameless copy of the
 -- @'Handler'@ type (and general approach) used by @'catches'@.
 --
@@ -59,7 +59,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
 --
 -- @'BugsnagException'@s are left as-is, and @'ErrorCall'@ exceptions are parsed
 -- for @'HasCallStack'@ information to use as @stacktrace@. Otherwise, we
--- attempt to determine @errorClass@ and we use the @'show'@ exception as
+-- attempt to determine @errorClass@ and we use the @'show'@n exception as
 -- @message@.
 --
 -- >>> :m +System.IO.Error
