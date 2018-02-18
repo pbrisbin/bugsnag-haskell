@@ -46,12 +46,15 @@ module Main (main) where
 import App (appMain) -- Actual program logic
 import qualified Data.Text as T
 import Network.Bugsnag
+import System.Exit (die)
 
 main :: IO ()
 main = do
     apiKey <- BugsnagApiKey . T.pack <$> getEnv "BUGSNAG_API_KEY"
     settings <- newBugsnagSettings apiKey
-    appMain `catchBugsnag` settings
+    appMain `catch` \ex ->
+      notifyBugsnag settings ex
+      die $ show ex
 ```
 
 ### WAI / Warp
@@ -62,10 +65,7 @@ warpSettings settings = setOnException
     (\mRequest ex ->
         when (defaultShouldDisplayException ex) $ do
             let beforeNotify = maybe id updateEventFromRequest mRequest
-
-            void $ forkIO
-                $ notifyBugsnagWith beforeNotify settings
-                $ bugsnagExceptionFromSomeException ex
+            void $ forkIO $ notifyBugsnagWith beforeNotify settings ex
 
     ) defaultSettings
 ```
@@ -105,8 +105,7 @@ instance YesodApp where
         defaultYesodMiddleware handler `catch` \ex ->
             unless (isHandlerContents ex)
                 $ void $ liftIO $ forkIO
-                $ notifyBugsnagWith beforeNotify settings
-                $ bugsnagExceptionFromSomeException ex
+                $ notifyBugsnagWith beforeNotify settings ex
 
       where
         isHandlerContents :: SomeException -> Bool
