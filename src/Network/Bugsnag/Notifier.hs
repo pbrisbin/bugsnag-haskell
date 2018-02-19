@@ -25,8 +25,8 @@ data BugsnagNotifier = BugsnagNotifier
     deriving Generic
 
 instance ToJSON BugsnagNotifier where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bn"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bn"
+    toJSON = genericToJSON $ bsAesonOptions "bn"
+    toEncoding = genericToEncoding $ bsAesonOptions "bn"
 
 bugsnagNotifier :: BugsnagNotifier
 bugsnagNotifier = BugsnagNotifier

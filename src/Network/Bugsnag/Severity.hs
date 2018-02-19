@@ -17,11 +17,11 @@ data BugsnagSeverity
     = ErrorSeverity
     | WarningSeverity
     | InfoSeverity
+    deriving Generic
 
 instance ToJSON BugsnagSeverity where
-    toJSON ErrorSeverity = String "error"
-    toJSON WarningSeverity = String "warning"
-    toJSON InfoSeverity = String "info"
+    toJSON = genericToJSON $ bsAesonOptions "Severity"
+    toEncoding = genericToEncoding $ bsAesonOptions "Severity"
 
 data BugsnagSeverityReasonType
     = UnhandledExceptionReasonType
@@ -39,23 +39,11 @@ data BugsnagSeverityReasonType
     | HandledErrorReasonType
     | HandledPanicReasonType
     | UserContextSetSeverityReasonType
+    deriving Generic
 
 instance ToJSON BugsnagSeverityReasonType where
-    toJSON UnhandledExceptionReasonType = String "unhandledException"
-    toJSON UnhandledErrorReasonType = String "unhandledError"
-    toJSON LogReasonType = String "log"
-    toJSON SignalReasonType = String "signal"
-    toJSON StrictModeReasonType = String "strictMode"
-    toJSON UnhandledPromiseRejectionReasonType = String "unhandledPromiseRejection"
-    toJSON CallbackErrorInterceptReasonType = String "callbackErrorIntercept"
-    toJSON ErrorClassReasonType = String "errorClass"
-    toJSON UnhandledPanicReasonType = String "unhandledPanic"
-    toJSON UserCallbackSetSeverityReasonType = String "userCallbackSetSeverity"
-    toJSON UserSpecifiedSeverityReasonType = String "userSpecifiedSeverity"
-    toJSON HandledExceptionReasonType = String "handledException"
-    toJSON HandledErrorReasonType = String "handledError"
-    toJSON HandledPanicReasonType = String "handledPanic"
-    toJSON UserContextSetSeverityReasonType = String "userContextSetSeverity"
+    toJSON = genericToJSON $ bsAesonOptions "ReasonType"
+    toEncoding = genericToEncoding $ bsAesonOptions "ReasonType"
 
 data BugsnagSeverityReasonAttributes = BugsnagSeverityReasonAttributes
     { bsraErrorType :: Maybe Text
@@ -67,8 +55,8 @@ data BugsnagSeverityReasonAttributes = BugsnagSeverityReasonAttributes
     deriving Generic
 
 instance ToJSON BugsnagSeverityReasonAttributes where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bsra"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bsra"
+    toJSON = genericToJSON $ bsAesonOptions "bsra"
+    toEncoding = genericToEncoding $ bsAesonOptions "bsra"
 
 data BugsnagSeverityReason = BugsnagSeverityReason
     { bsrType :: BugsnagSeverityReasonType
@@ -77,8 +65,8 @@ data BugsnagSeverityReason = BugsnagSeverityReason
     deriving Generic
 
 instance ToJSON BugsnagSeverityReason where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bsr"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bsr"
+    toJSON = genericToJSON $ bsAesonOptions "bsr"
+    toEncoding = genericToEncoding $ bsAesonOptions "bsr"
 
 bugsnagSeverityReasonAttributes :: BugsnagSeverityReasonAttributes
 bugsnagSeverityReasonAttributes = BugsnagSeverityReasonAttributes

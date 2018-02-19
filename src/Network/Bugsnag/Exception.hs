@@ -37,8 +37,8 @@ data BugsnagException = BugsnagException
     deriving (Generic, Show)
 
 instance ToJSON BugsnagException where
-    toJSON = genericToJSON $ lowerDroppingPrefix "be"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "be"
+    toJSON = genericToJSON $ bsAesonOptions "be"
+    toEncoding = genericToEncoding $ bsAesonOptions "be"
 
 instance Exception BugsnagException
 

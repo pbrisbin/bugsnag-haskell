@@ -17,8 +17,8 @@ data BugsnagReport = BugsnagReport
     deriving Generic
 
 instance ToJSON BugsnagReport where
-    toJSON = genericToJSON $ lowerDroppingPrefix "br"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "br"
+    toJSON = genericToJSON $ bsAesonOptions "br"
+    toEncoding = genericToEncoding $ bsAesonOptions "br"
 
 bugsnagReport :: [BugsnagEvent] -> BugsnagReport
 bugsnagReport events = BugsnagReport

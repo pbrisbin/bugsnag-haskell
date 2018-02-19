@@ -18,8 +18,8 @@ data BugsnagThread = BugsnagThread
     deriving Generic
 
 instance ToJSON BugsnagThread where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bt"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bt"
+    toJSON = genericToJSON $ bsAesonOptions "bt"
+    toEncoding = genericToEncoding $ bsAesonOptions "bt"
 
 bugsnagThread :: BugsnagThread
 bugsnagThread = BugsnagThread

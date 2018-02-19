@@ -26,8 +26,8 @@ data BugsnagApp = BugsnagApp
     deriving Generic
 
 instance ToJSON BugsnagApp where
-    toJSON = genericToJSON $ lowerDroppingPrefix "ba"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "ba"
+    toJSON = genericToJSON $ bsAesonOptions "ba"
+    toEncoding = genericToEncoding $ bsAesonOptions "ba"
 
 bugsnagApp :: BugsnagApp
 bugsnagApp = BugsnagApp

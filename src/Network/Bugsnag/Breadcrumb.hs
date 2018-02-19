@@ -21,16 +21,11 @@ data BugsnagBreadcrumbType
     | StateBreadcrumb
     | ErrorBreadcrumb
     | ManualBreadcrumb
+    deriving Generic
 
 instance ToJSON BugsnagBreadcrumbType where
-    toJSON NavigationBreadcrumb = String "navigation"
-    toJSON RequestBreadcrumb = String "request"
-    toJSON ProcessBreadcrumb = String "process"
-    toJSON LogBreadcrumb = String "log"
-    toJSON UserBreadcrumb = String "user"
-    toJSON StateBreadcrumb = String "state"
-    toJSON ErrorBreadcrumb = String "error"
-    toJSON ManualBreadcrumb = String "manual"
+    toJSON = genericToJSON $ bsAesonOptions "Breadcrumb"
+    toEncoding = genericToEncoding $ bsAesonOptions "Breadcrumb"
 
 data BugsnagBreadcrumb = BugsnagBreadcrumb
     { bbTimestamp :: UTCTime
@@ -41,8 +36,8 @@ data BugsnagBreadcrumb = BugsnagBreadcrumb
     deriving Generic
 
 instance ToJSON BugsnagBreadcrumb where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bb"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bb"
+    toJSON = genericToJSON $ bsAesonOptions "bb"
+    toEncoding = genericToEncoding $ bsAesonOptions "bb"
 
 bugsnagBreadcrumb
     :: UTCTime

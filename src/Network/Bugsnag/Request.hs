@@ -30,8 +30,8 @@ data BugsnagRequest = BugsnagRequest
     deriving Generic
 
 instance ToJSON BugsnagRequest where
-    toJSON = genericToJSON $ lowerDroppingPrefix "br"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "br"
+    toJSON = genericToJSON $ bsAesonOptions "br"
+    toEncoding = genericToEncoding $ bsAesonOptions "br"
 
 -- | Constructs an empty @'BugsnagRequest'@
 bugsnagRequest :: BugsnagRequest

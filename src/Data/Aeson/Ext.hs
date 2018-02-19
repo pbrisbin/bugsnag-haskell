@@ -4,7 +4,7 @@
 -- Orphan instances and shared @'Generic'@ JSON options.
 --
 module Data.Aeson.Ext
-    ( lowerDroppingPrefix
+    ( bsAesonOptions
     ) where
 
 import Data.Aeson
@@ -13,6 +13,7 @@ import Data.CaseInsensitive (CI)
 import qualified Data.CaseInsensitive as CI
 import Data.Char (toLower)
 import Data.List (stripPrefix)
+import Data.Maybe (fromMaybe)
 import Data.Text.Encoding (decodeUtf8)
 
 instance ToJSON ByteString where
@@ -21,19 +22,31 @@ instance ToJSON ByteString where
 instance ToJSON a => ToJSON (CI a) where
     toJSON = toJSON . CI.original
 
--- | Convert fields as we need (the name's not quite right)
+-- | Our custom Aeson @'Options'@
 --
--- >>> fieldLabelModifier (lowerDroppingPrefix "bs") "bsFooBar"
--- "fooBar"
+-- Omits @'Nothing'@ fields, and drops/lowers accordingly:
 --
--- >>> fieldLabelModifier (lowerDroppingPrefix "bs") "oopsOops"
--- "oopsOops"
+-- >>> fieldLabelModifier (bsAesonOptions "bs") "bsReleaseStage"
+-- "releaseStage"
 --
-lowerDroppingPrefix :: String -> Options
-lowerDroppingPrefix prefix = defaultOptions
-    { fieldLabelModifier = \field ->
-        case stripPrefix prefix field of
-            Just (c:rest) -> toLower c : rest
-            _ -> field
+-- For sums, the first argument is taken as a suffix:
+--
+-- >>> constructorTagModifier (bsAesonOptions "ReasonType") "UnhandledExceptionReasonType"
+-- "unhandledException"
+--
+bsAesonOptions :: String -> Options
+bsAesonOptions prefixOrSuffix = defaultOptions
+    { fieldLabelModifier = lowerFirst . dropPrefix prefixOrSuffix
+    , constructorTagModifier = lowerFirst . dropSuffix prefixOrSuffix
     , omitNothingFields = True
     }
+
+dropPrefix :: String -> String -> String
+dropPrefix prefix x = fromMaybe x $ stripPrefix prefix x
+
+dropSuffix :: String -> String -> String
+dropSuffix prefix = reverse . dropPrefix (reverse prefix) . reverse
+
+lowerFirst :: String -> String
+lowerFirst [] = []
+lowerFirst (x:rest) = toLower x : rest

@@ -36,8 +36,8 @@ data BugsnagStackFrame = BugsnagStackFrame
     deriving (Generic, Show)
 
 instance ToJSON BugsnagStackFrame where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bsf"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bsf"
+    toJSON = genericToJSON $ bsAesonOptions "bsf"
+    toEncoding = genericToEncoding $ bsAesonOptions "bsf"
 
 bugsnagStackFrame :: FilePath -> Natural -> Text -> BugsnagStackFrame
 bugsnagStackFrame path ln method = BugsnagStackFrame

@@ -34,8 +34,8 @@ data BugsnagDevice = BugsnagDevice
     deriving Generic
 
 instance ToJSON BugsnagDevice where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bd"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bd"
+    toJSON = genericToJSON $ bsAesonOptions "bd"
+    toEncoding = genericToEncoding $ bsAesonOptions "bd"
 
 bugsnagDevice :: BugsnagDevice
 bugsnagDevice = BugsnagDevice

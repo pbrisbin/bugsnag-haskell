@@ -50,8 +50,8 @@ data BugsnagEvent = BugsnagEvent
     deriving Generic
 
 instance ToJSON BugsnagEvent where
-    toJSON = genericToJSON $ lowerDroppingPrefix "be"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "be"
+    toJSON = genericToJSON $ bsAesonOptions "be"
+    toEncoding = genericToEncoding $ bsAesonOptions "be"
 
 bugsnagEvent :: NonEmpty BugsnagException -> BugsnagEvent
 bugsnagEvent exceptions = BugsnagEvent

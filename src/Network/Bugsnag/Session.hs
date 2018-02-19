@@ -22,8 +22,8 @@ data BugsnagSession = BugsnagSession
     deriving Generic
 
 instance ToJSON BugsnagSession where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bs"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bs"
+    toJSON = genericToJSON $ bsAesonOptions "bs"
+    toEncoding = genericToEncoding $ bsAesonOptions "bs"
 
 bugsnagSession :: BugsnagSession
 bugsnagSession = BugsnagSession

@@ -17,8 +17,8 @@ data BugsnagUser = BugsnagUser
     deriving Generic
 
 instance ToJSON BugsnagUser where
-    toJSON = genericToJSON $ lowerDroppingPrefix "bu"
-    toEncoding = genericToEncoding $ lowerDroppingPrefix "bu"
+    toJSON = genericToJSON $ bsAesonOptions "bu"
+    toEncoding = genericToEncoding $ bsAesonOptions "bu"
 
 bugsnagUser :: BugsnagUser
 bugsnagUser = BugsnagUser
