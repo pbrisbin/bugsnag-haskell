@@ -76,8 +76,7 @@ bugsnagEvent exceptions = BugsnagEvent
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
 updateEventFromWaiRequest :: Request -> BugsnagEvent -> BugsnagEvent
 updateEventFromWaiRequest wrequest =
-    let
-        mdevice = bugsnagDeviceFromWaiRequest wrequest
+    let mdevice = bugsnagDeviceFromWaiRequest wrequest
         request = bugsnagRequestFromWaiRequest wrequest
     in maybe id setDevice mdevice . updateEventFromRequest request
 

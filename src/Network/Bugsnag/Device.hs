@@ -15,7 +15,6 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Version
 import GHC.Generics
---import Network.HTTP.Types
 import Network.Wai
 import Numeric.Natural
 import Text.Read (readMaybe)
