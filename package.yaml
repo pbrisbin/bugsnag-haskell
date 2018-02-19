@@ -40,6 +40,10 @@ tests:
     dependencies:
       - hspec
       - bugsnag-reporter
+      - aeson
+      - aeson-qq
+      - text
+      - time
   doctest:
     main: DocTest.hs
     source-dirs: .

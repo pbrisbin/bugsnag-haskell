@@ -35,5 +35,5 @@ lowerDroppingPrefix prefix = defaultOptions
         case stripPrefix prefix field of
             Just (c:rest) -> toLower c : rest
             _ -> field
-
+    , omitNothingFields = True
     }

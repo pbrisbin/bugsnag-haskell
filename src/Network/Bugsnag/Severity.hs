@@ -4,6 +4,7 @@ module Network.Bugsnag.Severity
     ( BugsnagSeverity(..)
     , BugsnagSeverityReason(..)
     , BugsnagSeverityReasonAttributes(..)
+    , bugsnagSeverityReasonAttributes
     , BugsnagSeverityReasonType(..)
     ) where
 
@@ -78,3 +79,12 @@ data BugsnagSeverityReason = BugsnagSeverityReason
 instance ToJSON BugsnagSeverityReason where
     toJSON = genericToJSON $ lowerDroppingPrefix "bsr"
     toEncoding = genericToEncoding $ lowerDroppingPrefix "bsr"
+
+bugsnagSeverityReasonAttributes :: BugsnagSeverityReasonAttributes
+bugsnagSeverityReasonAttributes = BugsnagSeverityReasonAttributes
+    { bsraErrorType = Nothing
+    , bsraLevel = Nothing
+    , bsraSignalType = Nothing
+    , bsraViolationType = Nothing
+    , bsraErrorClass = Nothing
+    }

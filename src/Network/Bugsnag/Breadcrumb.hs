@@ -3,7 +3,7 @@
 module Network.Bugsnag.Breadcrumb
     ( BugsnagBreadcrumbType(..)
     , BugsnagBreadcrumb(..)
-    , bugsnagBreadCrumb
+    , bugsnagBreadcrumb
     ) where
 
 import Data.Aeson
@@ -44,8 +44,12 @@ instance ToJSON BugsnagBreadcrumb where
     toJSON = genericToJSON $ lowerDroppingPrefix "bb"
     toEncoding = genericToEncoding $ lowerDroppingPrefix "bb"
 
-bugsnagBreadCrumb :: UTCTime -> Text -> BugsnagBreadcrumbType -> BugsnagBreadcrumb
-bugsnagBreadCrumb timestamp name typ = BugsnagBreadcrumb
+bugsnagBreadcrumb
+    :: UTCTime
+    -> Text
+    -> BugsnagBreadcrumbType
+    -> BugsnagBreadcrumb
+bugsnagBreadcrumb timestamp name typ = BugsnagBreadcrumb
     { bbTimestamp = timestamp
     , bbName = name
     , bbType = typ
