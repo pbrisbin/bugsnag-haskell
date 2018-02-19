@@ -5,8 +5,10 @@ module Network.Bugsnag.Event
     , bugsnagEvent
 
     -- * Update helpers, useful as before-notify arguments
+    , updateEventFromWaiRequest
     , updateEventFromRequest
     , updateEventFromSession
+    , setDevice
     , setStacktrace
     , errorSeverity
     , warningSeverity
@@ -28,6 +30,7 @@ import Network.Bugsnag.Severity
 import Network.Bugsnag.StackFrame
 import Network.Bugsnag.Thread
 import Network.Bugsnag.User
+import Network.Wai (Request)
 
 data BugsnagEvent = BugsnagEvent
     { beExceptions :: NonEmpty BugsnagException
@@ -70,6 +73,14 @@ bugsnagEvent exceptions = BugsnagEvent
     , beMetaData = Nothing
     }
 
+-- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
+updateEventFromWaiRequest :: Request -> BugsnagEvent -> BugsnagEvent
+updateEventFromWaiRequest wrequest =
+    let
+        mdevice = bugsnagDeviceFromWaiRequest wrequest
+        request = bugsnagRequestFromWaiRequest wrequest
+    in maybe id setDevice mdevice . updateEventFromRequest request
+
 -- | Set the Event's Request
 --
 -- See also: @'bugsnagRequestFromWaiRequest'@
@@ -82,6 +93,15 @@ updateEventFromSession :: BugsnagSession -> BugsnagEvent -> BugsnagEvent
 updateEventFromSession session event = event
     { beContext = bsContext session
     , beUser = bsUser session
+    }
+
+-- | Set the device on the event
+--
+-- See @'bugsnagDeviceFromUserAgent'@
+--
+setDevice :: BugsnagDevice -> BugsnagEvent -> BugsnagEvent
+setDevice device event = event
+    { beDevice = Just device
     }
 
 -- | Set the stacktrace on the reported exception
