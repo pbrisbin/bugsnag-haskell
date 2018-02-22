@@ -6,6 +6,7 @@ module Network.Bugsnag.Notify
 import Control.Exception (SomeException)
 import Control.Monad (when)
 import Network.Bugsnag.App
+import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.Report
@@ -23,7 +24,7 @@ notifyBugsnag = notifyBugsnagWith id
 -- given function runs after any configured @'bsBeforeNotify'@, or changes
 -- caused by other aspects of setting (e.g. grouping hash).
 --
-notifyBugsnagWith :: (BugsnagEvent -> BugsnagEvent) -> BugsnagSettings -> SomeException -> IO ()
+notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
 notifyBugsnagWith f settings ex = do
     -- TODO: support local casters from settings
     let exception = bugsnagExceptionFromSomeException ex
@@ -48,12 +49,12 @@ notifyBugsnagWith f settings ex = do
 
         reportError manager apiKey report
 
-updateGroupingHash :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
+updateGroupingHash :: BugsnagSettings -> BeforeNotify
 updateGroupingHash settings event = event
     { beGroupingHash = bsGroupingHash settings event
     }
 
-updateStackFramesInProject :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
+updateStackFramesInProject :: BugsnagSettings -> BeforeNotify
 updateStackFramesInProject settings event = event
     { beExceptions = updateExceptions <$> beExceptions event
     }
@@ -68,7 +69,7 @@ updateStackFramesInProject settings event = event
         { bsfInProject = Just $ bsIsInProject settings $ bsfFile sf
         }
 
-filterStackFrames :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
+filterStackFrames :: BugsnagSettings -> BeforeNotify
 filterStackFrames settings event = event
     { beExceptions = updateExceptions <$> beExceptions event
     }
@@ -82,7 +83,7 @@ filterStackFrames settings event = event
 --
 -- N.B. safe to clobber because we're only used on a fresh event.
 --
-createApp :: BugsnagSettings -> BugsnagEvent -> BugsnagEvent
+createApp :: BugsnagSettings -> BeforeNotify
 createApp settings event = event
     { beApp = Just $ bugsnagApp
         { baVersion = bsAppVersion settings

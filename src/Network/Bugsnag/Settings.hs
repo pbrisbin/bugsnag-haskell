@@ -16,6 +16,7 @@ import Data.String
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Version
+import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.ReleaseStage
@@ -48,7 +49,7 @@ data BugsnagSettings = BugsnagSettings
     -- ^ The current release-stage (Production, Development, etc)
     , bsNotifyReleaseStages :: [BugsnagReleaseStage]
     -- ^ Which release-stages to notify in. By default Production and Staging.
-    , bsBeforeNotify :: BugsnagEvent -> BugsnagEvent
+    , bsBeforeNotify :: BeforeNotify
     -- ^ Modify any events before they are sent
     --
     -- For example to attach a user, or set the context.

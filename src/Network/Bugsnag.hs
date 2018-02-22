@@ -15,6 +15,7 @@ module Network.Bugsnag
     ) where
 
 import Network.Bugsnag.App as X
+import Network.Bugsnag.BeforeNotify as X
 import Network.Bugsnag.Breadcrumb as X
 import Network.Bugsnag.Device as X
 import Network.Bugsnag.Event as X
