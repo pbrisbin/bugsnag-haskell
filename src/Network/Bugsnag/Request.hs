@@ -77,9 +77,6 @@ readForwardedFor :: ByteString -> Maybe ByteString
 readForwardedFor bs
     | C8.null bs = Nothing
     | otherwise = Just $ fst $ C8.break (== ',') bs
-    -- case C8.break (== ',') x of
-    --     ("", "") -> Nothing
-    --     (bs, _) -> Just bs
 
 requestUrl :: Request -> ByteString
 requestUrl request = requestProtocol
