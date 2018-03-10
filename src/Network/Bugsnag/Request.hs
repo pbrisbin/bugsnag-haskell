@@ -95,4 +95,7 @@ sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = C8.pack $ show $ fromHostAddress6 h
 sockAddrToIp (SockAddrUnix _) = "<socket>"
-sockAddrToIp (SockAddrCan _) = "<invalid>"
+
+-- N.B. Can't match deprecated SockAddrCan without warning. TODO: make patterns
+-- exhaustive without a wildcard once it's actually removed.
+sockAddrToIp _ = "<invalid>"
