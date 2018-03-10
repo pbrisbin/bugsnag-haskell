@@ -26,7 +26,6 @@ notifyBugsnag = notifyBugsnagWith id
 --
 notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
 notifyBugsnagWith f settings ex = do
-    -- TODO: support local casters from settings
     let exception = bugsnagExceptionFromSomeException ex
 
     -- N.B. all notify functions should go through here. We need to maintain
