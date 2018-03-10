@@ -67,9 +67,10 @@ bugsnagException errorClass message stacktrace = BugsnagException
 -- attempt to determine @errorClass@ and we use the @'show'@n exception as
 -- @message@.
 --
--- >>> :m +System.IO.Error
--- >>> bugsnagExceptionFromSomeException $ toException $ userError "Oops"
--- BugsnagException {beErrorClass = "IOException", beMessage = Just "user error (Oops)", beStacktrace = [], beOriginalException = Just user error (Oops)}
+-- >>> import Control.Arrow
+-- >>> import System.IO.Error
+-- >>> (beErrorClass &&& beMessage) $ bugsnagExceptionFromSomeException $ toException $ userError "Oops"
+-- ("IOException",Just "user error (Oops)")
 --
 bugsnagExceptionFromSomeException :: SomeException -> BugsnagException
 bugsnagExceptionFromSomeException ex =
