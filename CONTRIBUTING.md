@@ -14,6 +14,9 @@ make
 ## Coding Conventions
 
 1. Abide by surrounding style
-1. Code MUST pass `--pedantic`, Stylish Haskell, HLint, and Weeder
 1. Exported functions SHOULD be documented
 1. Modules SHOULD be documented
+1. Always include tests
+1. In addition to passing tests, code MUST pass `--pedantic`, Stylish Haskell,
+   HLint, and Weeder
+1. Favor doctests for testing user-visible behavior
