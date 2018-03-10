@@ -20,3 +20,5 @@ make
 1. In addition to passing tests, code MUST pass `--pedantic`, Stylish Haskell,
    HLint, and Weeder
 1. Favor doctests for testing user-visible behavior
+1. If making a substantial change, locally modify relevant examples to use your
+   own test API key and verify that everything works

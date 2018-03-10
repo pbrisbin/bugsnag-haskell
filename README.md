@@ -13,8 +13,10 @@ See [`Network.Bugsnag.Settings`](#todo).
 ## Reporting an Error
 
 ```hs
-notifyBugsnag settings
-    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
+notifyBugsnag settings $ toException
+    $ bugsnagException "Error" "message"
+        [ $(currentStackFrame) "myFunction"
+        ]
 ```
 
 See [`Network.Bugsnag.Notify`](#todo).
@@ -38,98 +40,16 @@ myFunction `catch` \ex -> do
 
 ## Examples
 
-### Command-Line
+- [Simple](./examples/simple/Main.hs)
+- [Command-Line](./examples/cli/Main.hs)
+- [WAI/Warp](./examples/warp/Main.hs)
+- [Yesod](./examples/yesod/Main.hs)
 
-```hs
-module Main (main) where
+Examples can be built locally with:
 
-import App (appMain) -- Actual program logic
-import qualified Data.Text as T
-import Network.Bugsnag
-import System.Exit (die)
-
-main :: IO ()
-main = do
-    apiKey <- BugsnagApiKey . T.pack <$> getEnv "BUGSNAG_API_KEY"
-    settings <- newBugsnagSettings apiKey
-    appMain `catch` \ex ->
-        notifyBugsnag settings ex
-        die $ show ex
+```console
+stack build --flag bugsnag-reporter:examples
 ```
-
-### WAI / Warp
-
-```hs
-warpSettings :: BugsnagSettings -> Settings
-warpSettings settings = setOnException
-    (\mRequest ex ->
-        when (defaultShouldDisplayException ex) $ do
-            let beforeNotify = maybe id updateEventFromRequest mRequest
-            void $ forkIO $ notifyBugsnagWith beforeNotify settings ex
-
-    ) defaultSettings
-```
-
-### Yesod
-
-**NOTE**: the `yesodMiddleware` hook is the only way to handle things as actual
-exceptions. The alternative, using `errorHandler`, means you would only ever see
-`InternalError Text`. The main downside is that short-circuit responses also
-come through the middleware as exceptions too, and must be filtered. (Unless of
-course you *want* to notify Bugsnag of 404s and such.)
-
-```hs
---
--- Foundation.hs
---
-data App = App
-    { -- ...
-    , appBugsnag :: BugsnagSettings
-    }
-
-instance YesodApp where
-    -- ...
-
-    yesodMiddleware handler = do
-        settings <- getsYesod appBugsnag
-
-        -- Simple, synchronous, no request or session info:
-        defaultYesodMiddleware handler `catch` notifyBugsnag settings
-
-        -- More complex, asynchronous, request info added:
-        request <- waiRequest
-
-        let beforeNotify = updateEventFromRequest
-                $ bugsnagRequestFromWaiRequest request
-
-        defaultYesodMiddleware handler `catch` \ex ->
-            unless (isHandlerContents ex)
-                $ forkHandler (const $ pure ())
-                $ liftIO $ notifyBugsnagWith beforeNotify settings ex
-
-      where
-        isHandlerContents :: SomeException -> Bool
-        isHandlerContents ex =
-            -- There's a million ways to do this...
-            case (fromException ex :: Maybe HandlerContents) of
-                Just _ -> True
-                Nothing -> False
-
---
--- Application.hs
---
-makeFoundation = do
-    -- ...
-
-    let appBugsnag = (bugsnagSettings "..." manager)
-            { bsAppVersion = ...
-            , bsReleaseStage = ...
-            }
-
-    pure App{..}
-```
-
-*NOTE*: You can (should?) also set up Warp's `onException`.
 
 ## Contributing
 

@@ -34,6 +34,49 @@ library:
     - ua-parser
     - wai
 
+executables:
+  example-simple:
+    source-dirs: examples/simple
+    main: Main.hs
+    dependencies:
+      - bugsnag-reporter
+    when:
+      - condition: ! '!(flag(examples))'
+        buildable: false
+
+  example-cli:
+    source-dirs: examples/cli
+    main: Main.hs
+    dependencies:
+      - bugsnag-reporter
+    when:
+      - condition: ! '!(flag(examples))'
+        buildable: false
+
+  example-warp:
+    source-dirs: examples/warp
+    main: Main.hs
+    dependencies:
+      - bugsnag-reporter
+      - wai
+      - warp
+    when:
+      - condition: ! '!(flag(examples))'
+        buildable: false
+
+  example-yesod:
+    source-dirs: examples/yesod
+    main: Main.hs
+    dependencies:
+      - bugsnag-reporter
+      - exceptions
+      - wai
+      - warp
+      - yesod-core
+    when:
+      - condition: ! '!(flag(examples))'
+        buildable: false
+
 tests:
   spec:
     main: Spec.hs
@@ -51,3 +94,9 @@ tests:
     ghc-options: -Wall
     dependencies:
       - doctest
+
+flags:
+  examples:
+    description: Build the examples
+    manual: false
+    default: false
