@@ -94,7 +94,7 @@ instance YesodApp where
         settings <- getsYesod appBugsnag
 
         -- Simple, synchronous, no request or session info:
-        defaultYesodMiddleware handler `catchBugsnag` settings
+        defaultYesodMiddleware handler `catch` notifyBugsnag settings
 
         -- More complex, asynchronous, request info added:
         request <- waiRequest
@@ -104,8 +104,8 @@ instance YesodApp where
 
         defaultYesodMiddleware handler `catch` \ex ->
             unless (isHandlerContents ex)
-                $ void $ liftIO $ forkIO
-                $ notifyBugsnagWith beforeNotify settings ex
+                $ forkHandler (const $ pure ())
+                $ liftIO $ notifyBugsnagWith beforeNotify settings ex
 
       where
         isHandlerContents :: SomeException -> Bool
@@ -128,6 +128,8 @@ makeFoundation = do
 
     pure App{..}
 ```
+
+*NOTE*: You can (should?) also set up Warp's `onException`.
 
 ## Contributing
 
