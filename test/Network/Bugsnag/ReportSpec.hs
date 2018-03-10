@@ -66,6 +66,7 @@ spec = do
                                             , bsfCode = Nothing
                                             }
                                         ]
+                                    , beOriginalException = Nothing
                                     }
                                 , beBreadcrumbs = Just
                                     [ bugsnagBreadcrumb now "here" NavigationBreadcrumb

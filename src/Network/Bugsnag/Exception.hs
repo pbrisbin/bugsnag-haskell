@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 module Network.Bugsnag.Exception
@@ -11,7 +12,6 @@ module Network.Bugsnag.Exception
 
 import Control.Exception
 import Data.Aeson
-import Data.Aeson.Ext
 import Data.Proxy (Proxy(..))
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -33,12 +33,16 @@ data BugsnagException = BugsnagException
     { beErrorClass :: Text
     , beMessage :: Maybe Text
     , beStacktrace :: [BugsnagStackFrame]
+    , beOriginalException :: Maybe SomeException
     }
     deriving (Generic, Show)
 
 instance ToJSON BugsnagException where
-    toJSON = genericToJSON $ bsAesonOptions "be"
-    toEncoding = genericToEncoding $ bsAesonOptions "be"
+    toJSON BugsnagException{..} = object
+        [ "errorClass" .= beErrorClass
+        , "message" .= beMessage
+        , "stacktrace" .= beStacktrace
+        ]
 
 instance Exception BugsnagException
 
@@ -53,6 +57,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
     { beErrorClass = errorClass
     , beMessage = Just message
     , beStacktrace = stacktrace
+    , beOriginalException = Nothing
     }
 
 -- | Construct a @'BugsnagException'@ from a @'SomeException'@
@@ -64,7 +69,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
 --
 -- >>> :m +System.IO.Error
 -- >>> bugsnagExceptionFromSomeException $ toException $ userError "Oops"
--- BugsnagException {beErrorClass = "IOException", beMessage = Just "user error (Oops)", beStacktrace = []}
+-- BugsnagException {beErrorClass = "IOException", beMessage = Just "user error (Oops)", beStacktrace = [], beOriginalException = Just user error (Oops)}
 --
 bugsnagExceptionFromSomeException :: SomeException -> BugsnagException
 bugsnagExceptionFromSomeException ex =
@@ -116,7 +121,9 @@ bugsnagExceptionFromErrorCall ex =
 --
 bugsnagExceptionFromException :: Exception e => e -> BugsnagException
 bugsnagExceptionFromException ex =
-    bugsnagException (exErrorClass ex) (T.pack $ show ex) []
+    (bugsnagException (exErrorClass ex) (T.pack $ show ex) [])
+        { beOriginalException = Just $ toException ex
+        }
 
 -- | Show an exception's "error class"
 --
