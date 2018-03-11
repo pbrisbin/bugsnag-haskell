@@ -39,13 +39,10 @@ bugsnagYesodMiddleware handler = do
     settings <- getsYesod appBugsnag
     request <- waiRequest
 
-    let beforeNotify = updateEventFromRequest
-            $ bugsnagRequestFromWaiRequest request
-
     handler `catch` \ex -> do
         unless (isHandlerContents ex)
-            $ forkHandler (const $ pure ())
-            $ liftIO $ notifyBugsnagWith beforeNotify settings ex
+            $ forkHandler (const $ pure ()) $ liftIO
+            $ notifyBugsnagWith (updateEventFromWaiRequest request) settings ex
         throwM $ toException ex
   where
     isHandlerContents :: SomeException -> Bool
