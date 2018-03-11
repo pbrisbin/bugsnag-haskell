@@ -1,15 +1,22 @@
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
-    , setStacktrace
+
+    -- * Modifying the Exception
     , updateException
-    , updateEventFromRequest
+
+    -- * Modifying the Event
     , updateEventFromSession
     , updateEventFromWaiRequest
 
+    -- * Simple setters
+    , setDevice
+    , setRequest
+    , setStacktrace
+
     -- * Setting severity
-    , warningSeverity
-    , errorSeverity
-    , infoSeverity
+    , setWarningSeverity
+    , setErrorSeverity
+    , setInfoSeverity
     ) where
 
 import Network.Bugsnag.Device
@@ -35,10 +42,10 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 -- >
 -- > forSqlError :: BugsnagException -> BugsnagException
 -- > forSqlError ex = case fromException @SqlError ex of
--- >    Just SqlError{..} -> ex
--- >      { beErrorClass = "SqlError-" <> sqlErrorCode
--- >      , beMessage = sqlErrorMessage
--- >      }
+-- >     Just SqlError{..} -> ex
+-- >         { beErrorClass = "SqlError-" <> sqlErrorCode
+-- >         , beMessage = sqlErrorMessage
+-- >         }
 --
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
 updateException f event = event
@@ -50,14 +57,7 @@ updateEventFromWaiRequest :: Request -> BeforeNotify
 updateEventFromWaiRequest wrequest =
     let mdevice = bugsnagDeviceFromWaiRequest wrequest
         request = bugsnagRequestFromWaiRequest wrequest
-    in maybe id setDevice mdevice . updateEventFromRequest request
-
--- | Set the Event's Request
---
--- See also: @'bugsnagRequestFromWaiRequest'@
---
-updateEventFromRequest :: BugsnagRequest -> BeforeNotify
-updateEventFromRequest request event = event { beRequest = Just request }
+    in maybe id setDevice mdevice . setRequest request
 
 -- | Update the Event's Context and User from the Session
 updateEventFromSession :: BugsnagSession -> BeforeNotify
@@ -66,9 +66,18 @@ updateEventFromSession session event = event
     , beUser = bsUser session
     }
 
--- | Set the device on the event
+-- | Set the Event's Request
 --
--- See @'bugsnagDeviceFromUserAgent'@
+-- See @'bugsnagRequestFromWaiRequest'@
+--
+setRequest :: BugsnagRequest -> BeforeNotify
+setRequest request event = event
+    { beRequest = Just request
+    }
+
+-- | Set the Event's Device
+--
+-- See @'bugsnagDeviceFromWaiRequest'@
 --
 setDevice :: BugsnagDevice -> BeforeNotify
 setDevice device event = event
@@ -85,16 +94,16 @@ setStacktrace stacktrace = updateException $ \ex -> ex
     }
 
 -- | Set to @'ErrorSeverity'@
-errorSeverity :: BeforeNotify
-errorSeverity = setSeverity ErrorSeverity
+setErrorSeverity :: BeforeNotify
+setErrorSeverity = setSeverity ErrorSeverity
 
 -- | Set to @'WarningSeverity'@
-warningSeverity :: BeforeNotify
-warningSeverity = setSeverity WarningSeverity
+setWarningSeverity :: BeforeNotify
+setWarningSeverity = setSeverity WarningSeverity
 
 -- | Set to @'InfoSeverity'@
-infoSeverity :: BeforeNotify
-infoSeverity = setSeverity InfoSeverity
+setInfoSeverity :: BeforeNotify
+setInfoSeverity = setSeverity InfoSeverity
 
 setSeverity :: BugsnagSeverity -> BeforeNotify
 setSeverity severity event = event { beSeverity = Just severity }
