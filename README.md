@@ -1,6 +1,6 @@
-# Bugsnag Reporter
+# Bugsnag error reporter for Haskell
 
-Bugsnag error reporter/notifier for Haskell applications.
+Catch and report exceptions in your Haskell code.
 
 ## Configuration
 
@@ -48,7 +48,7 @@ myFunction `catch` \ex -> do
 Examples can be built locally with:
 
 ```console
-stack build --flag bugsnag-reporter:examples
+stack build --flag bugsnag-haskell:examples
 ```
 
 ## Contributing

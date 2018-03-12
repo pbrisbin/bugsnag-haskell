@@ -4,20 +4,20 @@ all: setup build test lint
 setup:
 	stack setup
 	stack build \
-	  --flag bugsnag-reporter:examples \
+	  --flag bugsnag-haskell:examples \
 	  --dependencies-only --test --no-run-tests
 	stack install hlint weeder
 
 .PHONY: build
 build:
 	stack build \
-	  --flag bugsnag-reporter:examples \
+	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test --no-run-tests
 
 .PHONY: test
 test:
 	stack build \
-	  --flag bugsnag-reporter:examples \
+	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test
 
 .PHONY: lint

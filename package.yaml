@@ -1,9 +1,9 @@
 ---
-name: bugsnag-reporter
+name: bugsnag-haskell
 version: 0.0.1.0
-synopsis: Bugsnag reporter
+synopsis: Bugsnag error reporter for Haskell
 description: Please see README.md
-homepage: https://github.com/pbrisbin/bugsnag-reporter#readme
+homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
 author: Patrick Brisbin
 maintainer: pbrisbin@gmail.com
 category: Web
@@ -39,7 +39,7 @@ executables:
     source-dirs: examples/simple
     main: Main.hs
     dependencies:
-      - bugsnag-reporter
+      - bugsnag-haskell
     when:
       - condition: ! '!(flag(examples))'
         buildable: false
@@ -48,7 +48,7 @@ executables:
     source-dirs: examples/cli
     main: Main.hs
     dependencies:
-      - bugsnag-reporter
+      - bugsnag-haskell
     when:
       - condition: ! '!(flag(examples))'
         buildable: false
@@ -57,7 +57,7 @@ executables:
     source-dirs: examples/warp
     main: Main.hs
     dependencies:
-      - bugsnag-reporter
+      - bugsnag-haskell
       - wai
       - warp
     when:
@@ -68,7 +68,7 @@ executables:
     source-dirs: examples/yesod
     main: Main.hs
     dependencies:
-      - bugsnag-reporter
+      - bugsnag-haskell
       - exceptions
       - wai
       - warp
@@ -83,7 +83,7 @@ tests:
     source-dirs: test
     dependencies:
       - hspec
-      - bugsnag-reporter
+      - bugsnag-haskell
       - aeson
       - aeson-qq
       - text

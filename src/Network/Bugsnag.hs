@@ -1,14 +1,14 @@
 -- |
 --
 -- Module: Network.Bugsnag
--- Description: Bugsnag reporter/notifier for Haskell
+-- Description: Haskell notifier for Bugsnag
 -- Copyright: Patrick Brisbin, 2018
 -- License: MIT
 -- Maintainer: pbrisbin@gmail.com
 -- Stability: experimental
 -- Portability: POSIX
 --
--- For examples, see <https://github.com/pbrisbin/bugsnag-reporter#examples>.
+-- For examples, see <https://github.com/pbrisbin/bugsnag-haskell#examples>.
 --
 module Network.Bugsnag
     ( module X
