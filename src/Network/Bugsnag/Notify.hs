@@ -54,29 +54,19 @@ updateGroupingHash settings event = event
     }
 
 updateStackFramesInProject :: BugsnagSettings -> BeforeNotify
-updateStackFramesInProject settings event = event
-    { beExceptions = updateExceptions <$> beExceptions event
+updateStackFramesInProject settings = updateException $ \ex -> ex
+    { beStacktrace = map updateStackFrames $ beStacktrace ex
     }
   where
-    updateExceptions :: BugsnagException -> BugsnagException
-    updateExceptions ex = ex
-        { beStacktrace = map updateStackFrames $ beStacktrace ex
-        }
-
     updateStackFrames :: BugsnagStackFrame -> BugsnagStackFrame
     updateStackFrames sf = sf
         { bsfInProject = Just $ bsIsInProject settings $ bsfFile sf
         }
 
 filterStackFrames :: BugsnagSettings -> BeforeNotify
-filterStackFrames settings event = event
-    { beExceptions = updateExceptions <$> beExceptions event
+filterStackFrames settings = updateException $ \ex -> ex
+    { beStacktrace = filter (bsFilterStackFrames settings) $ beStacktrace ex
     }
-  where
-    updateExceptions :: BugsnagException -> BugsnagException
-    updateExceptions ex = ex
-        { beStacktrace = filter (bsFilterStackFrames settings) $ beStacktrace ex
-        }
 
 -- |
 --
