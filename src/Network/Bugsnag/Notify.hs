@@ -22,7 +22,7 @@ notifyBugsnag = notifyBugsnagWith id
 --
 -- This is used to (e.g.) change severity for a specific error. Note that the
 -- given function runs after any configured @'bsBeforeNotify'@, or changes
--- caused by other aspects of setting (e.g. grouping hash).
+-- caused by other aspects of settings (e.g. grouping hash).
 --
 notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
 notifyBugsnagWith f settings ex = do

@@ -46,9 +46,9 @@ data BugsnagSettings = BugsnagSettings
     -- requires you set this.
     --
     , bsReleaseStage :: BugsnagReleaseStage
-    -- ^ The current release-stage (Production, Development, etc)
+    -- ^ The current release-stage, Production by default
     , bsNotifyReleaseStages :: [BugsnagReleaseStage]
-    -- ^ Which release-stages to notify in. By default Production and Staging.
+    -- ^ Which release-stages to notify in. Only Production by default
     , bsBeforeNotify :: BeforeNotify
     -- ^ Modify any events before they are sent
     --
