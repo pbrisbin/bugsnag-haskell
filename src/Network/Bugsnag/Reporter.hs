@@ -29,4 +29,3 @@ reportError manager apiKey report = do
         = setRequestBodyJSON report
         . setRequestHeader "Bugsnag-Api-Key" [key]
         . setRequestHeader "Bugsnag-Payload-Version" ["4"]
-
