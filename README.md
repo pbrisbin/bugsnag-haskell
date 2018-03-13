@@ -8,7 +8,7 @@ Catch and report exceptions in your Haskell code.
 settings <- newBugsnagSettings "BUGSNAG_API_KEY"
 ```
 
-See [`Network.Bugsnag.Settings`](#todo).
+See [`Network.Bugsnag.Settings`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Settings.html).
 
 ## Reporting an Error
 
@@ -19,7 +19,7 @@ notifyBugsnag settings $ toException
         ]
 ```
 
-See [`Network.Bugsnag.Notify`](#todo).
+See [`Network.Bugsnag.Notify`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Notify.html).
 
 ## Throwing & Catching
 
