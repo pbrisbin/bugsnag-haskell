@@ -41,11 +41,13 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 -- > notifyBugsnagWith (updateException forSqlError) settings ex
 -- >
 -- > forSqlError :: BugsnagException -> BugsnagException
--- > forSqlError ex = case fromException @SqlError ex of
--- >     Just SqlError{..} -> ex
--- >         { beErrorClass = "SqlError-" <> sqlErrorCode
--- >         , beMessage = sqlErrorMessage
--- >         }
+-- > forSqlError ex =
+-- >     case fromException =<< beOriginalException ex of
+-- >         Just SqlError{..} -> ex
+-- >             { beErrorClass = "SqlError-" <> sqlErrorCode
+-- >             , beMessage = Just sqlErrorMessage
+-- >             }
+-- >         _ -> ex
 --
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
 updateException f event = event
