@@ -11,12 +11,14 @@ setup:
 .PHONY: build
 build:
 	stack build \
+	  --coverage \
 	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test --no-run-tests
 
 .PHONY: test
 test:
 	stack build \
+	  --coverage \
 	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test
 
