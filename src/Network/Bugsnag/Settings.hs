@@ -15,7 +15,6 @@ import Data.Aeson (FromJSON)
 import Data.String
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Version
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
@@ -39,7 +38,7 @@ instance Show BugsnagApiKey where
 data BugsnagSettings = BugsnagSettings
     { bsApiKey :: BugsnagApiKey
     -- ^ Your Integration API Key.
-    , bsAppVersion :: Maybe Version
+    , bsAppVersion :: Maybe Text
     -- ^ The version of your application
     --
     -- Marking bugs as Fixed and having them auto-reopen in new versions

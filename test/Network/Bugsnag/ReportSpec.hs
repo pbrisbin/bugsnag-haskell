@@ -10,7 +10,6 @@ import Data.Aeson
 import Data.Aeson.QQ (aesonQQ)
 import Data.Text (Text)
 import Data.Time (getCurrentTime)
-import Data.Version (makeVersion)
 import Network.Bugsnag
 
 spec :: Spec
@@ -102,7 +101,7 @@ spec = do
                                     }
                                 , beApp = Just bugsnagApp
                                     { baId = Just "1"
-                                    , baVersion = Just $ makeVersion [1, 0, 0]
+                                    , baVersion = Just "1.0.0"
                                     }
                                 , beDevice = Nothing
                                 , beMetaData = Just $ object
