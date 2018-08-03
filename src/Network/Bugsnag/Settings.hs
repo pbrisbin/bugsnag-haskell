@@ -88,6 +88,10 @@ data BugsnagSettings = BugsnagSettings
     --
     }
 
+{-# DEPRECATED bsGroupingHash "use setGroupingHashBy with bsBeforeNotify" #-}
+{-# DEPRECATED bsIsInProject "use setStackFramesInProject with bsBeforeNotify" #-}
+{-# DEPRECATED bsFilterStackFrames "use filterStackFrames with bsBeforeNotify" #-}
+
 -- | Construct settings purely, given an existing @'Manager'@
 bugsnagSettings :: BugsnagApiKey -> Manager -> BugsnagSettings
 bugsnagSettings apiKey manager = BugsnagSettings

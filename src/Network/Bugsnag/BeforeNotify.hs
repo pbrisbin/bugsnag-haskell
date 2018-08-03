@@ -6,6 +6,10 @@ module Network.Bugsnag.BeforeNotify
 
     -- * Modifying the Exception
     , updateException
+    , filterStackFrames
+    , setStackFramesInProject
+    , setGroupingHash
+    , setGroupingHashBy
 
     -- * Modifying the Event
     , updateEventFromSession
@@ -25,6 +29,7 @@ module Network.Bugsnag.BeforeNotify
     , setInfoSeverity
     ) where
 
+import Data.Text (Text)
 import Network.Bugsnag.Device
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
@@ -77,6 +82,27 @@ defaultBeforeNotify =
 --
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
 updateException f event = event { beExceptions = f <$> beExceptions event }
+
+-- | Filter out StackFrames matching a predicate
+filterStackFrames :: (BugsnagStackFrame -> Bool) -> BeforeNotify
+filterStackFrames p =
+    updateException $ \ex -> ex { beStacktrace = filter p $ beStacktrace ex }
+
+-- | Set @'bsIsInProject'@ using the given predicate, applied to the Filename
+setStackFramesInProject :: (FilePath -> Bool) -> BeforeNotify
+setStackFramesInProject p = updateException
+    $ \ex -> ex { beStacktrace = map updateStackFrames $ beStacktrace ex }
+  where
+    updateStackFrames :: BugsnagStackFrame -> BugsnagStackFrame
+    updateStackFrames sf = sf { bsfInProject = Just $ p $ bsfFile sf }
+
+-- | Set @'beGroupingHash'@
+setGroupingHash :: Text -> BeforeNotify
+setGroupingHash hash = setGroupingHashBy $ const $ Just hash
+
+-- | Set @'beGroupingHash'@ based on the Event
+setGroupingHashBy :: (BugsnagEvent -> Maybe Text) -> BeforeNotify
+setGroupingHashBy f event = event { beGroupingHash = f event }
 
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
 updateEventFromWaiRequest :: Request -> BeforeNotify
