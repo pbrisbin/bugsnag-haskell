@@ -10,7 +10,7 @@ references:
       - run:
           name: Digest
           command: |
-            echo -- "$STACK_ARGUMENTS" > rdigest
+            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" > rdigest
             git ls-files | xargs md5sum > sdigest
       - restore_cache:
           keys:
@@ -22,12 +22,16 @@ references:
           name: Dependencies
           command: |
             make setup
-            stack install cc-coverage
-            curl -L "$CC_TEST_REPORTER_SRC" > ./cc-test-reporter
-            chmod +x cc-test-reporter
+
+            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
+              stack install cc-coverage
+              curl -L "$CC_TEST_REPORTER_SRC" > ./cc-test-reporter
+              chmod +x cc-test-reporter
+            fi
           environment:
             # yamllint disable-line rule:line-length
             CC_TEST_REPORTER_SRC: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+          no_output_timeout: 120m
       - run:
           name: Build
           command: make build
@@ -40,33 +44,46 @@ references:
           name: Test
           command: |
             make test
-            tix2cc | ./cc-test-reporter upload-coverage --input -
+
+            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
+              tix2cc | ./cc-test-reporter upload-coverage --input -
+            fi
       - run:
           name: Lint
           command: make lint
 
 jobs:
+  build_8.0.2:
+    <<: *stack_build
+    environment:
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-9.21.yaml
   build_8.2.2:
     <<: *stack_build
     environment:
-      # Set this one via ENV var so that weeder respects it too. See
-      # https://github.com/ndmitchell/weeder/issues/41.
-      STACK_YAML: stack-lts-11.18.yaml
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-11.19.yaml
   build_8.4.3:
     <<: *stack_build
     environment:
-      STACK_ARGUMENTS: --stack-yaml stack-lts-12.2.yaml
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-12.2.yaml
   build:
     <<: *stack_build
+    environment:
+      REPORT_COVERAGE: 1
+      STACK_ARGUMENTS: --no-terminal
   build_nightly:
     <<: *stack_build
     environment:
-      STACK_ARGUMENTS: --resolver nightly --stack-yaml stack-nightly.yaml
+      STACK_ARGUMENTS: --no-terminal --resolver nightly
+      STACK_YAML: stack-nightly.yaml
 
 workflows:
   version: 2
   commit:
     jobs:
+      - build_8.0.2
       - build_8.2.2
       - build_8.4.3
       - build

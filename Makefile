@@ -4,8 +4,9 @@ all: setup build test lint
 setup:
 	stack setup $(STACK_ARGUMENTS)
 	stack build $(STACK_ARGUMENTS) \
+	  --coverage \
 	  --flag bugsnag-haskell:examples \
-	  --dependencies-only --test --no-run-tests
+	  --fast --test --no-run-tests --dependencies-only
 	stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
 
 .PHONY: build
