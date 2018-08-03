@@ -12,6 +12,7 @@ module Network.Bugsnag.Settings
     ) where
 
 import Data.Aeson (FromJSON)
+import qualified Data.List.NonEmpty as NE
 import Data.String
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -107,34 +108,43 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsHttpManager = manager
     }
 
--- | Should this @'BugsnagException'@ trigger notification?
+-- | Should this @'BugsnagEvent'@ trigger notification?
 --
 -- >>> :set -XOverloadedStrings
 -- >>> settings <- newBugsnagSettings ""
--- >>> let exception = bugsnagException "" "" []
--- >>> bugsnagShouldNotify settings exception
+-- >>> let event = bugsnagEvent $ pure $ bugsnagException "" "" []
+-- >>> bugsnagShouldNotify settings event
 -- True
 --
 -- >>> let devSettings = settings { bsReleaseStage = DevelopmentReleaseStage }
--- >>> bugsnagShouldNotify devSettings exception
+-- >>> bugsnagShouldNotify devSettings event
 -- False
 --
--- >>> bugsnagShouldNotify devSettings { bsNotifyReleaseStages = [DevelopmentReleaseStage] } exception
+-- >>> bugsnagShouldNotify devSettings { bsNotifyReleaseStages = [DevelopmentReleaseStage] } event
 -- True
 --
 -- >>> let ignore = (== "IgnoreMe") . beErrorClass
 -- >>> let ignoreSettings = settings { bsIgnoreException = ignore }
--- >>> bugsnagShouldNotify ignoreSettings exception
+-- >>> let ignoreEvent = bugsnagEvent $ pure $ bugsnagException "IgnoreMe" "" []
+-- >>> bugsnagShouldNotify ignoreSettings event
 -- True
 --
--- >>> bugsnagShouldNotify ignoreSettings exception { beErrorClass = "IgnoreMe" }
+-- >>> bugsnagShouldNotify ignoreSettings ignoreEvent
 -- False
 --
-bugsnagShouldNotify :: BugsnagSettings -> BugsnagException -> Bool
-bugsnagShouldNotify settings exception
+bugsnagShouldNotify :: BugsnagSettings -> BugsnagEvent -> Bool
+bugsnagShouldNotify settings event
     | bsReleaseStage settings `notElem` bsNotifyReleaseStages settings = False
     | bsIgnoreException settings exception = False
     | otherwise = True
+  where
+    exception
+        | NE.length (beExceptions event) == 1 = NE.head $ beExceptions event
+        | otherwise = error $ unlines
+            [ "Library misused. Event must have exactly one Exception when"
+            , " going through our notifyBugsnag functions. To send more than"
+            , " one Exception, drop down to reportError."
+            ]
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
 --

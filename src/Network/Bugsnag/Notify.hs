@@ -27,27 +27,26 @@ notifyBugsnag = notifyBugsnagWith id
 --
 notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
 notifyBugsnagWith f settings ex = do
-    let exception = bugsnagExceptionFromSomeException ex
+    let event =
+            f
+                . bsBeforeNotify settings
+                . setGroupingHashBy (bsGroupingHash settings)
+                . setStackFramesInProject (bsIsInProject settings)
+                . filterStackFrames (bsFilterStackFrames settings)
+                . createApp settings
+                . bugsnagEvent
+                . pure
+                $ bugsnagExceptionFromSomeException ex
+
+        manager = bsHttpManager settings
+        apiKey = bsApiKey settings
+        report = bugsnagReport [event]
 
     -- N.B. all notify functions should go through here. We need to maintain
     -- this as the single point where (e.g.) should-notify is checked,
     -- before-notify is applied, stack-frame filtering, etc.
-    when (bugsnagShouldNotify settings exception) $ do
-        let event =
-                f
-                    . bsBeforeNotify settings
-                    . setGroupingHashBy (bsGroupingHash settings)
-                    . setStackFramesInProject (bsIsInProject settings)
-                    . filterStackFrames (bsFilterStackFrames settings)
-                    . createApp settings
-                    . bugsnagEvent
-                    $ pure exception
-
-            manager = bsHttpManager settings
-            apiKey = bsApiKey settings
-            report = bugsnagReport [event]
-
-        reportError manager apiKey report
+    when (bugsnagShouldNotify settings event)
+        $ reportError manager apiKey report
 
 -- |
 --
