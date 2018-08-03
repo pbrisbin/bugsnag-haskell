@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
 
@@ -7,6 +9,9 @@ module Network.Bugsnag.BeforeNotify
     -- * Modifying the Event
     , updateEventFromSession
     , updateEventFromWaiRequest
+
+    -- * Modifying the Request
+    , redactRequestHeaders
 
     -- * Simple setters
     , setDevice
@@ -26,6 +31,7 @@ import Network.Bugsnag.Request
 import Network.Bugsnag.Session
 import Network.Bugsnag.Severity
 import Network.Bugsnag.StackFrame
+import Network.HTTP.Types.Header (Header, HeaderName)
 import Network.Wai (Request)
 
 type BeforeNotify = BugsnagEvent -> BugsnagEvent
@@ -67,6 +73,34 @@ updateEventFromSession session event = event
     { beContext = bsContext session
     , beUser = bsUser session
     }
+
+-- | Redact the given request headers
+--
+-- Headers like @Authorization@ may contain information you don't want to report
+-- to Bugsnag.
+--
+-- > redactRequestHeaders ["Authorization", "Cookie"]
+--
+redactRequestHeaders :: [HeaderName] -> BeforeNotify
+redactRequestHeaders headers event = event
+    { beRequest = redactHeaders headers <$> beRequest event
+    }
+
+-- |
+--
+-- >>> let headers = [("Authorization", "secret"), ("X-Foo", "Bar")]
+-- >>> let req = bugsnagRequest { brHeaders = Just headers }
+-- >>> brHeaders $ redactHeaders ["Authorization"] req
+-- Just [("Authorization","<redacted>"),("X-Foo","Bar")]
+--
+redactHeaders :: [HeaderName] -> BugsnagRequest -> BugsnagRequest
+redactHeaders headers request = request
+    { brHeaders = map redactHeader <$> brHeaders request
+    }
+  where
+    redactHeader :: Header -> Header
+    redactHeader (k, _) | k `elem` headers = (k, "<redacted>")
+    redactHeader h = h
 
 -- | Set the Event's Request
 --
