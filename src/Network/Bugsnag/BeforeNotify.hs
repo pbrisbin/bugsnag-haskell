@@ -2,6 +2,7 @@
 
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
+    , defaultBeforeNotify
 
     -- * Modifying the Exception
     , updateException
@@ -35,6 +36,25 @@ import Network.HTTP.Types.Header (Header, HeaderName)
 import Network.Wai (Request)
 
 type BeforeNotify = BugsnagEvent -> BugsnagEvent
+
+-- | Used as @'bsBeforeNotify'@ the default Settings value
+--
+-- Redacts the following Request headers:
+--
+-- - Authorization
+-- - Cookie
+-- - X-XSRF-TOKEN (CSRF token header used by Yesod)
+--
+-- N.B. If you override the value on @'BugsnagSettings'@, you probably want to
+-- maintain this as well:
+--
+-- @
+-- settings { 'bsBeforeNotify' = 'defaultBeforeNotify' . myBeforeNotify }
+-- @
+--
+defaultBeforeNotify :: BeforeNotify
+defaultBeforeNotify =
+    redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
 
 -- | Modify just the Exception part of an Event
 --

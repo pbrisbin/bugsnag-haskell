@@ -51,7 +51,9 @@ data BugsnagSettings = BugsnagSettings
     , bsBeforeNotify :: BeforeNotify
     -- ^ Modify any events before they are sent
     --
-    -- For example to attach a user, or set the context.
+    -- For example to attach a user, or set the context. By default, we use
+    -- @'redactRequestHeaders'@ to strip some sensitive Headers from the
+    -- Request.
     --
     , bsIgnoreException :: BugsnagException -> Bool
     -- ^ Exception filtering
@@ -93,7 +95,7 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsAppVersion = Nothing
     , bsReleaseStage = ProductionReleaseStage
     , bsNotifyReleaseStages = [ProductionReleaseStage]
-    , bsBeforeNotify = id
+    , bsBeforeNotify = defaultBeforeNotify
     , bsIgnoreException = const False
     , bsGroupingHash = const Nothing
     , bsIsInProject = const True
