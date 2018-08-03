@@ -15,6 +15,13 @@ build:
 	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test --no-run-tests
 
+.PHONY: watch
+watch:
+	stack build $(STACK_ARGUMENTS) \
+	  --coverage \
+	  --flag bugsnag-haskell:examples \
+	  --fast --pedantic --test --file-watch
+
 .PHONY: test
 test:
 	stack build $(STACK_ARGUMENTS) \
