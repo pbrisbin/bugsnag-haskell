@@ -76,23 +76,20 @@ defaultBeforeNotify =
 -- >         _ -> ex
 --
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
-updateException f event = event
-    { beExceptions = f <$> beExceptions event
-    }
+updateException f event = event { beExceptions = f <$> beExceptions event }
 
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
 updateEventFromWaiRequest :: Request -> BeforeNotify
 updateEventFromWaiRequest wrequest =
-    let mdevice = bugsnagDeviceFromWaiRequest wrequest
+    let
+        mdevice = bugsnagDeviceFromWaiRequest wrequest
         request = bugsnagRequestFromWaiRequest wrequest
     in maybe id setDevice mdevice . setRequest request
 
 -- | Update the Event's Context and User from the Session
 updateEventFromSession :: BugsnagSession -> BeforeNotify
-updateEventFromSession session event = event
-    { beContext = bsContext session
-    , beUser = bsUser session
-    }
+updateEventFromSession session event =
+    event { beContext = bsContext session, beUser = bsUser session }
 
 -- | Redact the given request headers
 --
@@ -102,9 +99,8 @@ updateEventFromSession session event = event
 -- > redactRequestHeaders ["Authorization", "Cookie"]
 --
 redactRequestHeaders :: [HeaderName] -> BeforeNotify
-redactRequestHeaders headers event = event
-    { beRequest = redactHeaders headers <$> beRequest event
-    }
+redactRequestHeaders headers event =
+    event { beRequest = redactHeaders headers <$> beRequest event }
 
 -- |
 --
@@ -127,27 +123,22 @@ redactHeaders headers request = request
 -- See @'bugsnagRequestFromWaiRequest'@
 --
 setRequest :: BugsnagRequest -> BeforeNotify
-setRequest request event = event
-    { beRequest = Just request
-    }
+setRequest request event = event { beRequest = Just request }
 
 -- | Set the Event's Device
 --
 -- See @'bugsnagDeviceFromWaiRequest'@
 --
 setDevice :: BugsnagDevice -> BeforeNotify
-setDevice device event = event
-    { beDevice = Just device
-    }
+setDevice device event = event { beDevice = Just device }
 
 -- | Set the stacktrace on the reported exception
 --
 -- > notifyBugsnagWith (setStacktrace [$(currentStackFrame) "myFunc"]) ...
 --
 setStacktrace :: [BugsnagStackFrame] -> BeforeNotify
-setStacktrace stacktrace = updateException $ \ex -> ex
-    { beStacktrace = stacktrace
-    }
+setStacktrace stacktrace =
+    updateException $ \ex -> ex { beStacktrace = stacktrace }
 
 -- | Set to @'ErrorSeverity'@
 setErrorSeverity :: BeforeNotify
