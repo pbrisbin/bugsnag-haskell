@@ -70,10 +70,10 @@ executables:
     dependencies:
       - bugsnag-haskell
       - exceptions
+      - unliftio
       - wai
       - warp
       - yesod-core
-      - unliftio
     when:
       - condition: ! '!(flag(examples))'
         buildable: false

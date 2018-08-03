@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
@@ -7,11 +8,16 @@
 {-# OPTIONS_GHC -fno-warn-unused-top-binds #-}
 module Main (main) where
 
+import Control.Exception (SomeException, fromException, toException)
 import Control.Monad (unless)
 import Network.Bugsnag
 import Network.Wai.Handler.Warp (run)
-import UnliftIO.Exception
-    (SomeException, catch, fromException, throwIO, toException)
+#if MIN_VERSION_yesod_core(1,6,0)
+import UnliftIO.Exception (catch, throwIO)
+#else
+import Control.Monad.Catch (catch)
+import UnliftIO.Exception (throwIO)
+#endif
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
 

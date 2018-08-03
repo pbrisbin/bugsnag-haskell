@@ -1,2 +1,4 @@
 ---
 resolver: lts-12.2
+extra-deps:
+  - ua-parser-0.7.5.0
