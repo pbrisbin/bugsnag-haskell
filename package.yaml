@@ -73,6 +73,7 @@ executables:
       - wai
       - warp
       - yesod-core
+      - unliftio
     when:
       - condition: ! '!(flag(examples))'
         buildable: false

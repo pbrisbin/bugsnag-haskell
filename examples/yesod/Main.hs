@@ -7,11 +7,11 @@
 {-# OPTIONS_GHC -fno-warn-unused-top-binds #-}
 module Main (main) where
 
-import Control.Exception (SomeException, fromException, toException)
 import Control.Monad (unless)
-import Control.Monad.Catch (catch, throwM)
 import Network.Bugsnag
 import Network.Wai.Handler.Warp (run)
+import UnliftIO.Exception
+    (SomeException, catch, fromException, throwIO, toException)
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
 
@@ -43,7 +43,7 @@ bugsnagYesodMiddleware handler = do
         unless (isHandlerContents ex)
             $ forkHandler (const $ pure ()) $ liftIO
             $ notifyBugsnagWith (updateEventFromWaiRequest request) settings ex
-        throwM $ toException ex
+        throwIO $ toException ex
   where
     isHandlerContents :: SomeException -> Bool
     isHandlerContents ex =
