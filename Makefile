@@ -25,7 +25,7 @@ watch:
 
 .PHONY: test
 test:
-	stack build $(STACK_ARGUMENTS) \
+	stack build $(STACK_ARGUMENTS) $(STACK_TEST_TARGET) \
 	  --coverage \
 	  --flag bugsnag-haskell:examples \
 	  --fast --pedantic --test

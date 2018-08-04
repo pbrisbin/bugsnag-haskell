@@ -61,6 +61,9 @@ jobs:
   build_8.2.2:
     <<: *stack_build
     environment:
+      # doctest doesn't seem to work on CI for this version
+      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/38
+      STACK_TEST_TARGET: bugsnag-haskell:spec
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-11.19.yaml
   build_8.4.3:
