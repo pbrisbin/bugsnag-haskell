@@ -35,7 +35,6 @@ notifyBugsnagWith f settings ex = do
                 . filterStackFrames (bsFilterStackFrames settings)
                 . createApp settings
                 . bugsnagEvent
-                . pure
                 $ bugsnagExceptionFromSomeException ex
 
         manager = bsHttpManager settings

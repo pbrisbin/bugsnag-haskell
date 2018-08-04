@@ -1,15 +1,13 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
     ) where
 
 import Data.Aeson
-import Data.Aeson.Ext
-import Data.List.NonEmpty (NonEmpty)
+import Data.Aeson.Types
 import Data.Text (Text)
-import GHC.Generics
 import Network.Bugsnag.App
 import Network.Bugsnag.Breadcrumb
 import Network.Bugsnag.Device
@@ -20,7 +18,7 @@ import Network.Bugsnag.Thread
 import Network.Bugsnag.User
 
 data BugsnagEvent = BugsnagEvent
-    { beExceptions :: NonEmpty BugsnagException
+    { beException :: BugsnagException
     , beBreadcrumbs :: Maybe [BugsnagBreadcrumb]
     , beRequest :: Maybe BugsnagRequest
     , beThreads :: Maybe [BugsnagThread]
@@ -37,15 +35,33 @@ data BugsnagEvent = BugsnagEvent
     -- and I'm not sure yet how to resolve the naming clash with BugsnagSession.
     , beMetaData :: Maybe Value
     }
-    deriving Generic
 
 instance ToJSON BugsnagEvent where
-    toJSON = genericToJSON $ bsAesonOptions "be"
-    toEncoding = genericToEncoding $ bsAesonOptions "be"
+    -- | Explicit instance needed to send @'beException'@ as @exceptions@
+    toJSON BugsnagEvent {..} = object
+        $ "exceptions" .= [beException]
+        : concat
+            [ "breadcrumbs" .=? beBreadcrumbs
+            , "request" .=? beRequest
+            , "threads" .=? beThreads
+            , "context" .=? beContext
+            , "groupingHash" .=? beGroupingHash
+            , "unhandled" .=? beUnhandled
+            , "severity" .=? beSeverity
+            , "severityReason" .=? beSeverityReason
+            , "user" .=? beUser
+            , "app" .=? beApp
+            , "device" .=? beDevice
+            , "metaData" .=? beMetaData
+            ]
+      where
+        -- For implementing "omit Nothing fields"
+        (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
+        (.=?) k = maybe [] (pure . (k .=))
 
-bugsnagEvent :: NonEmpty BugsnagException -> BugsnagEvent
-bugsnagEvent exceptions = BugsnagEvent
-    { beExceptions = exceptions
+bugsnagEvent :: BugsnagException -> BugsnagEvent
+bugsnagEvent exception = BugsnagEvent
+    { beException = exception
     , beBreadcrumbs = Nothing
     , beRequest = Nothing
     , beThreads = Nothing
