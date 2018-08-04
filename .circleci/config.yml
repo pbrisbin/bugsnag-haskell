@@ -50,7 +50,10 @@ references:
             fi
       - run:
           name: Lint
-          command: make lint
+          command: |
+            if [ "${LINT:-1}" = 1 ]; then
+              make lint
+            fi
 
 jobs:
   build_8.0.2:
@@ -79,6 +82,9 @@ jobs:
   build_nightly:
     <<: *stack_build
     environment:
+      # weeder is not happy, again
+      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/36
+      LINT: 0
       STACK_ARGUMENTS: --no-terminal --resolver nightly
       STACK_YAML: stack-nightly.yaml
 
