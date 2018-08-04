@@ -18,12 +18,11 @@ spec = do
         it "is right for a minimally-specified report" $ do
             let report =
                     bugsnagReport
-                        [ bugsnagEvent $ pure
-                            $ bugsnagException
-                                "errorClass"
-                                "message"
-                                [ bugsnagStackFrame "src/Foo/Bar.hs" 10 "myFunction"
-                                ]
+                        [ bugsnagEvent $ bugsnagException
+                            "errorClass"
+                            "message"
+                            [ bugsnagStackFrame "src/Foo/Bar.hs" 10 "myFunction"
+                            ]
                         ]
 
             -- N.B. we don't worry about the notifier object since it would need
@@ -52,7 +51,7 @@ spec = do
                         { brNotifier = bugsnagNotifier
                         , brEvents =
                             [ BugsnagEvent
-                                { beExceptions = pure BugsnagException
+                                { beException = BugsnagException
                                     { beErrorClass = "errorClass"
                                     , beMessage = Just "message"
                                     , beStacktrace =

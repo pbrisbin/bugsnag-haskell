@@ -12,7 +12,6 @@ module Network.Bugsnag.Settings
     ) where
 
 import Data.Aeson (FromJSON)
-import qualified Data.List.NonEmpty as NE
 import Data.String
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -112,7 +111,7 @@ bugsnagSettings apiKey manager = BugsnagSettings
 --
 -- >>> :set -XOverloadedStrings
 -- >>> settings <- newBugsnagSettings ""
--- >>> let event = bugsnagEvent $ pure $ bugsnagException "" "" []
+-- >>> let event = bugsnagEvent $ bugsnagException "" "" []
 -- >>> bugsnagShouldNotify settings event
 -- True
 --
@@ -125,7 +124,7 @@ bugsnagSettings apiKey manager = BugsnagSettings
 --
 -- >>> let ignore = (== "IgnoreMe") . beErrorClass
 -- >>> let ignoreSettings = settings { bsIgnoreException = ignore }
--- >>> let ignoreEvent = bugsnagEvent $ pure $ bugsnagException "IgnoreMe" "" []
+-- >>> let ignoreEvent = bugsnagEvent $ bugsnagException "IgnoreMe" "" []
 -- >>> bugsnagShouldNotify ignoreSettings event
 -- True
 --
@@ -135,16 +134,8 @@ bugsnagSettings apiKey manager = BugsnagSettings
 bugsnagShouldNotify :: BugsnagSettings -> BugsnagEvent -> Bool
 bugsnagShouldNotify settings event
     | bsReleaseStage settings `notElem` bsNotifyReleaseStages settings = False
-    | bsIgnoreException settings exception = False
+    | bsIgnoreException settings $ beException event = False
     | otherwise = True
-  where
-    exception
-        | NE.length (beExceptions event) == 1 = NE.head $ beExceptions event
-        | otherwise = error $ unlines
-            [ "Library misused. Event must have exactly one Exception when"
-            , " going through our notifyBugsnag functions. To send more than"
-            , " one Exception, drop down to reportError."
-            ]
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
 --

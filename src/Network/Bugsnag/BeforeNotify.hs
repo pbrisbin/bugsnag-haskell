@@ -63,9 +63,6 @@ defaultBeforeNotify =
 
 -- | Modify just the Exception part of an Event
 --
--- Technically this will modify all exceptions in the Event, but if you're using
--- this library normally, there will be only one.
---
 -- This may be used to set more specific information for exception types in
 -- scope in your application:
 --
@@ -81,7 +78,7 @@ defaultBeforeNotify =
 -- >         _ -> ex
 --
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
-updateException f event = event { beExceptions = f <$> beExceptions event }
+updateException f event = event { beException = f $ beException event }
 
 -- | Filter out StackFrames matching a predicate
 filterStackFrames :: (BugsnagStackFrame -> Bool) -> BeforeNotify
