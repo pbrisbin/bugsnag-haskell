@@ -148,6 +148,8 @@ bugsnagShouldNotify settings event
 
 -- | Construct settings with a new, TLS-enabled @'Manager'@
 --
+-- Uses @'getGlobalManager'@.
+--
 -- >>> :set -XOverloadedStrings
 -- >>> settings <- newBugsnagSettings "API_KEY"
 -- >>> bsApiKey settings
@@ -160,4 +162,4 @@ bugsnagShouldNotify settings event
 -- [ProductionReleaseStage]
 --
 newBugsnagSettings :: BugsnagApiKey -> IO BugsnagSettings
-newBugsnagSettings apiKey = bugsnagSettings apiKey <$> newTlsManager
+newBugsnagSettings apiKey = bugsnagSettings apiKey <$> getGlobalManager
