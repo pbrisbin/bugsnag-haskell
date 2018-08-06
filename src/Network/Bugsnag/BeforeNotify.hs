@@ -12,6 +12,8 @@ module Network.Bugsnag.BeforeNotify
     , setGroupingHashBy
 
     -- * Modifying the Event
+    , updateEventFromException
+    , updateEventFromOriginalException
     , updateEventFromSession
     , updateEventFromWaiRequest
 
@@ -29,6 +31,8 @@ module Network.Bugsnag.BeforeNotify
     , setInfoSeverity
     ) where
 
+import Control.Exception (Exception, fromException)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Network.Bugsnag.Device
 import Network.Bugsnag.Event
@@ -100,6 +104,46 @@ setGroupingHash hash = setGroupingHashBy $ const $ Just hash
 -- | Set @'beGroupingHash'@ based on the Event
 setGroupingHashBy :: (BugsnagEvent -> Maybe Text) -> BeforeNotify
 setGroupingHashBy f event = event { beGroupingHash = f event }
+
+-- | Update the @'BugsnagEvent'@ based on its @'BugsnagException'@
+--
+-- Use this instead of @'updateException'@ if you want to do other things to the
+-- Event, such as set its @'beGroupingHash'@ based on the Exception.
+--
+updateEventFromException :: (BugsnagException -> BeforeNotify) -> BeforeNotify
+updateEventFromException f event = f (beException event) event
+
+-- | Update the @'BugsnagEvent'@ based on the original exception
+--
+-- This allows updating the Event after casting to an exception type that this
+-- library doesn't know about (e.g. @SqlError@). Because the result of your
+-- function is itself a @'BeforeNotify'@, you can (and should) use other
+-- helpers:
+--
+-- @
+-- myBeforeNotify =
+--     'defaultBeforeNotify'
+--         . 'updateEventFromOriginalException' asSqlError
+--         . 'updateEventFromOriginalException' asHttpError
+--         . -- ...
+--
+-- asSqlError :: SqlError -> BeforeNotify
+-- asSqlError SqlError{..} =
+--     'setGroupingHash' sqlErrorCode . 'updateException' $ \ex -> ex
+--         { beErrorClass = sqlErrorCode
+--         , beMessage = sqlErrorMessage
+--         }
+-- @
+--
+-- If there is no original exception, or the cast fails, the event is unchanged.
+--
+updateEventFromOriginalException
+    :: Exception e => (e -> BeforeNotify) -> BeforeNotify
+updateEventFromOriginalException f event =
+    fromMaybe event $ do
+        someException <- beOriginalException $ beException event
+        yourException <- fromException someException
+        pure $ f yourException event
 
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
 updateEventFromWaiRequest :: Request -> BeforeNotify
