@@ -52,6 +52,8 @@ references:
           name: Lint
           command: |
             if [ "${LINT:-1}" = 1 ]; then
+              curl -L -o .hlint.yaml \
+                https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
               make lint
             fi
 
