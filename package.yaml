@@ -89,6 +89,7 @@ tests:
       - aeson-qq
       - text
       - time
+      - unliftio
   doctest:
     main: DocTest.hs
     source-dirs: .
