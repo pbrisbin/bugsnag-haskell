@@ -74,7 +74,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
 --
 bugsnagExceptionFromSomeException :: SomeException -> BugsnagException
 bugsnagExceptionFromSomeException ex =
-    foldr go (bugsnagExceptionFromException ex) exCasters
+    foldr go (bugsnagExceptionWithParser parseStringException ex) exCasters
   where
     go :: Caster -> BugsnagException -> BugsnagException
     go (Caster caster) res = maybe res caster $ fromException ex
@@ -82,7 +82,7 @@ bugsnagExceptionFromSomeException ex =
 exCasters :: [Caster]
 exCasters =
     [ Caster id
-    , Caster bugsnagExceptionFromErrorCall
+    , Caster $ bugsnagExceptionWithParser parseErrorCall
     , Caster $ bugsnagExceptionFromException @IOException
     , Caster $ bugsnagExceptionFromException @ArithException
     , Caster $ bugsnagExceptionFromException @ArrayException
@@ -103,13 +103,13 @@ exCasters =
     , Caster $ bugsnagExceptionFromException @TypeError
     ]
 
--- | Construct a @'BugsnagException'@ from an @'ErrorCall'@
---
--- This type of exception may have @'HasCallStack'@ information.
---
-bugsnagExceptionFromErrorCall :: ErrorCall -> BugsnagException
-bugsnagExceptionFromErrorCall ex =
-    case parseErrorCall ex of
+bugsnagExceptionWithParser
+    :: Exception e
+    => (e -> Either String MessageWithStackFrames)
+    -> e
+    -> BugsnagException
+bugsnagExceptionWithParser p ex =
+    case p ex of
         Left _ -> bugsnagExceptionFromException ex
         Right (MessageWithStackFrames message stacktrace) ->
             bugsnagException (exErrorClass ex) message stacktrace
