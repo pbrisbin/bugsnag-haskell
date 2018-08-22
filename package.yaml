@@ -1,4 +1,3 @@
----
 name: bugsnag-haskell
 version: 0.0.1.3
 synopsis: Bugsnag error reporter for Haskell
@@ -17,9 +16,11 @@ ghc-options: -Wall
 library:
   source-dirs: src
   dependencies:
+    - Glob
     - aeson >= 1.3.0.0
     - bytestring
     - case-insensitive
+    - containers
     - http-client
     - http-client-tls
     - http-conduit
@@ -41,7 +42,7 @@ executables:
     dependencies:
       - bugsnag-haskell
     when:
-      - condition: ! '!(flag(examples))'
+      - condition: ! "!(flag(examples))"
         buildable: false
 
   example-cli:
@@ -50,7 +51,7 @@ executables:
     dependencies:
       - bugsnag-haskell
     when:
-      - condition: ! '!(flag(examples))'
+      - condition: ! "!(flag(examples))"
         buildable: false
 
   example-warp:
@@ -61,7 +62,7 @@ executables:
       - wai
       - warp
     when:
-      - condition: ! '!(flag(examples))'
+      - condition: ! "!(flag(examples))"
         buildable: false
 
   example-yesod:
@@ -75,7 +76,7 @@ executables:
       - warp
       - yesod-core
     when:
-      - condition: ! '!(flag(examples))'
+      - condition: ! "!(flag(examples))"
         buildable: false
 
 tests:

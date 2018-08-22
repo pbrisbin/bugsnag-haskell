@@ -6,7 +6,9 @@ module Network.Bugsnag.BeforeNotify
 
     -- * Modifying the Exception
     , updateException
+    , updateStackFrames
     , filterStackFrames
+    , setStackFramesCode
     , setStackFramesInProject
     , setGroupingHash
     , setGroupingHashBy
@@ -34,6 +36,7 @@ module Network.Bugsnag.BeforeNotify
 import Control.Exception (Exception, fromException)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Device
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
@@ -84,18 +87,24 @@ defaultBeforeNotify =
 updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
 updateException f event = event { beException = f $ beException event }
 
+-- | Apply a function to each @'BugsnagStackFrame'@ in the Exception
+updateStackFrames :: (BugsnagStackFrame -> BugsnagStackFrame) -> BeforeNotify
+updateStackFrames f =
+    updateException $ \ex -> ex { beStacktrace = map f $ beStacktrace ex }
+
 -- | Filter out StackFrames matching a predicate
 filterStackFrames :: (BugsnagStackFrame -> Bool) -> BeforeNotify
 filterStackFrames p =
     updateException $ \ex -> ex { beStacktrace = filter p $ beStacktrace ex }
 
+-- | Set @'bsfCode'@ using the given index
+setStackFramesCode :: CodeIndex -> BeforeNotify
+setStackFramesCode = updateStackFrames . attachBugsnagCode
+
 -- | Set @'bsIsInProject'@ using the given predicate, applied to the Filename
 setStackFramesInProject :: (FilePath -> Bool) -> BeforeNotify
-setStackFramesInProject p = updateException
-    $ \ex -> ex { beStacktrace = map updateStackFrames $ beStacktrace ex }
-  where
-    updateStackFrames :: BugsnagStackFrame -> BugsnagStackFrame
-    updateStackFrames sf = sf { bsfInProject = Just $ p $ bsfFile sf }
+setStackFramesInProject p =
+    updateStackFrames $ \sf -> sf { bsfInProject = Just $ p $ bsfFile sf }
 
 -- | Set @'beGroupingHash'@
 setGroupingHash :: Text -> BeforeNotify
