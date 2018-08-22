@@ -139,11 +139,10 @@ updateEventFromException f event = f (beException event) event
 --
 updateEventFromOriginalException
     :: Exception e => (e -> BeforeNotify) -> BeforeNotify
-updateEventFromOriginalException f event =
-    fromMaybe event $ do
-        someException <- beOriginalException $ beException event
-        yourException <- fromException someException
-        pure $ f yourException event
+updateEventFromOriginalException f event = fromMaybe event $ do
+    someException <- beOriginalException $ beException event
+    yourException <- fromException someException
+    pure $ f yourException event
 
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
 updateEventFromWaiRequest :: Request -> BeforeNotify
