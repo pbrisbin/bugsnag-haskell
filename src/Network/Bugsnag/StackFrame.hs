@@ -4,6 +4,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Bugsnag.StackFrame
     ( BugsnagCode(..)
+    , findBugsnagCode
     , BugsnagStackFrame(..)
     , bugsnagStackFrame
     , currentStackFrame
@@ -15,15 +16,18 @@ import Data.Text (Text)
 import GHC.Generics
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Syntax
+import Network.Bugsnag.CodeIndex
 import Numeric.Natural (Natural)
 
 -- | Lines of code surrounding the error
 --
--- Pairs of @(line-number, line-of-code)@, up to 3 on either side. There's no
--- real way to support this in Haskell, so we always send @Nothing@.
+-- Pairs of @(line-number, line-of-code)@, up to 3 on either side.
 --
 newtype BugsnagCode = BugsnagCode [(Natural, Text)]
     deriving (Show, ToJSON)
+
+findBugsnagCode :: FilePath -> Natural -> CodeIndex -> Maybe BugsnagCode
+findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (n - 3, n + 3)
 
 data BugsnagStackFrame = BugsnagStackFrame
     { bsfFile :: FilePath
@@ -61,6 +65,8 @@ bugsnagStackFrame path ln method = BugsnagStackFrame
 currentStackFrame :: Q Exp
 currentStackFrame = [|locStackFrame $(qLocation >>= liftLoc)|]
 
+-- brittany-disable-next-binding
+
 locStackFrame :: Loc -> Text -> BugsnagStackFrame
 locStackFrame (Loc path _ _ (ls, cs) _) func =
     BugsnagStackFrame
@@ -74,6 +80,8 @@ locStackFrame (Loc path _ _ (ls, cs) _) func =
         -- assumed to be in end-user code.
         , bsfCode = Nothing
         }
+
+-- brittany-disable-next-binding
 
 -- Taken from monad-logger
 liftLoc :: Loc -> Q Exp
