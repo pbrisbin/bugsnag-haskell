@@ -16,6 +16,7 @@ import Data.String
 import Data.Text (Text)
 import qualified Data.Text as T
 import Network.Bugsnag.BeforeNotify
+import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.ReleaseStage
@@ -86,6 +87,13 @@ data BugsnagSettings = BugsnagSettings
     -- It's more efficient, and ensures proper resource cleanup, to share a
     -- single manager across an application. Must be TLS-enabled.
     --
+    , bsCodeIndex :: Maybe CodeIndex
+    -- ^ A @'CodeIndex'@ built at compile-time from project sources
+    --
+    -- If set, this will be used to update StackFrames to include lines of
+    -- source code context as read out of this value. N.B. using this means
+    -- loading and keeping the source code for the entire project in memory.
+    --
     }
 
 {-# DEPRECATED bsGroupingHash "use setGroupingHashBy with bsBeforeNotify" #-}
@@ -105,6 +113,7 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsIsInProject = const True
     , bsFilterStackFrames = const True
     , bsHttpManager = manager
+    , bsCodeIndex = Nothing
     }
 
 -- | Should this @'BugsnagEvent'@ trigger notification?
