@@ -31,6 +31,7 @@ notifyBugsnagWith f settings ex = do
             f
                 . bsBeforeNotify settings
                 . setGroupingHashBy (bsGroupingHash settings)
+                . maybe id setStackFramesCode (bsCodeIndex settings)
                 . setStackFramesInProject (bsIsInProject settings)
                 . filterStackFrames (bsFilterStackFrames settings)
                 . createApp settings
