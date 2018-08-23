@@ -99,8 +99,7 @@ filterStackFrames p =
 
 -- | Set @'bsfCode'@ using the given index
 setStackFramesCode :: CodeIndex -> BeforeNotify
-setStackFramesCode index = updateStackFrames $ \sf ->
-    sf { bsfCode = findBugsnagCode (bsfFile sf) (bsfLineNumber sf) index }
+setStackFramesCode = updateStackFrames . attachBugsnagCode
 
 -- | Set @'bsIsInProject'@ using the given predicate, applied to the Filename
 setStackFramesInProject :: (FilePath -> Bool) -> BeforeNotify

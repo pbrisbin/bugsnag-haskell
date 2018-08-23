@@ -4,7 +4,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Network.Bugsnag.StackFrame
     ( BugsnagCode(..)
-    , findBugsnagCode
+    , attachBugsnagCode
     , BugsnagStackFrame(..)
     , bugsnagStackFrame
     , currentStackFrame
@@ -25,6 +25,15 @@ import Numeric.Natural (Natural)
 --
 newtype BugsnagCode = BugsnagCode [(Natural, Text)]
     deriving (Show, ToJSON)
+
+-- | Attempt to attach a @'BugsnagCode'@ to a @'BugsnagStackFrame'@
+--
+-- Looks up the content in the Index by File/LineNumber and, if found, sets it
+-- on the record.
+--
+attachBugsnagCode :: CodeIndex -> BugsnagStackFrame -> BugsnagStackFrame
+attachBugsnagCode index sf =
+    sf { bsfCode = findBugsnagCode (bsfFile sf) (bsfLineNumber sf) index }
 
 findBugsnagCode :: FilePath -> Natural -> CodeIndex -> Maybe BugsnagCode
 findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (begin, n + 3)
