@@ -12,6 +12,7 @@ module Network.Bugsnag.StackFrame
 
 import Data.Aeson
 import Data.Aeson.Ext
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import GHC.Generics
 import Instances.TH.Lift ()
@@ -29,11 +30,14 @@ newtype BugsnagCode = BugsnagCode [(Natural, Text)]
 -- | Attempt to attach a @'BugsnagCode'@ to a @'BugsnagStackFrame'@
 --
 -- Looks up the content in the Index by File/LineNumber and, if found, sets it
--- on the record.
+-- on the record. N.B. this will only operate on in-project StackFrames.
 --
 attachBugsnagCode :: CodeIndex -> BugsnagStackFrame -> BugsnagStackFrame
-attachBugsnagCode index sf =
-    sf { bsfCode = findBugsnagCode (bsfFile sf) (bsfLineNumber sf) index }
+attachBugsnagCode index sf = sf
+    { bsfCode = if fromMaybe True $ bsfInProject sf
+        then findBugsnagCode (bsfFile sf) (bsfLineNumber sf) index
+        else Nothing
+    }
 
 findBugsnagCode :: FilePath -> Natural -> CodeIndex -> Maybe BugsnagCode
 findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (begin, n + 3)
