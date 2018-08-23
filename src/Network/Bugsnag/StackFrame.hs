@@ -27,7 +27,11 @@ newtype BugsnagCode = BugsnagCode [(Natural, Text)]
     deriving (Show, ToJSON)
 
 findBugsnagCode :: FilePath -> Natural -> CodeIndex -> Maybe BugsnagCode
-findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (n - 3, n + 3)
+findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (begin, n + 3)
+  where
+    begin
+        | n < 3 = 0
+        | otherwise = n - 3
 
 data BugsnagStackFrame = BugsnagStackFrame
     { bsfFile :: FilePath
