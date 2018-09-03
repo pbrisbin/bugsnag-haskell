@@ -2,4 +2,5 @@
 resolver: lts-9.21
 allow-newer: true
 extra-deps:
+  - Glob-0.9.2
   - aeson-1.4.0.0
