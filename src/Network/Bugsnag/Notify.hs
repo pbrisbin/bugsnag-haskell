@@ -5,13 +5,16 @@ module Network.Bugsnag.Notify
 
 import Control.Exception (SomeException)
 import Control.Monad (when)
+import Data.Maybe (isJust)
 import Network.Bugsnag.App
 import Network.Bugsnag.BeforeNotify
+import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.Report
 import Network.Bugsnag.Reporter
 import Network.Bugsnag.Settings
+import Network.Bugsnag.StackFrame
 
 -- | Notify Bugsnag of a single exception
 notifyBugsnag :: BugsnagSettings -> SomeException -> IO ()
@@ -28,7 +31,7 @@ notifyBugsnagWith f settings ex = do
     let event =
             f
                 . bsBeforeNotify settings
-                . maybe id setStackFramesCode (bsCodeIndex settings)
+                . modifyStackFrames (bsCodeIndex settings)
                 . createApp settings
                 . bugsnagEvent
                 $ bugsnagExceptionFromSomeException ex
@@ -54,3 +57,8 @@ createApp settings event = event
         , baReleaseStage = Just $ bsReleaseStage settings
         }
     }
+
+modifyStackFrames :: Maybe CodeIndex -> BeforeNotify
+modifyStackFrames Nothing = setStackFramesInProject $ const True
+modifyStackFrames (Just index) =
+    setStackFramesInProjectBy bsfCode isJust . setStackFramesCode index

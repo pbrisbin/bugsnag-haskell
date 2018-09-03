@@ -10,6 +10,7 @@ module Network.Bugsnag.BeforeNotify
     , filterStackFrames
     , setStackFramesCode
     , setStackFramesInProject
+    , setStackFramesInProjectBy
     , setGroupingHash
     , setGroupingHashBy
 
@@ -51,13 +52,11 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 
 -- | Used as @'bsBeforeNotify'@ the default Settings value
 --
--- 1. Redacts the following Request headers:
+-- Redacts the following Request headers:
 --
---    - Authorization
---    - Cookie
---    - X-XSRF-TOKEN (CSRF token header used by Yesod)
---
--- 2. Set all StackFrames as in-project
+-- - Authorization
+-- - Cookie
+-- - X-XSRF-TOKEN (CSRF token header used by Yesod)
 --
 -- N.B. If you override the value on @'BugsnagSettings'@, you probably want to
 -- maintain this as well:
@@ -69,7 +68,6 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 defaultBeforeNotify :: BeforeNotify
 defaultBeforeNotify =
     redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
-        . setStackFramesInProject (const True)
 
 -- | Modify just the Exception part of an Event
 --
@@ -106,8 +104,12 @@ setStackFramesCode = updateStackFrames . attachBugsnagCode
 
 -- | Set @'bsIsInProject'@ using the given predicate, applied to the Filename
 setStackFramesInProject :: (FilePath -> Bool) -> BeforeNotify
-setStackFramesInProject p =
-    updateStackFrames $ \sf -> sf { bsfInProject = Just $ p $ bsfFile sf }
+setStackFramesInProject = setStackFramesInProjectBy bsfFile
+
+setStackFramesInProjectBy
+    :: (BugsnagStackFrame -> a) -> (a -> Bool) -> BeforeNotify
+setStackFramesInProjectBy f p =
+    updateStackFrames $ \sf -> sf { bsfInProject = Just $ p $ f sf }
 
 -- | Set @'beGroupingHash'@
 setGroupingHash :: Text -> BeforeNotify
