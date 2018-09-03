@@ -51,11 +51,13 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 
 -- | Used as @'bsBeforeNotify'@ the default Settings value
 --
--- Redacts the following Request headers:
+-- 1. Redacts the following Request headers:
 --
--- - Authorization
--- - Cookie
--- - X-XSRF-TOKEN (CSRF token header used by Yesod)
+--    - Authorization
+--    - Cookie
+--    - X-XSRF-TOKEN (CSRF token header used by Yesod)
+--
+-- 2. Set all StackFrames as in-project
 --
 -- N.B. If you override the value on @'BugsnagSettings'@, you probably want to
 -- maintain this as well:
@@ -67,6 +69,7 @@ type BeforeNotify = BugsnagEvent -> BugsnagEvent
 defaultBeforeNotify :: BeforeNotify
 defaultBeforeNotify =
     redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
+        . setStackFramesInProject (const True)
 
 -- | Modify just the Exception part of an Event
 --

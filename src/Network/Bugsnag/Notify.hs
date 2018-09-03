@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-deprecations #-}
-
 module Network.Bugsnag.Notify
     ( notifyBugsnag
     , notifyBugsnagWith
@@ -30,10 +28,7 @@ notifyBugsnagWith f settings ex = do
     let event =
             f
                 . bsBeforeNotify settings
-                . setGroupingHashBy (bsGroupingHash settings)
                 . maybe id setStackFramesCode (bsCodeIndex settings)
-                . setStackFramesInProject (bsIsInProject settings)
-                . filterStackFrames (bsFilterStackFrames settings)
                 . createApp settings
                 . bugsnagEvent
                 $ bugsnagExceptionFromSomeException ex

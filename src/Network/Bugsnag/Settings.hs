@@ -20,7 +20,6 @@ import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
 import Network.Bugsnag.ReleaseStage
-import Network.Bugsnag.StackFrame
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS
 
@@ -63,24 +62,6 @@ data BugsnagSettings = BugsnagSettings
     -- pass this predicate. N.B. Something lower-level, like @'reportError'@
     -- won't be aware of this.
     --
-    , bsGroupingHash :: BugsnagEvent -> Maybe Text
-    -- ^ The grouping hash to use for any specific event
-    --
-    -- Events (exceptions) which have the same hash will be counted as the same
-    -- exception. Use @Nothing@ (the default) to maintain Bugsnags automatic
-    -- behavior (group by top in-project stack-frame).
-    --
-    , bsIsInProject :: FilePath -> Bool
-    -- ^ Predicate for in-project stack frames
-    --
-    -- By default, all are considered in-project.
-    --
-    , bsFilterStackFrames :: BugsnagStackFrame -> Bool
-    -- ^ Stack frame filter
-    --
-    -- Return @True@ for any stack-frames that should be omitted from
-    -- notifications.
-    --
     , bsHttpManager :: Manager
     -- ^ The HTTP @Manager@ used to emit notifications
     --
@@ -96,10 +77,6 @@ data BugsnagSettings = BugsnagSettings
     --
     }
 
-{-# DEPRECATED bsGroupingHash "use setGroupingHashBy with bsBeforeNotify" #-}
-{-# DEPRECATED bsIsInProject "use setStackFramesInProject with bsBeforeNotify" #-}
-{-# DEPRECATED bsFilterStackFrames "use filterStackFrames with bsBeforeNotify" #-}
-
 -- | Construct settings purely, given an existing @'Manager'@
 bugsnagSettings :: BugsnagApiKey -> Manager -> BugsnagSettings
 bugsnagSettings apiKey manager = BugsnagSettings
@@ -109,9 +86,6 @@ bugsnagSettings apiKey manager = BugsnagSettings
     , bsNotifyReleaseStages = [ProductionReleaseStage]
     , bsBeforeNotify = defaultBeforeNotify
     , bsIgnoreException = const False
-    , bsGroupingHash = const Nothing
-    , bsIsInProject = const True
-    , bsFilterStackFrames = const True
     , bsHttpManager = manager
     , bsCodeIndex = Nothing
     }
