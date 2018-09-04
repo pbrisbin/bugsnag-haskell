@@ -1,6 +1,6 @@
 ## [*Unreleased*](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.0...master)
 
-None
+- Set StackFrame as in-project based on the `CodeIndex` when present
 
 ## [v0.0.2.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.1.3...v0.0.2.0)
 
