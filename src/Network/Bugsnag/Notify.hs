@@ -48,6 +48,16 @@ notifyBugsnagWith f settings ex = do
 
 -- |
 --
+-- If we have a @'CodeIndex'@ set the Code and then set InProject based on if we
+-- found any. Otherwise we just assume everything is InProject.
+--
+modifyStackFrames :: Maybe CodeIndex -> BeforeNotify
+modifyStackFrames Nothing = setStackFramesInProject $ const True
+modifyStackFrames (Just index) =
+    setStackFramesInProjectBy bsfCode isJust . setStackFramesCode index
+
+-- |
+--
 -- N.B. safe to clobber because we're only used on a fresh event.
 --
 createApp :: BugsnagSettings -> BeforeNotify
@@ -58,7 +68,3 @@ createApp settings event = event
         }
     }
 
-modifyStackFrames :: Maybe CodeIndex -> BeforeNotify
-modifyStackFrames Nothing = setStackFramesInProject $ const True
-modifyStackFrames (Just index) =
-    setStackFramesInProjectBy bsfCode isJust . setStackFramesCode index
