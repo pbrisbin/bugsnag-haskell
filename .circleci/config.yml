@@ -26,7 +26,7 @@ references:
             if [ "${LINT:-1}" = 1 ]; then
               # Temporarily moved from Makefile because it doesn't currently
               # work on nightly
-              stack install $(STACK_ARGUMENTS) \
+              stack install $STACK_ARGUMENTS \
                 --copy-compiler-tool hlint weeder
             fi
 
