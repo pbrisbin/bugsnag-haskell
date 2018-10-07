@@ -23,6 +23,13 @@ references:
           command: |
             make setup
 
+            if [ "${LINT:-1}" = 1 ]; then
+              # Temporarily moved from Makefile because it doesn't currently
+              # work on nightly
+              stack install $(STACK_ARGUMENTS) \
+                --copy-compiler-tool hlint weeder
+            fi
+
             if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
               stack install cc-coverage
               curl -L "$CC_TEST_REPORTER_SRC" > ./cc-test-reporter

@@ -7,7 +7,7 @@ setup:
 	  --coverage \
 	  --flag bugsnag-haskell:examples \
 	  --fast --test --no-run-tests --dependencies-only
-	stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
+	# stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
 
 .PHONY: build
 build:
