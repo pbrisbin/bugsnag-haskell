@@ -14,10 +14,10 @@ references:
             git ls-files | xargs md5sum > sdigest
       - restore_cache:
           keys:
-            - 1-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
-            - 1-{{ .Branch }}-{{ checksum "rdigest" }}-
-            - 1-{{ .Branch }}-
-            - 1-master-
+            - 2-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+            - 2-{{ .Branch }}-{{ checksum "rdigest" }}-
+            - 2-{{ .Branch }}-
+            - 2-master-
       - run:
           name: Dependencies
           command: |
@@ -36,7 +36,7 @@ references:
           name: Build
           command: make build
       - save_cache:
-          key: 1-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+          key: 2-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
           paths:
             - ~/.stack
             - ./.stack-work
