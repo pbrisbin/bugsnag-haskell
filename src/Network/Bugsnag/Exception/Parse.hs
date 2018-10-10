@@ -37,6 +37,8 @@ parseErrorCall = parse' errorCallParser
 parseStringException :: SomeException -> Either String MessageWithStackFrames
 parseStringException = parse' stringExceptionParser
 
+-- brittany-disable-next-binding
+
 errorCallParser :: Parser MessageWithStackFrames
 errorCallParser = MessageWithStackFrames
     <$> messageParser
@@ -60,6 +62,8 @@ errorCallParser = MessageWithStackFrames
             , bsfInProject = Just True
             , bsfCode = Nothing
             }
+
+-- brittany-disable-next-binding
 
 stringExceptionParser :: Parser MessageWithStackFrames
 stringExceptionParser = MessageWithStackFrames
@@ -91,7 +95,8 @@ stackFrameFunctionTill p = spaces *> (T.pack <$> manyTill anyChar p)
 
 stackFrameLocationTill :: Parser a -> Parser (FilePath, Natural, Natural)
 stackFrameLocationTill p = do
-    result <- (,,)
+    result <-
+        (,,)
         <$> manyTill anyChar (char ':')
         <*> (read <$> manyTill digit (char ':'))
         <*> (read <$> manyTill digit (char ' '))
