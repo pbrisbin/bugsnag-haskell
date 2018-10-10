@@ -32,6 +32,13 @@ sillyHead' :: HasCallStack => [a] -> IO a
 sillyHead' (x : _) = pure x
 sillyHead' _ = throwString "empty list"
 
+brokenFunction'' :: HasCallStack => IO a
+brokenFunction'' = sillyHead'' []
+
+sillyHead'' :: HasCallStack => [a] -> IO a
+sillyHead'' (x : _) = pure x
+sillyHead'' _ = throwString "empty list\n and message with newlines\n\n"
+
 spec :: Spec
 spec = do
     describe "BugsnagException" $ do
@@ -83,3 +90,24 @@ spec = do
 
                 map bsfMethod (beStacktrace ex)
                     `shouldBe` ["throwString", "sillyHead'", "brokenFunction'"]
+
+            it "also parses StringExceptions with newlines" $ do
+                e <- brokenFunction'' `catch` pure
+
+                let ex = bugsnagExceptionFromSomeException e
+                beErrorClass ex `shouldBe` "SomeException"
+                beMessage ex `shouldBe` Just
+                    "empty list\n and message with newlines\n\n"
+                beStacktrace ex `shouldSatisfy` ((== 3) . length)
+
+                let frame = head $ beStacktrace ex
+                bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
+                bsfLineNumber frame `shouldBe` 40
+                bsfColumnNumber frame `shouldBe` Just 17
+                bsfMethod frame `shouldBe` "throwString"
+
+                map bsfMethod (beStacktrace ex)
+                    `shouldBe` [ "throwString"
+                               , "sillyHead''"
+                               , "brokenFunction''"
+                               ]

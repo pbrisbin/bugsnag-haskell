@@ -73,8 +73,7 @@ stringExceptionParser = MessageWithStackFrames
     messageParser :: Parser Text
     messageParser = do
         manyTill anyChar (try $ string "throwString called with:") *> eol *> eol
-        msg <- T.pack <$> manyTill anyChar eol
-        msg <$ (string "Called from:" *> eol)
+        T.pack <$> manyTill anyChar (try $ eol *> string "Called from:" *> eol)
 
     stackFrameParser :: Parser BugsnagStackFrame
     stackFrameParser = do
