@@ -14,20 +14,22 @@ import UnliftIO.Exception (throwString)
 
 brokenFunctionIO :: IO a
 brokenFunctionIO = throw $ bugsnagException
-    "IOException" "Something exploded" [$(currentStackFrame) "brokenFunctionIO"]
+    "IOException"
+    "Something exploded"
+    [$(currentStackFrame) "brokenFunctionIO"]
 
 brokenFunction :: HasCallStack => a
 brokenFunction = sillyHead [] `seq` undefined
 
 sillyHead :: HasCallStack => [a] -> a
-sillyHead (x:_) = x
+sillyHead (x : _) = x
 sillyHead _ = error "empty list"
 
 brokenFunction' :: HasCallStack => IO a
 brokenFunction' = sillyHead' []
 
 sillyHead' :: HasCallStack => [a] -> IO a
-sillyHead' (x:_) = pure x
+sillyHead' (x : _) = pure x
 sillyHead' _ = throwString "empty list"
 
 spec :: Spec
@@ -42,8 +44,8 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 17
-            bsfColumnNumber frame `shouldBe` Just 43
+            bsfLineNumber frame `shouldBe` 19
+            bsfColumnNumber frame `shouldBe` Just 8
             bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
 
@@ -58,7 +60,7 @@ spec = do
 
                 let frame = head $ beStacktrace ex
                 bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-                bsfLineNumber frame `shouldBe` 24
+                bsfLineNumber frame `shouldBe` 26
                 bsfColumnNumber frame `shouldBe` Just 15
                 bsfMethod frame `shouldBe` "error"
 
@@ -75,7 +77,7 @@ spec = do
 
                 let frame = head $ beStacktrace ex
                 bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-                bsfLineNumber frame `shouldBe` 31
+                bsfLineNumber frame `shouldBe` 33
                 bsfColumnNumber frame `shouldBe` Just 16
                 bsfMethod frame `shouldBe` "throwString"
 
