@@ -1,4 +1,8 @@
-## [*Unreleased*](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.0...master)
+## [*Unreleased*](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.1...master)
+
+None
+
+## [v0.0.2.1](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.0...v0.0.2.1)
 
 - Set StackFrame as in-project based on the `CodeIndex` when present
 - Correctly parse `throwString` exceptions with newlines in the message
