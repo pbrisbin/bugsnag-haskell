@@ -11,6 +11,13 @@ license: MIT
 dependencies:
   - base >= 4.8.0 && < 5
 
+extra-doc-files:
+  - CHANGELOG.md
+  - README.md
+
+extra-source-files:
+  - test/fixtures/**/*
+
 ghc-options: -Wall
 
 library:
