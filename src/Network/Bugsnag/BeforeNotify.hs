@@ -2,7 +2,6 @@
 
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
-    , defaultBeforeNotify
 
     -- * Modifying the Exception
     , updateException
@@ -19,6 +18,7 @@ module Network.Bugsnag.BeforeNotify
     , updateEventFromOriginalException
     , updateEventFromSession
     , updateEventFromWaiRequest
+    , updateEventFromWaiRequestUnredacted
 
     -- * Modifying the Request
     , redactRequestHeaders
@@ -49,25 +49,6 @@ import Network.HTTP.Types.Header (Header, HeaderName)
 import Network.Wai (Request)
 
 type BeforeNotify = BugsnagEvent -> BugsnagEvent
-
--- | Used as @'bsBeforeNotify'@ the default Settings value
---
--- Redacts the following Request headers:
---
--- - Authorization
--- - Cookie
--- - X-XSRF-TOKEN (CSRF token header used by Yesod)
---
--- N.B. If you override the value on @'BugsnagSettings'@, you probably want to
--- maintain this as well:
---
--- @
--- settings { 'bsBeforeNotify' = 'defaultBeforeNotify' . myBeforeNotify }
--- @
---
-defaultBeforeNotify :: BeforeNotify
-defaultBeforeNotify =
-    redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
 
 -- | Modify just the Exception part of an Event
 --
@@ -159,8 +140,22 @@ updateEventFromOriginalException f event = fromMaybe event $ do
     pure $ f yourException event
 
 -- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
+--
+-- This function redacts the following Request headers:
+--
+-- - Authorization
+-- - Cookie
+-- - X-XSRF-TOKEN (CSRF token header used by Yesod)
+--
+-- To avoid this, use @'updateEventFromWaiRequestUnredacted'@.
+--
 updateEventFromWaiRequest :: Request -> BeforeNotify
 updateEventFromWaiRequest wrequest =
+    redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
+        . updateEventFromWaiRequestUnredacted wrequest
+
+updateEventFromWaiRequestUnredacted :: Request -> BeforeNotify
+updateEventFromWaiRequestUnredacted wrequest =
     let
         mdevice = bugsnagDeviceFromWaiRequest wrequest
         request = bugsnagRequestFromWaiRequest wrequest
