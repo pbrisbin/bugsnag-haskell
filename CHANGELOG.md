@@ -1,6 +1,15 @@
-## [*Unreleased*](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.1...master)
+## [*Unreleased*](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.0...master)
 
 None
+
+## [v0.0.3.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.2...v0.0.3.0)
+
+- Fix sensitive request header redacting
+- Remove `defaultBeforeNotify`
+
+## [v0.0.2.2](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.1...v0.0.2.2)
+
+Packaging changes only.
 
 ## [v0.0.2.1](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.0...v0.0.2.1)
 
@@ -21,6 +30,10 @@ None
 ## [v0.0.1.3](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.1.2...v0.0.1.3)
 
 - Redact sensitive request headers by default [#31](https://github.com/pbrisbin/bugsnag-haskell/issues/31)
+
+  **NOTE**: this wasn't actually working at this point. It is actually fixed in
+  v0.0.3.0.
+
 - Deprecate Settings that should be `BeforeNotify` values [#32](https://github.com/pbrisbin/bugsnag-haskell/issues/32)
 - `bugsnagShouldNotify` operates after any `BeforeNotify` changes
 
