@@ -1,28 +1,6 @@
 # overriden by --resolver on CI
-resolver: nightly-2018-10-05
-allow-newer: true
+resolver: nightly-2018-02-05
 extra-deps:
-  - aeson-qq-0.8.2
-  - asn1-encoding-0.9.5
-  - asn1-parse-0.9.4
-  - asn1-types-0.3.2
-  - byteable-0.1.1
-  - cipher-aes-0.2.11
-  - clientsession-0.9.1.2
-  - connection-0.2.8
-  - cprng-aes-0.6.1
-  - crypto-cipher-types-0.0.9
-  - crypto-random-0.0.9
-  - cryptonite-0.25
-  - haskell-src-meta-0.8.0.3
-  - http-client-tls-0.3.5.3
-  - http-conduit-2.3.2
-  - pem-0.2.4
-  - securemem-0.1.10
-  - skein-1.0.9.4
-  - tls-1.4.1
-  - x509-1.7.4
-  - x509-store-1.6.6
-  - x509-system-1.6.6
-  - x509-validation-1.6.10
-  - yesod-core-1.6.6
+  - aeson-qq-0.8.2@sha256:7927fe84302f2aac23211552e01a6b4ae3e1434aa696e410eb239dba5552d683
+  - haskell-src-exts-1.20.3@sha256:eb9a0a02e422f64e793fe077e445e930bc365b7f7ce92ce6983475c72f8b3785
+  - haskell-src-meta-0.8.0.3@sha256:cc7ce9c443a7a5f61b570812e46131ea722d1f7d42e4f7d497f171d03cd8e536
