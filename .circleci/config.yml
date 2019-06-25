@@ -6,11 +6,16 @@ references:
     docker:
       - image: fpco/stack-build:lts
     steps:
+      - run:
+          name: Upgrade stack
+          command: stack upgrade
+
       - checkout
       - run:
           name: Digest
           command: |
-            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" > rdigest
+            echo stack --version > rdigest
+            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" >> rdigest
             git ls-files | xargs md5sum > sdigest
       - restore_cache:
           keys:
