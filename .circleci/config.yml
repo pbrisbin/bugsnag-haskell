@@ -6,18 +6,23 @@ references:
     docker:
       - image: fpco/stack-build:lts
     steps:
+      - run:
+          name: Upgrade stack
+          command: stack upgrade
+
       - checkout
       - run:
           name: Digest
           command: |
-            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" > rdigest
+            echo stack --version > rdigest
+            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" >> rdigest
             git ls-files | xargs md5sum > sdigest
       - restore_cache:
           keys:
-            - 2-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
-            - 2-{{ .Branch }}-{{ checksum "rdigest" }}-
-            - 2-{{ .Branch }}-
-            - 2-master-
+            - 3-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+            - 3-{{ .Branch }}-{{ checksum "rdigest" }}-
+            - 3-{{ .Branch }}-
+            - 3-master-
       - run:
           name: Dependencies
           command: |
@@ -43,7 +48,7 @@ references:
           name: Build
           command: make build
       - save_cache:
-          key: 2-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+          key: 3-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
           paths:
             - ~/.stack
             - ./.stack-work
@@ -86,7 +91,9 @@ jobs:
   build:
     <<: *stack_build
     environment:
-      REPORT_COVERAGE: 1
+      # New stack can't find this extra-dep...?
+      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/565
+      REPORT_COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
   build_nightly:
     <<: *stack_build
@@ -101,7 +108,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build_8.0.2
+      # Hmm... https://circleci.com/gh/pbrisbin/bugsnag-haskell/559
+      #- build_8.0.2
       - build_8.2.2
       - build_8.4.3
       - build
