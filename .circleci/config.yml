@@ -106,7 +106,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build_8.0.2
+      # Hmm... https://circleci.com/gh/pbrisbin/bugsnag-haskell/559
+      #- build_8.0.2
       - build_8.2.2
       - build_8.4.3
       - build
