@@ -6,4 +6,4 @@ extra-deps:
   - haskell-src-meta-0.8.0.3@sha256:cc7ce9c443a7a5f61b570812e46131ea722d1f7d42e4f7d497f171d03cd8e536
 
 # Fix weeder with stack-2.0
-ghc-options: {"$locals": -ddump-to-file -ddump-hi}
+ghc-options: { "$locals": -ddump-to-file -ddump-hi }
