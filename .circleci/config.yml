@@ -91,7 +91,9 @@ jobs:
   build:
     <<: *stack_build
     environment:
-      REPORT_COVERAGE: 1
+      # New stack can't find this extra-dep...?
+      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/565
+      REPORT_COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
   build_nightly:
     <<: *stack_build
