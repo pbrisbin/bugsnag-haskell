@@ -9,7 +9,7 @@ category: Web
 license: MIT
 
 dependencies:
-  - base >= 4.8.0 && < 5
+  - base >= 4.11.0 && < 5
 
 extra-doc-files:
   - CHANGELOG.md
