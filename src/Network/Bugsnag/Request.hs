@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
@@ -96,3 +97,7 @@ sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = C8.pack $ show $ fromHostAddress6 h
 sockAddrToIp (SockAddrUnix _) = "<socket>"
+
+-- Matches deprecated and eventually removed SockAddrCan on older GHCs.
+-- overlapping-patterns warning is disabled for this.
+sockAddrToIp _ = "<invalid>"
