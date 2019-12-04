@@ -1,9 +1,6 @@
 # overriden by --resolver on CI
-resolver: nightly-2018-02-05
-extra-deps:
-  - aeson-qq-0.8.2@sha256:7927fe84302f2aac23211552e01a6b4ae3e1434aa696e410eb239dba5552d683
-  - haskell-src-exts-1.20.3@sha256:eb9a0a02e422f64e793fe077e445e930bc365b7f7ce92ce6983475c72f8b3785
-  - haskell-src-meta-0.8.0.3@sha256:cc7ce9c443a7a5f61b570812e46131ea722d1f7d42e4f7d497f171d03cd8e536
+resolver: nightly-2019-11-29
+allow-newer: true
 
 # Fix weeder with stack-2.0
 ghc-options: { "$locals": -ddump-to-file -ddump-hi }
