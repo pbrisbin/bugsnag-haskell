@@ -13,7 +13,6 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
 import Data.IP
 import Data.Maybe (fromMaybe)
-import Data.Monoid ((<>))
 import GHC.Generics
 import Network.HTTP.Types
 import Network.Socket
@@ -95,7 +94,3 @@ sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = C8.pack $ show $ fromHostAddress6 h
 sockAddrToIp (SockAddrUnix _) = "<socket>"
-
--- N.B. Can't match deprecated SockAddrCan without warning. TODO: make patterns
--- exhaustive without a wildcard once it's actually removed.
-sockAddrToIp _ = "<invalid>"
