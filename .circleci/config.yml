@@ -70,24 +70,16 @@ references:
             fi
 
 jobs:
-  build_8.0.2:
-    <<: *stack_build
-    environment:
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-9.21.yaml
-  build_8.2.2:
-    <<: *stack_build
-    environment:
-      # doctest doesn't seem to work on CI for this version
-      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/38
-      STACK_TEST_TARGET: bugsnag-haskell:spec
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-11.19.yaml
   build_8.4.3:
     <<: *stack_build
     environment:
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-12.2.yaml
+  build_8.6.5:
+    <<: *stack_build
+    environment:
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-14.16.yaml
   build:
     <<: *stack_build
     environment:
@@ -108,10 +100,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      # Hmm... https://circleci.com/gh/pbrisbin/bugsnag-haskell/559
-      #- build_8.0.2
-      - build_8.2.2
       - build_8.4.3
+      - build_8.6.5
       - build
       - build_nightly
   nightly:
