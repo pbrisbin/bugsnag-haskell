@@ -4,7 +4,8 @@ module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
     , bugsnagRequestFromWaiRequest
-    ) where
+    )
+where
 
 import Control.Applicative ((<|>))
 import Data.Aeson
@@ -54,12 +55,12 @@ bugsnagRequestFromWaiRequest request = bugsnagRequest
     }
 
 requestRealIp :: Request -> Maybe ByteString
-requestRealIp request = requestForwardedFor request
-    <|> lookup "X-Real-IP" (requestHeaders request)
+requestRealIp request =
+    requestForwardedFor request <|> lookup "X-Real-IP" (requestHeaders request)
 
 requestForwardedFor :: Request -> Maybe ByteString
-requestForwardedFor request = readForwardedFor
-    =<< lookup "X-Forwarded-For" (requestHeaders request)
+requestForwardedFor request =
+    readForwardedFor =<< lookup "X-Forwarded-For" (requestHeaders request)
 
 -- |
 --
@@ -78,17 +79,18 @@ readForwardedFor bs
     | otherwise = Just $ fst $ C8.break (== ',') bs
 
 requestUrl :: Request -> ByteString
-requestUrl request = requestProtocol
-    <> "://"
-    <> requestHost request
-    <> rawPathInfo request
-    <> rawQueryString request
+requestUrl request =
+    requestProtocol
+        <> "://"
+        <> requestHost request
+        <> rawPathInfo request
+        <> rawQueryString request
   where
     clientProtocol = if isSecure request then "https" else "http"
     requestHost = fromMaybe "<unknown>" . requestHeaderHost
-    requestProtocol = fromMaybe clientProtocol
-        $ lookup "X-Forwarded-Proto"
-        $ requestHeaders request
+    requestProtocol =
+        fromMaybe clientProtocol $ lookup "X-Forwarded-Proto" $ requestHeaders
+            request
 
 sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
