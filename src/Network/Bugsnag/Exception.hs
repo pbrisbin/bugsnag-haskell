@@ -86,24 +86,6 @@ exCasters :: [Caster]
 exCasters =
     [ Caster id
     , Caster $ bugsnagExceptionWithParser parseErrorCall
-    , Caster $ bugsnagExceptionFromException @IOException
-    , Caster $ bugsnagExceptionFromException @ArithException
-    , Caster $ bugsnagExceptionFromException @ArrayException
-    , Caster $ bugsnagExceptionFromException @AssertionFailed
-    , Caster $ bugsnagExceptionFromException @SomeAsyncException
-    , Caster $ bugsnagExceptionFromException @AsyncException
-    , Caster $ bugsnagExceptionFromException @NonTermination
-    , Caster $ bugsnagExceptionFromException @NestedAtomically
-    , Caster $ bugsnagExceptionFromException @BlockedIndefinitelyOnMVar
-    , Caster $ bugsnagExceptionFromException @BlockedIndefinitelyOnSTM
-    , Caster $ bugsnagExceptionFromException @AllocationLimitExceeded
-    , Caster $ bugsnagExceptionFromException @Deadlock
-    , Caster $ bugsnagExceptionFromException @NoMethodError
-    , Caster $ bugsnagExceptionFromException @PatternMatchFail
-    , Caster $ bugsnagExceptionFromException @RecConError
-    , Caster $ bugsnagExceptionFromException @RecSelError
-    , Caster $ bugsnagExceptionFromException @RecUpdError
-    , Caster $ bugsnagExceptionFromException @TypeError
     ]
 
 bugsnagExceptionWithParser
