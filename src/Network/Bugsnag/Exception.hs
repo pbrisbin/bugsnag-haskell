@@ -73,34 +73,19 @@ bugsnagException errorClass message stacktrace = BugsnagException
 -- ("IOException",Just "user error (Oops)")
 --
 bugsnagExceptionFromSomeException :: SomeException -> BugsnagException
-bugsnagExceptionFromSomeException ex =
-    foldr go (bugsnagExceptionWithParser parseStringException ex) exCasters
-  where
+bugsnagExceptionFromSomeException ex = foldr go seed exCasters
+ where
     go :: Caster -> BugsnagException -> BugsnagException
     go (Caster caster) res = maybe res caster $ fromException ex
+
+    seed = (bugsnagExceptionWithParser parseStringException ex)
+        { beErrorClass = (\(SomeException e) -> exErrorClass e) ex
+        }
 
 exCasters :: [Caster]
 exCasters =
     [ Caster id
     , Caster $ bugsnagExceptionWithParser parseErrorCall
-    , Caster $ bugsnagExceptionFromException @IOException
-    , Caster $ bugsnagExceptionFromException @ArithException
-    , Caster $ bugsnagExceptionFromException @ArrayException
-    , Caster $ bugsnagExceptionFromException @AssertionFailed
-    , Caster $ bugsnagExceptionFromException @SomeAsyncException
-    , Caster $ bugsnagExceptionFromException @AsyncException
-    , Caster $ bugsnagExceptionFromException @NonTermination
-    , Caster $ bugsnagExceptionFromException @NestedAtomically
-    , Caster $ bugsnagExceptionFromException @BlockedIndefinitelyOnMVar
-    , Caster $ bugsnagExceptionFromException @BlockedIndefinitelyOnSTM
-    , Caster $ bugsnagExceptionFromException @AllocationLimitExceeded
-    , Caster $ bugsnagExceptionFromException @Deadlock
-    , Caster $ bugsnagExceptionFromException @NoMethodError
-    , Caster $ bugsnagExceptionFromException @PatternMatchFail
-    , Caster $ bugsnagExceptionFromException @RecConError
-    , Caster $ bugsnagExceptionFromException @RecSelError
-    , Caster $ bugsnagExceptionFromException @RecUpdError
-    , Caster $ bugsnagExceptionFromException @TypeError
     ]
 
 bugsnagExceptionWithParser
