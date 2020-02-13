@@ -78,7 +78,7 @@ spec = do
                 e <- brokenFunction' `catch` pure
 
                 let ex = bugsnagExceptionFromSomeException e
-                beErrorClass ex `shouldBe` "SomeException"
+                beErrorClass ex `shouldBe` "StringException"
                 beMessage ex `shouldBe` Just "empty list"
                 beStacktrace ex `shouldSatisfy` ((== 3) . length)
 
@@ -95,7 +95,7 @@ spec = do
                 e <- brokenFunction'' `catch` pure
 
                 let ex = bugsnagExceptionFromSomeException e
-                beErrorClass ex `shouldBe` "SomeException"
+                beErrorClass ex `shouldBe` "StringException"
                 beMessage ex `shouldBe` Just
                     "empty list\n and message with newlines\n\n"
                 beStacktrace ex `shouldSatisfy` ((== 3) . length)
