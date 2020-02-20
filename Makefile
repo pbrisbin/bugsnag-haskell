@@ -1,4 +1,4 @@
-all: setup build test lint
+all: setup setup.lint build test lint
 
 coverage: setup setup.coverage build.coverage test.coverage coverage.upload
 
