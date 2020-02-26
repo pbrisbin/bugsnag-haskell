@@ -26,7 +26,11 @@ references:
       - run:
           name: Dependencies
           command: |
-            make setup setup.lint
+            make setup
+
+            if [ "${LINT:-1}" = 1 ]; then
+              make setup.lint
+            fi
 
             if [ "${COVERAGE:-1}" = 1 ]; then
               make setup.coverage
@@ -50,7 +54,10 @@ references:
             fi
       - run:
           name: Lint
-          command: make lint
+          command: |
+            if [ "${LINT:-1}" = 1 ]; then
+              make lint
+            fi
 
 jobs:
   build_8.6.5:
@@ -73,6 +80,7 @@ jobs:
     <<: *stack_build
     environment:
       COVERAGE: 0
+      LINT: 0
       STACK_ARGUMENTS: --no-terminal --resolver nightly
       STACK_YAML: stack-nightly.yaml
 
