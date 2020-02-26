@@ -25,7 +25,12 @@ references:
             - 3-master-
       - run:
           name: Dependencies
-          command: make setup setup.lint setup.coverage
+          command: |
+            make setup setup.lint
+
+            if [ "${COVERAGE:-1}" = 1 ]; then
+              make setup.coverage
+            fi
           no_output_timeout: 120m
       - run:
           name: Build
@@ -37,7 +42,12 @@ references:
             - ./.stack-work
       - run:
           name: Test
-          command: make test coverage.upload
+          command: |
+            make test
+
+            if [ "${COVERAGE:-1}" = 1 ]; then
+              make coverage.upload
+            fi
       - run:
           name: Lint
           command: make lint
@@ -46,11 +56,13 @@ jobs:
   build_8.6.5:
     <<: *stack_build
     environment:
+      COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-14.16.yaml
   build_8.8.2:
     <<: *stack_build
     environment:
+      COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-15.1.yaml
   build:
@@ -60,6 +72,7 @@ jobs:
   build_nightly:
     <<: *stack_build
     environment:
+      COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal --resolver nightly
       STACK_YAML: stack-nightly.yaml
 
