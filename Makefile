@@ -9,7 +9,19 @@ setup:
 	  --coverage \
 	  --flag bugsnag-haskell:examples \
 	  --fast --test --no-run-tests --dependencies-only
-	# stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
+
+.PHONY: setup.lint
+setup.lint:
+	stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
+	if [ ! -f ~/.hlint.yaml ]; then \
+	  curl -L -o .hlint.yaml https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml; \
+	if
+
+.PHONY: setup.coverage
+setup.coverage:
+	stack install $(STACK_ARGUMENTS) --copy-compiler-tool cc-coverage
+	curl -L -o cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+	chmod +x ./cc-test-reporter
 
 .PHONY: build
 build:
@@ -36,6 +48,10 @@ test:
 lint:
 	stack exec $(STACK_ARGUMENTS) hlint src test
 	stack exec $(STACK_ARGUMENTS) weeder .
+
+.PHONY: coverage.upload
+coverage.upload:
+	stack exec $(STACK_ARGUMENTS) tix2cc | ./cc-test-reporter upload-coverage --input -
 
 .PHONY: clean
 clean:

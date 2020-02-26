@@ -1,5 +1,5 @@
 require-stack-version: ">= 2.1.1"
-resolver: lts-13.26
+resolver: lts-15.1
 extra-deps:
   - git: https://github.com/pbrisbin/hs-cc-coverage
     commit: a37306a0fd97c74ef97dd683046ca3d833a29840

@@ -25,24 +25,7 @@ references:
             - 3-master-
       - run:
           name: Dependencies
-          command: |
-            make setup
-
-            if [ "${LINT:-1}" = 1 ]; then
-              # Temporarily moved from Makefile because it doesn't currently
-              # work on nightly
-              stack install $STACK_ARGUMENTS \
-                --copy-compiler-tool hlint weeder
-            fi
-
-            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
-              stack install cc-coverage
-              curl -L "$CC_TEST_REPORTER_SRC" > ./cc-test-reporter
-              chmod +x cc-test-reporter
-            fi
-          environment:
-            # yamllint disable-line rule:line-length
-            CC_TEST_REPORTER_SRC: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+          command: make setup setup.lint setup.coverage
           no_output_timeout: 120m
       - run:
           name: Build
@@ -54,45 +37,29 @@ references:
             - ./.stack-work
       - run:
           name: Test
-          command: |
-            make test
-
-            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
-              tix2cc | ./cc-test-reporter upload-coverage --input -
-            fi
+          command: make test coverage.upload
       - run:
           name: Lint
-          command: |
-            if [ "${LINT:-1}" = 1 ]; then
-              curl -L -o .hlint.yaml \
-                https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
-              make lint
-            fi
+          command: make lint
 
 jobs:
-  build_8.4.3:
-    <<: *stack_build
-    environment:
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-12.2.yaml
   build_8.6.5:
     <<: *stack_build
     environment:
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-14.16.yaml
+  build_8.8.2:
+    <<: *stack_build
+    environment:
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-15.1.yaml
   build:
     <<: *stack_build
     environment:
-      # New stack can't find this extra-dep...?
-      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/565
-      REPORT_COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
   build_nightly:
     <<: *stack_build
     environment:
-      # weeder is not happy, again
-      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/36
-      LINT: 0
       STACK_ARGUMENTS: --no-terminal --resolver nightly
       STACK_YAML: stack-nightly.yaml
 
@@ -100,8 +67,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build_8.4.3
       - build_8.6.5
+      - build_8.8.2
       - build
       - build_nightly
   nightly:
