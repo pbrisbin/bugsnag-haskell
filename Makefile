@@ -15,7 +15,7 @@ setup.lint:
 	stack install $(STACK_ARGUMENTS) --copy-compiler-tool hlint weeder
 	if [ ! -f ~/.hlint.yaml ]; then \
 	  curl -L -o .hlint.yaml https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml; \
-	if
+	fi
 
 .PHONY: setup.coverage
 setup.coverage:
