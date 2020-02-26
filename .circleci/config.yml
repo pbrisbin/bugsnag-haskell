@@ -19,36 +19,28 @@ references:
             git ls-files | xargs md5sum > sdigest
       - restore_cache:
           keys:
-            - 3-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
-            - 3-{{ .Branch }}-{{ checksum "rdigest" }}-
-            - 3-{{ .Branch }}-
-            - 3-master-
+            - 4-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+            - 4-{{ .Branch }}-{{ checksum "rdigest" }}-
+            - 4-{{ .Branch }}-
+            - 4-master-
       - run:
           name: Dependencies
           command: |
             make setup
 
             if [ "${LINT:-1}" = 1 ]; then
-              # Temporarily moved from Makefile because it doesn't currently
-              # work on nightly
-              stack install $STACK_ARGUMENTS \
-                --copy-compiler-tool hlint weeder
+              make setup.lint
             fi
 
-            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
-              stack install cc-coverage
-              curl -L "$CC_TEST_REPORTER_SRC" > ./cc-test-reporter
-              chmod +x cc-test-reporter
+            if [ "${COVERAGE:-1}" = 1 ]; then
+              make setup.coverage
             fi
-          environment:
-            # yamllint disable-line rule:line-length
-            CC_TEST_REPORTER_SRC: https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
           no_output_timeout: 120m
       - run:
           name: Build
           command: make build
       - save_cache:
-          key: 3-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
+          key: 4-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
           paths:
             - ~/.stack
             - ./.stack-work
@@ -57,41 +49,37 @@ references:
           command: |
             make test
 
-            if [ "${REPORT_COVERAGE:-0}" = 1 ]; then
-              tix2cc | ./cc-test-reporter upload-coverage --input -
+            if [ "${COVERAGE:-1}" = 1 ]; then
+              make coverage.upload
             fi
       - run:
           name: Lint
           command: |
             if [ "${LINT:-1}" = 1 ]; then
-              curl -L -o .hlint.yaml \
-                https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
               make lint
             fi
 
 jobs:
-  build_8.4.3:
-    <<: *stack_build
-    environment:
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-12.2.yaml
   build_8.6.5:
     <<: *stack_build
     environment:
+      COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
       STACK_YAML: stack-lts-14.16.yaml
+  build_8.8.2:
+    <<: *stack_build
+    environment:
+      COVERAGE: 0
+      STACK_ARGUMENTS: --no-terminal
+      STACK_YAML: stack-lts-15.1.yaml
   build:
     <<: *stack_build
     environment:
-      # New stack can't find this extra-dep...?
-      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/565
-      REPORT_COVERAGE: 0
       STACK_ARGUMENTS: --no-terminal
   build_nightly:
     <<: *stack_build
     environment:
-      # weeder is not happy, again
-      # https://circleci.com/gh/pbrisbin/bugsnag-haskell/36
+      COVERAGE: 0
       LINT: 0
       STACK_ARGUMENTS: --no-terminal --resolver nightly
       STACK_YAML: stack-nightly.yaml
@@ -100,8 +88,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build_8.4.3
       - build_8.6.5
+      - build_8.8.2
       - build
       - build_nightly
   nightly:

@@ -1,6 +1,5 @@
 # overriden by --resolver on CI
 resolver: nightly-2019-11-29
-allow-newer: true
 
 # Fix weeder with stack-2.0
 ghc-options: { "$locals": -ddump-to-file -ddump-hi }
