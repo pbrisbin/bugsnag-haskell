@@ -1,97 +1,48 @@
----
-version: 2.0
+version: 2.1
 
-references:
-  stack_build: &stack_build
-    docker:
-      - image: quay.io/haskell_works/stack-build-minimal
-    steps:
-      - checkout
-      - run:
-          name: Digest
-          command: |
-            echo stack --version > rdigest
-            echo -- "${STACK_YAML}/${STACK_ARGUMENTS}" >> rdigest
-            git ls-files | xargs md5sum > sdigest
-      - restore_cache:
-          keys:
-            - 4-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
-            - 4-{{ .Branch }}-{{ checksum "rdigest" }}-
-            - 4-{{ .Branch }}-
-            - 4-master-
-      - run:
-          name: Dependencies
-          command: |
-            # Needed for pcre-light transitive
-            sudo apt-get update -y
-            sudo apt-get install -y libpcre3-dev
+orbs:
+  stack-build: pbrisbin/stack-build@2.0.0
 
-            make setup
-
-            if [ "${LINT:-1}" = 1 ]; then
-              make setup.lint
-            fi
-
-            if [ "${COVERAGE:-1}" = 1 ]; then
-              make setup.coverage
-            fi
-          no_output_timeout: 120m
-      - run:
-          name: Build
-          command: make build
-      - save_cache:
-          key: 4-{{ .Branch }}-{{ checksum "rdigest" }}-{{ checksum "sdigest" }}
-          paths:
-            - ~/.stack
-            - ./.stack-work
-      - run:
-          name: Test
-          command: |
-            make test
-
-            if [ "${COVERAGE:-1}" = 1 ]; then
-              make coverage.upload
-            fi
-      - run:
-          name: Lint
-          command: |
-            if [ "${LINT:-1}" = 1 ]; then
-              make lint
-            fi
-
-jobs:
-  build_8.6.5:
-    <<: *stack_build
-    environment:
-      COVERAGE: 0
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-14.16.yaml
-  build_8.8.2:
-    <<: *stack_build
-    environment:
-      COVERAGE: 0
-      STACK_ARGUMENTS: --no-terminal
-      STACK_YAML: stack-lts-15.1.yaml
-  build:
-    <<: *stack_build
-    environment:
-      STACK_ARGUMENTS: --no-terminal
-  build_nightly:
-    <<: *stack_build
-    environment:
-      COVERAGE: 0
-      LINT: 0
-      STACK_ARGUMENTS: --no-terminal --resolver nightly
-      STACK_YAML: stack-nightly.yaml
+defaults: &defaults
+  before-dependencies:
+    - run: |
+        sudo apt-get update -y
+        sudo apt-get install -y libpcre3-dev
+  hlint-yaml-url:
+    https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
 
 workflows:
-  version: 2
   commit:
     jobs:
-      - build_8.6.5
-      - build_8.8.2
-      - build
-      - build_nightly
+      - stack-build/build-test-lint:
+          <<: *defaults
+          name: "default"
+          stack-arguments: --coverage --flag bugsnag-haskell:examples
+          after-dependencies:
+            - run: |
+                stack install --no-terminal --copy-compiler-tool cc-coverage
+                curl -L -o cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+                chmod +x ./cc-test-reporter
+          after-test:
+            - run: stack exec tix2cc | ./cc-test-reporter upload-coverage --input -
+      - stack-build/build-test-lint:
+          <<: *defaults
+          name: "ghc-8.8.2 / lts-15.1"
+          stack-yaml: stack-lts-15.1.yaml
+          stack-arguments: --flag bugsnag-haskell:examples
+      - stack-build/build-test-lint:
+          <<: *defaults
+          name: "ghc-8.6.5 / lts-14.16"
+          stack-yaml: stack-lts-14.16.yaml
+          stack-arguments: --flag bugsnag-haskell:examples
+      - stack-build/build-test-nightly:
+          name: "nightly"
+          stack-arguments: --flag bugsnag-haskell:examples
+          before-dependencies:
+            - run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libpcre3-dev
+
   nightly:
     triggers:
       - schedule:
@@ -101,4 +52,10 @@ workflows:
               only:
                 - master
     jobs:
-      - build_nightly
+      - stack-build/build-test-nightly:
+          name: "nightly"
+          stack-arguments: --flag bugsnag-haskell:examples
+          before-dependencies:
+            - run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libpcre3-dev
