@@ -65,7 +65,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
 --
 -- @'BugsnagException'@s are left as-is, and @'ErrorCall'@ exceptions are parsed
 -- for @'HasCallStack'@ information to use as @stacktrace@. Otherwise, we
--- attempt to determine @errorClass@ and we use the @'show'@n exception as
+-- attempt to determine @errorClass@ and we use @'displayException'@ as
 -- @message@.
 --
 -- >>> import Control.Arrow
@@ -104,7 +104,7 @@ bugsnagExceptionWithParser p ex = case p ex of
 --
 bugsnagExceptionFromException :: Exception e => e -> BugsnagException
 bugsnagExceptionFromException ex =
-    (bugsnagException (exErrorClass ex) (T.pack $ show ex) [])
+    (bugsnagException (exErrorClass ex) (T.pack $ displayException ex) [])
         { beOriginalException = Just $ toException ex
         }
 
