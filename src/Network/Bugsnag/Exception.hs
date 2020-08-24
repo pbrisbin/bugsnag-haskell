@@ -8,7 +8,8 @@ module Network.Bugsnag.Exception
     ( BugsnagException(..)
     , bugsnagException
     , bugsnagExceptionFromSomeException
-    ) where
+    )
+where
 
 import Control.Exception
 import Data.Aeson
@@ -38,7 +39,7 @@ data BugsnagException = BugsnagException
     deriving (Generic, Show)
 
 instance ToJSON BugsnagException where
-    toJSON BugsnagException{..} = object
+    toJSON BugsnagException {..} = object
         [ "errorClass" .= beErrorClass
         , "message" .= beMessage
         , "stacktrace" .= beStacktrace
@@ -74,7 +75,7 @@ bugsnagException errorClass message stacktrace = BugsnagException
 --
 bugsnagExceptionFromSomeException :: SomeException -> BugsnagException
 bugsnagExceptionFromSomeException ex = foldr go seed exCasters
- where
+  where
     go :: Caster -> BugsnagException -> BugsnagException
     go (Caster caster) res = maybe res caster $ fromException ex
 
@@ -83,21 +84,17 @@ bugsnagExceptionFromSomeException ex = foldr go seed exCasters
         }
 
 exCasters :: [Caster]
-exCasters =
-    [ Caster id
-    , Caster $ bugsnagExceptionWithParser parseErrorCall
-    ]
+exCasters = [Caster id, Caster $ bugsnagExceptionWithParser parseErrorCall]
 
 bugsnagExceptionWithParser
     :: Exception e
     => (e -> Either String MessageWithStackFrames)
     -> e
     -> BugsnagException
-bugsnagExceptionWithParser p ex =
-    case p ex of
-        Left _ -> bugsnagExceptionFromException ex
-        Right (MessageWithStackFrames message stacktrace) ->
-            bugsnagException (exErrorClass ex) message stacktrace
+bugsnagExceptionWithParser p ex = case p ex of
+    Left _ -> bugsnagExceptionFromException ex
+    Right (MessageWithStackFrames message stacktrace) ->
+        bugsnagException (exErrorClass ex) message stacktrace
 
 -- | Construct a @'BugsnagException'@ from an @'Exception'@
 --
@@ -119,5 +116,5 @@ bugsnagExceptionFromException ex =
 -- >>> exErrorClass (undefined :: SomeException)
 -- "SomeException"
 --
-exErrorClass :: forall e. Exception e => e -> Text
+exErrorClass :: forall e . Exception e => e -> Text
 exErrorClass _ = T.pack $ show $ typeRep $ Proxy @e
