@@ -10,7 +10,6 @@ defaults: &defaults
         sudo apt-get install -y libpcre3-dev
   hlint-yaml-url:
     https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
-  stack-arguments: --flag bugsnag-haskell:examples
 
 workflows:
   commit:
@@ -27,13 +26,19 @@ workflows:
           <<: *defaults
           name: "ghc-8.8.2 / lts-15.1"
           stack-yaml: stack-lts-15.1.yaml
+          stack-arguments: --flag bugsnag-haskell:examples
       - stack-build/build-test-lint:
           <<: *defaults
           name: "ghc-8.6.5 / lts-14.16"
           stack-yaml: stack-lts-14.16.yaml
+          stack-arguments: --flag bugsnag-haskell:examples
       - stack-build/build-test-nightly:
-          <<: *defaults
           name: "nightly"
+          stack-arguments: --flag bugsnag-haskell:examples
+          before-dependencies:
+            - run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libpcre3-dev
 
   nightly:
     triggers:
@@ -45,5 +50,9 @@ workflows:
                 - master
     jobs:
       - stack-build/build-test-nightly:
-          <<: *defaults
           name: "nightly"
+          stack-arguments: --flag bugsnag-haskell:examples
+          before-dependencies:
+            - run: |
+                sudo apt-get update -y
+                sudo apt-get install -y libpcre3-dev
