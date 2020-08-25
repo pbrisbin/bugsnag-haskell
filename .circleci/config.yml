@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  stack-build: pbrisbin/stack-build@2.0.0
+  stack-build: pbrisbin/stack-build@3.0.1
 
 defaults: &defaults
   before-dependencies:
