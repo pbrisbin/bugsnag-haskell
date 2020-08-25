@@ -3,24 +3,10 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages:
-- completed:
-    cabal-file:
-      size: 1720
-      sha256: 29ef331599a8abb5193a61c7628ff03bc0aae3f73fcb58f8401b717fd4d7e3d6
-    name: cc-coverage
-    version: 0.1.0.0
-    git: https://github.com/pbrisbin/hs-cc-coverage
-    pantry-tree:
-      size: 1195
-      sha256: 042e3b388c409ff5a02976124c3a51456dbfb7329b12395517640a081aa4e3bc
-    commit: a37306a0fd97c74ef97dd683046ca3d833a29840
-  original:
-    git: https://github.com/pbrisbin/hs-cc-coverage
-    commit: a37306a0fd97c74ef97dd683046ca3d833a29840
+packages: []
 snapshots:
 - completed:
-    size: 489011
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/1.yaml
-    sha256: d4ecc42b7125d68e4c3c036a08046ad0cd02ae0d9efbe3af2223a00ff8cc16f3
-  original: lts-15.1
+    size: 532383
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/16/10.yaml
+    sha256: 469d781ab6d2a4eceed6b31b6e4ec842dcd3cd1d11577972e86902603dce24df
+  original: lts-16.10
