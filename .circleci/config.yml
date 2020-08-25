@@ -19,7 +19,7 @@ workflows:
           name: "default"
           stack-arguments: --coverage --flag bugsnag-haskell:examples
           after-dependencies:
-            - run: make coverage.setup
+            - run: make setup.coverage
           after-test:
             - run: make coverage.upload
       - stack-build/build-test-lint:
