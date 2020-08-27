@@ -25,6 +25,10 @@ newtype CodeIndex = CodeIndex
     { unCodeIndex :: Map FilePath FileIndex }
     deriving (Lift, Show)
 
+-- | Builds an index of code that can be used to attach information; see the @bsCodeIndex@ field of @BugsnagSettings@.
+--
+-- Warning: In larger projects, this will embed substantial amounts of source code in a single file.
+-- This can significantly degrade compilation time, so use with caution.
 buildCodeIndex :: String -> Q Exp
 buildCodeIndex p = do
     index <- qRunIO $ buildCodeIndex' p
