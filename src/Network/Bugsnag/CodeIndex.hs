@@ -25,9 +25,18 @@ newtype CodeIndex = CodeIndex
     { unCodeIndex :: Map FilePath FileIndex }
     deriving (Lift, Show)
 
--- | Builds an index of code that can be used to attach lines of source code contex to stacktraces; see the @bsCodeIndex@ field of @BugsnagSettings@ for details.
+-- | Index code for attaching lines of source to 'StackFrame's
 --
--- Warning: In larger projects, this will embed substantial amounts of source code in a single file, which can significantly degrade compilation time.
+-- See the 'bsCodeIndex' field of 'BugsnagSettings' for details.
+--
+-- **WARNING**: This feature comes with a number of caveats.
+--
+-- 1. It's not frequently used and may not work.
+-- 2. It (probably) means you will be holding all indexed source code in memory
+--    during the life of your process.
+-- 3. In larger projects, it will embed substantial amounts of source code in a
+--    single file, which can significantly degrade compilation time.
+--
 buildCodeIndex :: String -> Q Exp
 buildCodeIndex p = do
     index <- qRunIO $ buildCodeIndex' p
