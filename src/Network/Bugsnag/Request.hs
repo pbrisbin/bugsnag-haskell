@@ -5,6 +5,7 @@ module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
     , bugsnagRequestFromWaiRequest
+    , BugsnagRequestHeaders(..)
     )
 where
 
@@ -13,17 +14,33 @@ import Data.Aeson
 import Data.Aeson.Ext
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
+import Data.CaseInsensitive (CI)
+import qualified Data.CaseInsensitive as CI
 import Data.IP
+import Data.Text (Text)
+import qualified Data.Text.Encoding as TE
 import Data.Maybe (fromMaybe)
 import GHC.Generics
 import Network.HTTP.Types
 import Network.Socket
 import Network.Wai
 
+-- | Wrapper around Wai's 'RequestHeaders', used to give a custom ToJSON instance.
+newtype BugsnagRequestHeaders = BugsnagRequestHeaders {unBugsnagRequestHeaders :: RequestHeaders}
+
+instance ToJSON BugsnagRequestHeaders where
+    toJSON (BugsnagRequestHeaders headers) =
+        object $ map headerToText headers
+
+        where
+            -- Headers are most commonly ASCII, which UTF-8 is a superset of, so UTF-8 is fine to decode
+            headerToText :: (CI ByteString, ByteString) -> (Text, Value)
+            headerToText (name, value) = (TE.decodeUtf8 $ CI.original name, String $ TE.decodeUtf8 value)
+
 -- | The web request being handled when the error was encountered
 data BugsnagRequest = BugsnagRequest
     { brClientIp :: Maybe ByteString
-    , brHeaders :: Maybe RequestHeaders
+    , brHeaders :: Maybe BugsnagRequestHeaders
     , brHttpMethod :: Maybe Method
     , brUrl :: Maybe ByteString
     , brReferer :: Maybe ByteString
@@ -49,7 +66,7 @@ bugsnagRequestFromWaiRequest :: Request -> BugsnagRequest
 bugsnagRequestFromWaiRequest request = bugsnagRequest
     { brClientIp = requestRealIp request
         <|> Just (sockAddrToIp $ remoteHost request)
-    , brHeaders = Just $ requestHeaders request
+    , brHeaders = Just $ BugsnagRequestHeaders $ requestHeaders request
     , brHttpMethod = Just $ requestMethod request
     , brUrl = Just $ requestUrl request
     , brReferer = requestHeaderReferer request

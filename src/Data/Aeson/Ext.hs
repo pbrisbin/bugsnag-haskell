@@ -9,8 +9,6 @@ module Data.Aeson.Ext
 
 import Data.Aeson
 import Data.ByteString (ByteString)
-import Data.CaseInsensitive (CI)
-import qualified Data.CaseInsensitive as CI
 import Data.Char (toLower)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe)
@@ -18,9 +16,6 @@ import Data.Text.Encoding (decodeUtf8)
 
 instance ToJSON ByteString where
     toJSON = String . decodeUtf8
-
-instance ToJSON a => ToJSON (CI a) where
-    toJSON = toJSON . CI.original
 
 -- | Our custom Aeson @'Options'@
 --
