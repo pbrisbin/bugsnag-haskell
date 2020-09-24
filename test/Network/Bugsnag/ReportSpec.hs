@@ -72,7 +72,7 @@ spec = do
                                     ]
                                 , beRequest = Just bugsnagRequest
                                     { brClientIp = Just "127.0.0.1"
-                                    , brHeaders = Just []
+                                    , brHeaders = Just (BugsnagRequestHeaders [])
                                     , brHttpMethod = Just "POST"
                                     , brUrl = Just "https://example.com"
                                     }
@@ -152,7 +152,7 @@ spec = do
                             "clientIp": "127.0.0.1",
                             "httpMethod": "POST",
                             "url": "https://example.com",
-                            "headers": []
+                            "headers": {}
                         },
                         "unhandled": false,
                         "metaData": {

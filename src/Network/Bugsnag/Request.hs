@@ -17,9 +17,9 @@ import qualified Data.ByteString.Char8 as C8
 import Data.CaseInsensitive (CI)
 import qualified Data.CaseInsensitive as CI
 import Data.IP
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
-import Data.Maybe (fromMaybe)
 import GHC.Generics
 import Network.HTTP.Types
 import Network.Socket

@@ -186,7 +186,7 @@ redactRequestHeaders headers event =
 --
 redactHeaders :: [HeaderName] -> BugsnagRequest -> BugsnagRequest
 redactHeaders headers request = request
-    { brHeaders = BugsnagRequestHeaders . map redactHeader . unBugsnagRequestHeaders <$> (brHeaders request)
+    { brHeaders = BugsnagRequestHeaders . map redactHeader . unBugsnagRequestHeaders <$> brHeaders request
     }
   where
     redactHeader :: Header -> Header
