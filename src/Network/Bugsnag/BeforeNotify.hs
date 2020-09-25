@@ -182,7 +182,7 @@ redactRequestHeaders headers event =
 -- >>> let headers = [("Authorization", "secret"), ("X-Foo", "Bar")]
 -- >>> let req = bugsnagRequest { brHeaders = Just $ BugsnagRequestHeaders headers }
 -- >>> brHeaders $ redactHeaders ["Authorization"] req
--- Just [("Authorization","<redacted>"),("X-Foo","Bar")]
+-- Just (BugsnagRequestHeaders {unBugsnagRequestHeaders = [("Authorization","<redacted>"),("X-Foo","Bar")]})
 --
 redactHeaders :: [HeaderName] -> BugsnagRequest -> BugsnagRequest
 redactHeaders headers request = request

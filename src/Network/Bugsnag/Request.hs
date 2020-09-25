@@ -27,6 +27,7 @@ import Network.Wai
 
 -- | Wrapper around Wai's 'RequestHeaders', used to give a custom ToJSON instance.
 newtype BugsnagRequestHeaders = BugsnagRequestHeaders {unBugsnagRequestHeaders :: RequestHeaders}
+    deriving (Show)
 
 instance ToJSON BugsnagRequestHeaders where
     toJSON (BugsnagRequestHeaders headers) =
