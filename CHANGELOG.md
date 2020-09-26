@@ -3,6 +3,17 @@
 - Fixed serialization of headers in BugsnagRequest. Previously, headers were a
   list of:
 
+  ```
+  [(CI ByteString, ByteString)]
+  ```
+  
+  so they serialized as an array, but Bugsnag only accepts objects for headers.
+  
+  To solve this, the newtype `BugsnagRequestHeaders` now wraps the headers and has
+  a correct ToJSON instance.
+  
+  This also allowed removing the orphan ToJSON instance for CI (from the
+  `case-insensitive` package).
 
 ## [v0.0.3.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.2...v0.0.3.0)
 
