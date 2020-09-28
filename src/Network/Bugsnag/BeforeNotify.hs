@@ -37,6 +37,7 @@ module Network.Bugsnag.BeforeNotify
 import Control.Exception (Exception, fromException)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import Network.Bugsnag.BugsnagRequestHeaders
 import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Device
 import Network.Bugsnag.Event
@@ -45,7 +46,7 @@ import Network.Bugsnag.Request
 import Network.Bugsnag.Session
 import Network.Bugsnag.Severity
 import Network.Bugsnag.StackFrame
-import Network.HTTP.Types.Header (Header, HeaderName)
+import Network.HTTP.Types.Header (HeaderName)
 import Network.Wai (Request)
 
 type BeforeNotify = BugsnagEvent -> BugsnagEvent
@@ -186,12 +187,8 @@ redactRequestHeaders headers event =
 --
 redactHeaders :: [HeaderName] -> BugsnagRequest -> BugsnagRequest
 redactHeaders headers request = request
-    { brHeaders = BugsnagRequestHeaders . map redactHeader . unBugsnagRequestHeaders <$> brHeaders request
+    { brHeaders = redactBugsnagRequestHeaders headers <$> brHeaders request
     }
-  where
-    redactHeader :: Header -> Header
-    redactHeader (k, _) | k `elem` headers = (k, "<redacted>")
-    redactHeader h = h
 
 -- | Set the Event's Request
 --
