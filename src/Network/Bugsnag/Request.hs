@@ -5,7 +5,6 @@ module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
     , bugsnagRequestFromWaiRequest
-    , BugsnagRequestHeaders(..)
     )
 where
 
@@ -14,29 +13,13 @@ import Data.Aeson
 import Data.Aeson.Ext
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
-import Data.CaseInsensitive (CI)
-import qualified Data.CaseInsensitive as CI
 import Data.IP
 import Data.Maybe (fromMaybe)
-import Data.Text (Text)
-import qualified Data.Text.Encoding as TE
 import GHC.Generics
+import Network.Bugsnag.BugsnagRequestHeaders
 import Network.HTTP.Types
 import Network.Socket
 import Network.Wai
-
--- | Wrapper around Wai's 'RequestHeaders', used to give a custom ToJSON instance.
-newtype BugsnagRequestHeaders = BugsnagRequestHeaders {unBugsnagRequestHeaders :: RequestHeaders}
-    deriving (Show)
-
-instance ToJSON BugsnagRequestHeaders where
-    toJSON (BugsnagRequestHeaders headers) =
-        object $ map headerToText headers
-
-        where
-            -- Headers are most commonly ASCII, which UTF-8 is a superset of, so UTF-8 is fine to decode
-            headerToText :: (CI ByteString, ByteString) -> (Text, Value)
-            headerToText (name, value) = (TE.decodeUtf8 $ CI.original name, String $ TE.decodeUtf8 value)
 
 -- | The web request being handled when the error was encountered
 data BugsnagRequest = BugsnagRequest
@@ -67,7 +50,7 @@ bugsnagRequestFromWaiRequest :: Request -> BugsnagRequest
 bugsnagRequestFromWaiRequest request = bugsnagRequest
     { brClientIp = requestRealIp request
         <|> Just (sockAddrToIp $ remoteHost request)
-    , brHeaders = Just $ BugsnagRequestHeaders $ requestHeaders request
+    , brHeaders = Just $ bugsnagRequestHeaders $ requestHeaders request
     , brHttpMethod = Just $ requestMethod request
     , brUrl = Just $ requestUrl request
     , brReferer = requestHeaderReferer request
