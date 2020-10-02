@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
 
@@ -34,6 +32,8 @@ module Network.Bugsnag.BeforeNotify
     , setInfoSeverity
     )
 where
+
+import Prelude
 
 import Control.Exception (Exception, fromException)
 import Data.Maybe (fromMaybe)

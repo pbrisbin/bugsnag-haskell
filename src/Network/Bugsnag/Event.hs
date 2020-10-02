@@ -1,9 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Types
@@ -38,22 +39,20 @@ data BugsnagEvent = BugsnagEvent
 
 instance ToJSON BugsnagEvent where
     -- | Explicit instance needed to send @'beException'@ as @exceptions@
-    toJSON BugsnagEvent {..} = object
-        $ "exceptions" .= [beException]
-        : concat
-            [ "breadcrumbs" .=? beBreadcrumbs
-            , "request" .=? beRequest
-            , "threads" .=? beThreads
-            , "context" .=? beContext
-            , "groupingHash" .=? beGroupingHash
-            , "unhandled" .=? beUnhandled
-            , "severity" .=? beSeverity
-            , "severityReason" .=? beSeverityReason
-            , "user" .=? beUser
-            , "app" .=? beApp
-            , "device" .=? beDevice
-            , "metaData" .=? beMetaData
-            ]
+    toJSON BugsnagEvent {..} = object $ "exceptions" .= [beException] : concat
+        [ "breadcrumbs" .=? beBreadcrumbs
+        , "request" .=? beRequest
+        , "threads" .=? beThreads
+        , "context" .=? beContext
+        , "groupingHash" .=? beGroupingHash
+        , "unhandled" .=? beUnhandled
+        , "severity" .=? beSeverity
+        , "severityReason" .=? beSeverityReason
+        , "user" .=? beUser
+        , "app" .=? beApp
+        , "device" .=? beDevice
+        , "metaData" .=? beMetaData
+        ]
       where
         -- For implementing "omit Nothing fields"
         (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]

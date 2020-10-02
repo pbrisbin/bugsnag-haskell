@@ -1,8 +1,10 @@
-{-# LANGUAGE DeriveGeneric #-}
 module Network.Bugsnag.Thread
     ( BugsnagThread(..)
     , bugsnagThread
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -15,15 +17,12 @@ data BugsnagThread = BugsnagThread
     , btName :: Maybe Text
     , btStacktrace :: Maybe [BugsnagStackFrame]
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagThread where
     toJSON = genericToJSON $ bsAesonOptions "bt"
     toEncoding = genericToEncoding $ bsAesonOptions "bt"
 
 bugsnagThread :: BugsnagThread
-bugsnagThread = BugsnagThread
-    { btId = Nothing
-    , btName = Nothing
-    , btStacktrace = Nothing
-    }
+bugsnagThread =
+    BugsnagThread { btId = Nothing, btName = Nothing, btStacktrace = Nothing }

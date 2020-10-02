@@ -1,12 +1,13 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.Severity
     ( BugsnagSeverity(..)
     , BugsnagSeverityReason(..)
     , BugsnagSeverityReasonAttributes(..)
     , bugsnagSeverityReasonAttributes
     , BugsnagSeverityReasonType(..)
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -17,7 +18,7 @@ data BugsnagSeverity
     = ErrorSeverity
     | WarningSeverity
     | InfoSeverity
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagSeverity where
     toJSON = genericToJSON $ bsAesonOptions "Severity"
@@ -39,7 +40,7 @@ data BugsnagSeverityReasonType
     | HandledErrorReasonType
     | HandledPanicReasonType
     | UserContextSetSeverityReasonType
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagSeverityReasonType where
     toJSON = genericToJSON $ bsAesonOptions "ReasonType"
@@ -52,7 +53,7 @@ data BugsnagSeverityReasonAttributes = BugsnagSeverityReasonAttributes
     , bsraViolationType :: Maybe Text
     , bsraErrorClass :: Maybe Text
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagSeverityReasonAttributes where
     toJSON = genericToJSON $ bsAesonOptions "bsra"
@@ -62,7 +63,7 @@ data BugsnagSeverityReason = BugsnagSeverityReason
     { bsrType :: BugsnagSeverityReasonType
     , bsrAttributes :: BugsnagSeverityReasonAttributes
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagSeverityReason where
     toJSON = genericToJSON $ bsAesonOptions "bsr"

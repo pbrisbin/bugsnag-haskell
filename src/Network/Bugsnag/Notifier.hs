@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 -- |
 --
 -- Static values about this notifier itself.
@@ -7,7 +5,10 @@
 module Network.Bugsnag.Notifier
     ( BugsnagNotifier
     , bugsnagNotifier
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -22,7 +23,7 @@ data BugsnagNotifier = BugsnagNotifier
     , bnVersion :: Version
     , bnUrl :: Text
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagNotifier where
     toJSON = genericToJSON $ bsAesonOptions "bn"

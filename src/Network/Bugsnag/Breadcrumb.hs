@@ -1,10 +1,11 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.Breadcrumb
     ( BugsnagBreadcrumbType(..)
     , BugsnagBreadcrumb(..)
     , bugsnagBreadcrumb
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -21,7 +22,7 @@ data BugsnagBreadcrumbType
     | StateBreadcrumb
     | ErrorBreadcrumb
     | ManualBreadcrumb
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagBreadcrumbType where
     toJSON = genericToJSON $ bsAesonOptions "Breadcrumb"
@@ -33,17 +34,14 @@ data BugsnagBreadcrumb = BugsnagBreadcrumb
     , bbType :: BugsnagBreadcrumbType
     , bbMetaData :: Maybe Value
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagBreadcrumb where
     toJSON = genericToJSON $ bsAesonOptions "bb"
     toEncoding = genericToEncoding $ bsAesonOptions "bb"
 
 bugsnagBreadcrumb
-    :: UTCTime
-    -> Text
-    -> BugsnagBreadcrumbType
-    -> BugsnagBreadcrumb
+    :: UTCTime -> Text -> BugsnagBreadcrumbType -> BugsnagBreadcrumb
 bugsnagBreadcrumb timestamp name typ = BugsnagBreadcrumb
     { bbTimestamp = timestamp
     , bbName = name

@@ -1,10 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.BugsnagRequestHeaders
     ( BugsnagRequestHeaders
     , bugsnagRequestHeaders
     , redactBugsnagRequestHeaders
     )
 where
+
+import Prelude
 
 import Data.Aeson
 import Data.ByteString (ByteString)
@@ -17,14 +18,14 @@ import Network.HTTP.Types
 newtype BugsnagRequestHeaders = BugsnagRequestHeaders
     { unBugsnagRequestHeaders :: RequestHeaders
     }
-    deriving (Show, Eq, Ord)
+    deriving stock (Show, Eq, Ord)
 
 instance ToJSON BugsnagRequestHeaders where
-    toJSON = object . map headerToPair . unBugsnagRequestHeaders
-    toEncoding = pairs . foldMap headerToPair . unBugsnagRequestHeaders
+    toJSON = object . map headerToKeyValue . unBugsnagRequestHeaders
+    toEncoding = pairs . foldMap headerToKeyValue . unBugsnagRequestHeaders
 
-headerToPair :: KeyValue kv => (CI ByteString, ByteString) -> kv
-headerToPair (name, value) =
+headerToKeyValue :: KeyValue kv => (CI ByteString, ByteString) -> kv
+headerToKeyValue (name, value) =
     TE.decodeUtf8 (CI.original name) .= String (TE.decodeUtf8 value)
 
 -- | Create 'BugsnagRequestHeaders'

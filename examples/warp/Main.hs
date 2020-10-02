@@ -1,5 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
+module Main
+    ( main
+    )
+where
+
+import Prelude
 
 import Control.Concurrent (forkIO)
 import Control.Exception (SomeException)
@@ -15,9 +19,9 @@ warpSettings :: IO Settings
 warpSettings = do
     settings <- newBugsnagSettings "BUGSNAG_API_KEY"
 
-    pure
-        $ setPort 3000
-        $ setOnException (bugsnagOnException settings) defaultSettings
+    pure $ setPort 3000 $ setOnException
+        (bugsnagOnException settings)
+        defaultSettings
 
 -- N.B. This may some day be provided by a bugsnag-warp package
 bugsnagOnException :: BugsnagSettings -> Maybe Request -> SomeException -> IO ()

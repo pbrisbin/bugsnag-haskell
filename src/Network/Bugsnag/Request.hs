@@ -1,12 +1,13 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
+
 module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
     , bugsnagRequestFromWaiRequest
     )
 where
+
+import Prelude
 
 import Control.Applicative ((<|>))
 import Data.Aeson
@@ -29,7 +30,7 @@ data BugsnagRequest = BugsnagRequest
     , brUrl :: Maybe ByteString
     , brReferer :: Maybe ByteString
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagRequest where
     toJSON = genericToJSON $ bsAesonOptions "br"
@@ -88,8 +89,13 @@ requestUrl request =
         <> rawPathInfo request
         <> rawQueryString request
   where
+    clientProtocol :: ByteString
     clientProtocol = if isSecure request then "https" else "http"
+
+    requestHost :: Request -> ByteString
     requestHost = fromMaybe "<unknown>" . requestHeaderHost
+
+    requestProtocol :: ByteString
     requestProtocol =
         fromMaybe clientProtocol $ lookup "X-Forwarded-Proto" $ requestHeaders
             request

@@ -1,17 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+
 module Network.Bugsnag.ReportSpec
     ( spec
     )
 where
 
-import Test.Hspec
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.QQ (aesonQQ)
 import Data.Text (Text)
 import Data.Time (getCurrentTime)
 import Network.Bugsnag
+import Test.Hspec
 
 spec :: Spec
 spec = do

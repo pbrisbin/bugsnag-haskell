@@ -1,8 +1,10 @@
-{-# LANGUAGE DeriveGeneric #-}
 module Network.Bugsnag.App
     ( BugsnagApp(..)
     , bugsnagApp
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -22,7 +24,7 @@ data BugsnagApp = BugsnagApp
     , baDurationInForeground :: Maybe Natural
     , baInForeground :: Maybe Bool
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagApp where
     toJSON = genericToJSON $ bsAesonOptions "ba"

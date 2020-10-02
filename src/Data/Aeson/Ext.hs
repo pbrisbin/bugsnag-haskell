@@ -1,11 +1,15 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+
 -- |
 --
 -- Orphan instances and shared @'Generic'@ JSON options.
 --
 module Data.Aeson.Ext
     ( bsAesonOptions
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.ByteString (ByteString)
@@ -44,4 +48,4 @@ dropSuffix prefix = reverse . dropPrefix (reverse prefix) . reverse
 
 lowerFirst :: String -> String
 lowerFirst [] = []
-lowerFirst (x:rest) = toLower x : rest
+lowerFirst (x : rest) = toLower x : rest

@@ -1,8 +1,10 @@
-{-# LANGUAGE DeriveGeneric #-}
 module Network.Bugsnag.Report
     ( BugsnagReport(..)
     , bugsnagReport
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -14,14 +16,12 @@ data BugsnagReport = BugsnagReport
     { brNotifier :: BugsnagNotifier
     , brEvents :: [BugsnagEvent]
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagReport where
     toJSON = genericToJSON $ bsAesonOptions "br"
     toEncoding = genericToEncoding $ bsAesonOptions "br"
 
 bugsnagReport :: [BugsnagEvent] -> BugsnagReport
-bugsnagReport events = BugsnagReport
-    { brNotifier = bugsnagNotifier
-    , brEvents = events
-    }
+bugsnagReport events =
+    BugsnagReport { brNotifier = bugsnagNotifier, brEvents = events }
