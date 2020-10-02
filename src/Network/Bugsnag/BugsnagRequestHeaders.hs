@@ -2,7 +2,6 @@
 module Network.Bugsnag.BugsnagRequestHeaders
     ( BugsnagRequestHeaders
     , bugsnagRequestHeaders
-    , bugsnagRequestHeadersToHeaders
     , redactBugsnagRequestHeaders
     )
 where
@@ -31,10 +30,6 @@ instance ToJSON BugsnagRequestHeaders where
 -- | Create 'BugsnagRequestHeaders'
 bugsnagRequestHeaders :: RequestHeaders -> BugsnagRequestHeaders
 bugsnagRequestHeaders = BugsnagRequestHeaders
-
--- | Get 'RequestHeaders' from 'BugsnagRequestHeaders'
-bugsnagRequestHeadersToHeaders :: BugsnagRequestHeaders -> RequestHeaders
-bugsnagRequestHeadersToHeaders = unBugsnagRequestHeaders
 
 -- | For headers with the given names, replace their value with "<redacted>".
 --
