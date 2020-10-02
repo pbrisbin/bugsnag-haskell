@@ -1,13 +1,16 @@
 {-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
+
 module Network.Bugsnag.CodeIndex
     ( CodeIndex
     , buildCodeIndex
     , findSourceRange
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.List (genericLength)
 import Data.Map.Strict (Map)
@@ -22,8 +25,9 @@ import Numeric.Natural (Natural)
 import System.FilePath.Glob (glob)
 
 newtype CodeIndex = CodeIndex
-    { unCodeIndex :: Map FilePath FileIndex }
-    deriving (Lift, Show)
+    { unCodeIndex :: Map FilePath FileIndex
+    }
+    deriving stock (Lift, Show)
 
 -- | Index code for attaching lines of source to 'StackFrame's
 --
@@ -54,7 +58,7 @@ data FileIndex = FileIndex
     { fiSourceLines :: Map Natural Text
     , fiLastLine :: Natural
     }
-    deriving (Lift, Show)
+    deriving stock (Lift, Show)
 
 buildFileIndex :: FilePath -> IO FileIndex
 buildFileIndex path = do

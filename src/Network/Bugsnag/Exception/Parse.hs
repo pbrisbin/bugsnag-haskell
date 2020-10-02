@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 -- |
 --
 -- Parse error messages for @'HasCallStack'@ information.
@@ -7,7 +6,10 @@ module Network.Bugsnag.Exception.Parse
     ( MessageWithStackFrames(..)
     , parseErrorCall
     , parseStringException
-    ) where
+    )
+where
+
+import Prelude
 
 import Control.Exception (ErrorCall, Exception, SomeException)
 import Control.Monad (void)

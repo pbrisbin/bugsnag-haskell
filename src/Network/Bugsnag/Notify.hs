@@ -1,7 +1,10 @@
 module Network.Bugsnag.Notify
     ( notifyBugsnag
     , notifyBugsnagWith
-    ) where
+    )
+where
+
+import Prelude
 
 import Control.Exception (SomeException)
 import Control.Monad (when)

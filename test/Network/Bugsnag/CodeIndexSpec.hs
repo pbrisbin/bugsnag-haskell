@@ -1,12 +1,15 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
+
 module Network.Bugsnag.CodeIndexSpec
     ( spec
-    ) where
+    )
+where
 
-import Test.Hspec
+import Prelude
 
 import Network.Bugsnag.CodeIndex
+import Test.Hspec
 
 spec :: Spec
 spec = do

@@ -1,12 +1,13 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# OPTIONS_GHC -fno-warn-missing-deriving-strategies #-}
+{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 {-# OPTIONS_GHC -fno-warn-unused-top-binds #-}
+
 module Main (main) where
+
+import Prelude
 
 import Control.Exception (SomeException, fromException, toException)
 import Control.Monad (unless)

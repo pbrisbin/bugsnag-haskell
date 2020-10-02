@@ -1,8 +1,9 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.ReleaseStage
     ( BugsnagReleaseStage(..)
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Text (Text)
@@ -12,7 +13,7 @@ data BugsnagReleaseStage
     | StagingReleaseStage
     | ProductionReleaseStage
     | CustomReleaseStage Text
-    deriving (Eq, Show)
+    deriving stock (Eq, Show)
 
 instance FromJSON BugsnagReleaseStage where
     parseJSON = withText "ReleaseStage" $ \case

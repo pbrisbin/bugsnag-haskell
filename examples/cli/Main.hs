@@ -1,5 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
+module Main
+    ( main
+    )
+where
+
+import Prelude
 
 import Control.Exception (catch)
 import Network.Bugsnag

@@ -1,4 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 -- |
 --
 -- <https://docs.bugsnag.com/api/error-reporting/#application-settings>
@@ -9,7 +8,10 @@ module Network.Bugsnag.Settings
     , newBugsnagSettings
     , bugsnagSettings
     , bugsnagShouldNotify
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson (FromJSON)
 import Data.String
@@ -26,7 +28,7 @@ import Network.HTTP.Client.TLS
 newtype BugsnagApiKey = BugsnagApiKey
     { unBugsnagApiKey :: Text
     }
-    deriving (FromJSON, IsString)
+    deriving newtype (FromJSON, IsString)
 
 instance Show BugsnagApiKey where
     show = T.unpack . unBugsnagApiKey

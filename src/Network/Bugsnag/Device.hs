@@ -1,12 +1,12 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Network.Bugsnag.Device
     ( Bytes(..)
     , BugsnagDevice(..)
     , bugsnagDevice
     , bugsnagDeviceFromWaiRequest
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -20,7 +20,8 @@ import Numeric.Natural
 import Text.Read (readMaybe)
 import Web.UAParser
 
-newtype Bytes = Bytes Natural deriving ToJSON
+newtype Bytes = Bytes Natural
+    deriving newtype ToJSON
 
 data BugsnagDevice = BugsnagDevice
     { bdHostname :: Maybe Text
@@ -38,7 +39,7 @@ data BugsnagDevice = BugsnagDevice
     , bdJailBroken :: Maybe Bool
     , bdOrientation :: Maybe Text
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagDevice where
     toJSON = genericToJSON $ bsAesonOptions "bd"

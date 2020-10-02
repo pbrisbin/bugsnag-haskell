@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 -- |
 --
 -- Report an error to Bugsnag
@@ -10,7 +9,10 @@
 --
 module Network.Bugsnag.Reporter
     ( reportError
-    ) where
+    )
+where
+
+import Prelude
 
 import Control.Monad (void)
 import Data.Text.Encoding (encodeUtf8)
@@ -25,7 +27,7 @@ reportError manager apiKey report = do
     void $ httpNoBody request manager
   where
     key = encodeUtf8 $ unBugsnagApiKey apiKey
-    setupRequest
-        = setRequestBodyJSON report
-        . setRequestHeader "Bugsnag-Api-Key" [key]
-        . setRequestHeader "Bugsnag-Payload-Version" ["4"]
+    setupRequest =
+        setRequestBodyJSON report
+            . setRequestHeader "Bugsnag-Api-Key" [key]
+            . setRequestHeader "Bugsnag-Payload-Version" ["4"]

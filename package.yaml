@@ -18,7 +18,36 @@ extra-doc-files:
 extra-source-files:
   - test/fixtures/**/*
 
-ghc-options: -Wall
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+
+ghc-options: -Weverything
+  -Wno-safe
+  -Wno-unsafe
+  -Wno-missing-import-lists
 
 library:
   source-dirs: src
@@ -101,9 +130,10 @@ tests:
   doctest:
     main: DocTest.hs
     source-dirs: .
-    ghc-options: -Wall
     dependencies:
+      - aeson
       - doctest
+      - yaml
 
 flags:
   examples:

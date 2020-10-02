@@ -1,14 +1,16 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module Network.Bugsnag.StackFrame
     ( BugsnagCode(..)
     , attachBugsnagCode
     , BugsnagStackFrame(..)
     , bugsnagStackFrame
     , currentStackFrame
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -24,7 +26,7 @@ import Numeric.Natural (Natural)
 -- Pairs of @(line-number, line-of-code)@, up to 3 on either side.
 --
 newtype BugsnagCode = BugsnagCode [(Natural, Text)]
-    deriving (Show, ToJSON)
+    deriving newtype (Show, ToJSON)
 
 -- | Attempt to attach a @'BugsnagCode'@ to a @'BugsnagStackFrame'@
 --
@@ -50,7 +52,7 @@ data BugsnagStackFrame = BugsnagStackFrame
     , bsfInProject :: Maybe Bool
     , bsfCode :: Maybe BugsnagCode
     }
-    deriving (Generic, Show)
+    deriving stock (Generic, Show)
 
 instance ToJSON BugsnagStackFrame where
     toJSON = genericToJSON $ bsAesonOptions "bsf"

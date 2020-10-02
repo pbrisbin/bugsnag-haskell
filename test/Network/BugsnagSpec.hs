@@ -1,15 +1,15 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module Network.BugsnagSpec
     ( spec
-    ) where
+    )
+where
 
-import Test.Hspec
+import Prelude
 
 import Control.Exception
 import Network.Bugsnag
+import Test.Hspec
 import UnliftIO.Exception (throwString)
 
 brokenFunctionIO :: IO a

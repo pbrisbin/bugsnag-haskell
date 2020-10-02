@@ -1,4 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
+
 -- |
 --
 -- <https://docs.bugsnag.com/api/error-reporting/#per-session-settings>
@@ -6,7 +8,10 @@
 module Network.Bugsnag.Session
     ( BugsnagSession(..)
     , bugsnagSession
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -19,7 +24,7 @@ data BugsnagSession = BugsnagSession
     , bsContext :: Maybe Text
     , bsMetaData :: Maybe Value
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagSession where
     toJSON = genericToJSON $ bsAesonOptions "bs"

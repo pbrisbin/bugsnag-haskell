@@ -1,8 +1,10 @@
-{-# LANGUAGE DeriveGeneric #-}
 module Network.Bugsnag.User
     ( BugsnagUser(..)
     , bugsnagUser
-    ) where
+    )
+where
+
+import Prelude
 
 import Data.Aeson
 import Data.Aeson.Ext
@@ -14,7 +16,7 @@ data BugsnagUser = BugsnagUser
     , buEmailAddress :: Maybe Text
     , buUsername :: Maybe Text
     }
-    deriving Generic
+    deriving stock Generic
 
 instance ToJSON BugsnagUser where
     toJSON = genericToJSON $ bsAesonOptions "bu"

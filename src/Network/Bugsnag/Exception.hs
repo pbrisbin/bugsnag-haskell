@@ -1,15 +1,13 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
+
 module Network.Bugsnag.Exception
     ( BugsnagException(..)
     , bugsnagException
     , bugsnagExceptionFromSomeException
     )
 where
+
+import Prelude
 
 import Control.Exception
 import Data.Aeson
@@ -36,7 +34,7 @@ data BugsnagException = BugsnagException
     , beStacktrace :: [BugsnagStackFrame]
     , beOriginalException :: Maybe SomeException
     }
-    deriving (Generic, Show)
+    deriving stock (Generic, Show)
 
 instance ToJSON BugsnagException where
     toJSON BugsnagException {..} = object
