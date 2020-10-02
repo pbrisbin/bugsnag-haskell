@@ -14,7 +14,7 @@ import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
 import Network.HTTP.Types
 
--- | Wrapper around Wai's 'RequestHeaders', used to give a custom ToJSON instance.
+-- | Wrapper around Wai's 'RequestHeaders', for custom 'ToJSON' instance
 newtype BugsnagRequestHeaders = BugsnagRequestHeaders
     { unBugsnagRequestHeaders :: RequestHeaders
     }
