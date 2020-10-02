@@ -10,7 +10,6 @@ import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import qualified Data.CaseInsensitive as CI
-import Data.Text (Text)
 import qualified Data.Text.Encoding as TE
 import Network.HTTP.Types
 
@@ -21,11 +20,12 @@ newtype BugsnagRequestHeaders = BugsnagRequestHeaders
     deriving (Show, Eq, Ord)
 
 instance ToJSON BugsnagRequestHeaders where
-    toJSON (BugsnagRequestHeaders headers) = object $ map headerToText headers
-      where
-        headerToText :: (CI ByteString, ByteString) -> (Text, Value)
-        headerToText (name, value) =
-            (TE.decodeUtf8 $ CI.original name, String $ TE.decodeUtf8 value)
+    toJSON = object . map headerToPair . unBugsnagRequestHeaders
+    toEncoding = pairs . foldMap headerToPair . unBugsnagRequestHeaders
+
+headerToPair :: KeyValue kv => (CI ByteString, ByteString) -> kv
+headerToPair (name, value) =
+    TE.decodeUtf8 (CI.original name) .= String (TE.decodeUtf8 value)
 
 -- | Create 'BugsnagRequestHeaders'
 bugsnagRequestHeaders :: RequestHeaders -> BugsnagRequestHeaders
