@@ -32,7 +32,8 @@ module Network.Bugsnag.BeforeNotify
     , setWarningSeverity
     , setErrorSeverity
     , setInfoSeverity
-    ) where
+    )
+where
 
 import Control.Exception (Exception, fromException)
 import Data.Maybe (fromMaybe)
