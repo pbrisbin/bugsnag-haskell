@@ -16,7 +16,9 @@ import qualified Data.Text.Encoding as TE
 import Network.HTTP.Types
 
 -- | Wrapper around Wai's 'RequestHeaders', used to give a custom ToJSON instance.
-newtype BugsnagRequestHeaders = BugsnagRequestHeaders {unBugsnagRequestHeaders :: RequestHeaders}
+newtype BugsnagRequestHeaders = BugsnagRequestHeaders
+    { unBugsnagRequestHeaders :: RequestHeaders
+    }
     deriving (Show, Eq, Ord)
 
 instance ToJSON BugsnagRequestHeaders where
