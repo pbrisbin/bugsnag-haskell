@@ -1,9 +1,12 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -fno-warn-missing-deriving-strategies #-}
 {-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 {-# OPTIONS_GHC -fno-warn-unused-top-binds #-}
+
+#if __GLASGOW_HASKELL__ >= 808
+{-# OPTIONS_GHC -fno-warn-missing-deriving-strategies #-}
+#endif
 
 module Main (main) where
 
