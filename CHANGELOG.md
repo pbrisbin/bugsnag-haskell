@@ -6,12 +6,12 @@
   ```
   [(CI ByteString, ByteString)]
   ```
-  
+
   so they serialized as an array, but Bugsnag only accepts objects for headers.
-  
-  To solve this, the newtype `BugsnagRequestHeaders` now wraps the headers and has
-  a correct ToJSON instance.
-  
+
+  To solve this, the newtype `BugsnagRequestHeaders` now wraps the headers and
+  has a correct ToJSON instance.
+
   This also allowed removing the orphan ToJSON instance for CI (from the
   `case-insensitive` package).
 

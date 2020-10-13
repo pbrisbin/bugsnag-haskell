@@ -70,4 +70,3 @@ createApp settings event = event
         , baReleaseStage = Just $ bsReleaseStage settings
         }
     }
-
