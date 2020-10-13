@@ -44,6 +44,9 @@ workflows:
       - stack-build/build-test-nightly:
           <<: *defaults
           name: "nightly"
+          stack-arguments: >-
+            --flag bugsnag-haskell:examples
+            --ghc-options="-Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module"
 
   nightly:
     triggers:
@@ -57,3 +60,6 @@ workflows:
       - stack-build/build-test-nightly:
           <<: *defaults
           name: "nightly"
+          stack-arguments: >-
+            --flag bugsnag-haskell:examples
+            --ghc-options="-Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module"
