@@ -11,7 +11,10 @@ restylers_version: dev
 restylers:
   - hlint
   - stylish-haskell
-  - brittany
+  - brittany:
+      include:
+        - "**/*.hs"
+        - "!examples/yesod/Main.hs" # CCP error
   - prettier:
       include:
         - "**/*.yaml"
