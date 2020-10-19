@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.1...master)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.0...master)
+
+None.
+
+## [v0.0.4.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.1...v0.0.4.0)
 
 - Fixed serialization of headers in BugsnagRequest
 

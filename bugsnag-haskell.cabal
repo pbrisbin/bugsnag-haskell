@@ -4,10 +4,10 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4ef3dc93720de80f2b7eae9e5a61a2baf292512e30d68bb760d19a0fadb1d01b
+-- hash: 29c38ed61343fc8899e7a70afac5583415798394fe6c7c1a6fbbf30575f59cd9
 
 name:           bugsnag-haskell
-version:        0.0.3.1
+version:        0.0.4.0
 synopsis:       Bugsnag error reporter for Haskell
 description:    Please see README.md
 category:       Web
