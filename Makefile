@@ -58,7 +58,7 @@ test.coverage:
 .PHONY: lint
 lint:
 	stack exec hlint src test
-	stack exec weeder .
+	#stack exec weeder .
 
 .PHONY: coverage.upload
 coverage.upload:
