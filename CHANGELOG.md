@@ -1,4 +1,4 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.0...master)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.1...master)
 
 - Fixed serialization of headers in BugsnagRequest. Previously, headers were a
   list of:
@@ -14,6 +14,10 @@
 
   This also allowed removing the orphan ToJSON instance for CI (from the
   `case-insensitive` package).
+
+## [v0.0.3.1](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.0...v0.0.3.1)
+
+- Tag SomeException with the underlying exception class
 
 ## [v0.0.3.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.2.2...v0.0.3.0)
 
