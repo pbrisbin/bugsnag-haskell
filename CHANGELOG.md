@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.0...master)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...master)
 
 None.
+
+## [v0.0.4.1](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.0...v0.0.4.1)
+
+- Fix invalid URLs in Request tab (missing leading `/`s in paths)
 
 ## [v0.0.4.0](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.3.1...v0.0.4.0)
 
