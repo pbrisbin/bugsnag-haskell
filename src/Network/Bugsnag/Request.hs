@@ -86,7 +86,7 @@ requestUrl request =
     requestProtocol
         <> "://"
         <> requestHost request
-        <> rawPathInfo request
+        <> prependIfNecessary "/" (rawPathInfo request)
         <> rawQueryString request
   where
     clientProtocol :: ByteString
@@ -99,6 +99,10 @@ requestUrl request =
     requestProtocol =
         fromMaybe clientProtocol $ lookup "X-Forwarded-Proto" $ requestHeaders
             request
+
+    prependIfNecessary c x
+        | c `C8.isPrefixOf` x = x
+        | otherwise = c <> x
 
 sockAddrToIp :: SockAddr -> ByteString
 sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
