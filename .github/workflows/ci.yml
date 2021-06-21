@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        stack-yaml:
+          - stack.yaml
+          - stack-lts-15.1.yaml
+          - stack-lts-14.16.yaml
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: freckle/stack-cache-action@main
+      with:
+        stack-yaml: ${{ matrix.stack-yaml }}
+    - run:
+        curl --output .hlint.yaml https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
+    - uses: freckle/stack-action@main
+      with:
+        stack-yaml: ${{ matrix.stack-yaml }}
+        stack-arguments: --flag bugsnag-haskell:examples
+
+# TODO nightly
+#   --flag bugsnag-haskell:examples
+#   --ghc-options="-Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module"
+#
+# TODO coverage
+# stack-arguments: --coverage --flag bugsnag-haskell:examples
+# after-dependencies: [{run: make setup.coverage}]
+# after-test:
+#   - run: |
+#       if [ -z "$CC_TEST_REPORTER_ID" ]; then
+#         echo "$CC_TEST_REPORTER_ID empty, probably a Fork PR" >&2
+#         echo "Skipping coverage upload" >&2
+#         exit 0
+#       fi
+#       make coverage.upload
