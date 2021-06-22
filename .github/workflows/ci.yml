@@ -29,10 +29,6 @@ jobs:
         stack-yaml: ${{ matrix.stack-yaml }}
         stack-arguments: --flag bugsnag-haskell:examples
 
-# TODO nightly
-#   --flag bugsnag-haskell:examples
-#   --ghc-options="-Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module"
-#
 # TODO coverage
 # stack-arguments: --coverage --flag bugsnag-haskell:examples
 # after-dependencies: [{run: make setup.coverage}]
