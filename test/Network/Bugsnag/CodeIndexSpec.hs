@@ -3,8 +3,7 @@
 
 module Network.Bugsnag.CodeIndexSpec
     ( spec
-    )
-where
+    ) where
 
 import Prelude
 

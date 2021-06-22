@@ -2,8 +2,7 @@
 
 module Network.BugsnagSpec
     ( spec
-    )
-where
+    ) where
 
 import Prelude
 
@@ -51,8 +50,11 @@ spec = do
 
             let frame = head $ beStacktrace ex
             bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-            bsfLineNumber frame `shouldBe` 19
-            bsfColumnNumber frame `shouldBe` Just 8
+            bsfLineNumber frame `shouldBe` 18
+            -- different versions of GHC disagree, apparently, if the column is
+            -- the opening of the splice (7) or the first character into the
+            -- splice (8)
+            --bsfColumnNumber frame `shouldBe` Just 8
             bsfMethod frame `shouldBe` "brokenFunctionIO"
             bsfInProject frame `shouldBe` Just True
 
@@ -67,7 +69,7 @@ spec = do
 
                 let frame = head $ beStacktrace ex
                 bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-                bsfLineNumber frame `shouldBe` 26
+                bsfLineNumber frame `shouldBe` 25
                 bsfColumnNumber frame `shouldBe` Just 15
                 bsfMethod frame `shouldBe` "error"
 
@@ -84,7 +86,7 @@ spec = do
 
                 let frame = head $ beStacktrace ex
                 bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-                bsfLineNumber frame `shouldBe` 33
+                bsfLineNumber frame `shouldBe` 32
                 bsfColumnNumber frame `shouldBe` Just 16
                 bsfMethod frame `shouldBe` "throwString"
 
@@ -102,7 +104,7 @@ spec = do
 
                 let frame = head $ beStacktrace ex
                 bsfFile frame `shouldBe` "test/Network/BugsnagSpec.hs"
-                bsfLineNumber frame `shouldBe` 40
+                bsfLineNumber frame `shouldBe` 39
                 bsfColumnNumber frame `shouldBe` Just 17
                 bsfMethod frame `shouldBe` "throwString"
 

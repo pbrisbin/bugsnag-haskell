@@ -1,8 +1,7 @@
 module Network.Bugsnag.Event
     ( BugsnagEvent(..)
     , bugsnagEvent
-    )
-where
+    ) where
 
 import Prelude
 

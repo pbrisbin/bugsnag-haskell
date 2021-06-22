@@ -6,8 +6,7 @@ module Network.Bugsnag.Exception.Parse
     ( MessageWithStackFrames(..)
     , parseErrorCall
     , parseStringException
-    )
-where
+    ) where
 
 import Prelude
 

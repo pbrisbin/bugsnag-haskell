@@ -3,8 +3,7 @@ module Network.Bugsnag.Device
     , BugsnagDevice(..)
     , bugsnagDevice
     , bugsnagDeviceFromWaiRequest
-    )
-where
+    ) where
 
 import Prelude
 

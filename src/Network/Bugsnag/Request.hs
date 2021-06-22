@@ -4,8 +4,7 @@ module Network.Bugsnag.Request
     ( BugsnagRequest(..)
     , bugsnagRequest
     , bugsnagRequestFromWaiRequest
-    )
-where
+    ) where
 
 import Prelude
 

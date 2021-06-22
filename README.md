@@ -1,5 +1,8 @@
 # Bugsnag error reporter for Haskell
 
+[![CI](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml)
+[![Stackage nightly](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml)
+
 Catch and report exceptions in your Haskell code.
 
 ## Configuration
@@ -8,7 +11,8 @@ Catch and report exceptions in your Haskell code.
 settings <- newBugsnagSettings "BUGSNAG_API_KEY"
 ```
 
-See [`Network.Bugsnag.Settings`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Settings.html).
+See
+[`Network.Bugsnag.Settings`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Settings.html).
 
 ## Reporting an Error
 
@@ -19,7 +23,8 @@ notifyBugsnag settings $ toException
         ]
 ```
 
-See [`Network.Bugsnag.Notify`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Notify.html).
+See
+[`Network.Bugsnag.Notify`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Notify.html).
 
 ## Throwing & Catching
 

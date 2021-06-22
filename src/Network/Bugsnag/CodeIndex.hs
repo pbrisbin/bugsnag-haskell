@@ -7,8 +7,7 @@ module Network.Bugsnag.CodeIndex
     ( CodeIndex
     , buildCodeIndex
     , findSourceRange
-    )
-where
+    ) where
 
 import Prelude
 

@@ -9,8 +9,7 @@
 --
 module Network.Bugsnag.Reporter
     ( reportError
-    )
-where
+    ) where
 
 import Prelude
 

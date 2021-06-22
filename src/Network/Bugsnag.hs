@@ -12,8 +12,7 @@
 --
 module Network.Bugsnag
     ( module X
-    )
-where
+    ) where
 
 import Network.Bugsnag.App as X
 import Network.Bugsnag.BeforeNotify as X
