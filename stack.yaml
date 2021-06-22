@@ -1,1 +1,12 @@
 resolver: lts-18.0
+
+ghc-options:
+  "$locals": >
+    -fwrite-ide-info
+    -Weverything
+    -Wno-safe
+    -Wno-unsafe
+    -Wno-missing-import-lists
+    -Wno-missing-safe-haskell-mode
+    -Wno-prepositive-qualified-module
+    -Wno-all-missed-specialisations
