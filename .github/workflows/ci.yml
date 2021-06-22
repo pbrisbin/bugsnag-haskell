@@ -28,6 +28,7 @@ jobs:
       with:
         stack-yaml: ${{ matrix.stack-yaml }}
         stack-arguments: --flag bugsnag-haskell:examples
+        weeder: false
 
 # TODO coverage
 # stack-arguments: --coverage --flag bugsnag-haskell:examples
