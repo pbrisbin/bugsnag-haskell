@@ -1,8 +1,7 @@
 module Network.Bugsnag.Report
     ( BugsnagReport(..)
     , bugsnagReport
-    )
-where
+    ) where
 
 import Prelude
 

@@ -5,8 +5,7 @@
 module Network.Bugsnag.Notifier
     ( BugsnagNotifier
     , bugsnagNotifier
-    )
-where
+    ) where
 
 import Prelude
 

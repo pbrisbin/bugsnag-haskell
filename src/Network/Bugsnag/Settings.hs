@@ -8,8 +8,7 @@ module Network.Bugsnag.Settings
     , newBugsnagSettings
     , bugsnagSettings
     , bugsnagShouldNotify
-    )
-where
+    ) where
 
 import Prelude
 

@@ -1,7 +1,6 @@
 module Network.Bugsnag.ReleaseStage
     ( BugsnagReleaseStage(..)
-    )
-where
+    ) where
 
 import Prelude
 

@@ -30,8 +30,7 @@ module Network.Bugsnag.BeforeNotify
     , setWarningSeverity
     , setErrorSeverity
     , setInfoSeverity
-    )
-where
+    ) where
 
 import Prelude
 

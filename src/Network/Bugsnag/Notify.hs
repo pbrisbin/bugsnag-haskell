@@ -1,8 +1,7 @@
 module Network.Bugsnag.Notify
     ( notifyBugsnag
     , notifyBugsnagWith
-    )
-where
+    ) where
 
 import Prelude
 

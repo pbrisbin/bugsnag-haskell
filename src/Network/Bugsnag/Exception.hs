@@ -4,8 +4,7 @@ module Network.Bugsnag.Exception
     ( BugsnagException(..)
     , bugsnagException
     , bugsnagExceptionFromSomeException
-    )
-where
+    ) where
 
 import Prelude
 
@@ -26,7 +25,7 @@ import Network.Bugsnag.StackFrame
 -- something better than @'SomeException'@. This is a shameless copy of the
 -- @'Handler'@ type (and general approach) used by @'catches'@.
 --
-data Caster = forall e. Exception e => Caster (e -> BugsnagException)
+data Caster = forall e . Exception e => Caster (e -> BugsnagException)
 
 data BugsnagException = BugsnagException
     { beErrorClass :: Text

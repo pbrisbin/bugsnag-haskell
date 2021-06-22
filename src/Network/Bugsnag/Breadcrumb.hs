@@ -2,8 +2,7 @@ module Network.Bugsnag.Breadcrumb
     ( BugsnagBreadcrumbType(..)
     , BugsnagBreadcrumb(..)
     , bugsnagBreadcrumb
-    )
-where
+    ) where
 
 import Prelude
 

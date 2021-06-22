@@ -1,8 +1,7 @@
 module Network.Bugsnag.User
     ( BugsnagUser(..)
     , bugsnagUser
-    )
-where
+    ) where
 
 import Prelude
 

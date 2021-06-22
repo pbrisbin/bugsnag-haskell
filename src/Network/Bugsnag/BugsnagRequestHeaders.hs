@@ -2,8 +2,7 @@ module Network.Bugsnag.BugsnagRequestHeaders
     ( BugsnagRequestHeaders
     , bugsnagRequestHeaders
     , redactBugsnagRequestHeaders
-    )
-where
+    ) where
 
 import Prelude
 

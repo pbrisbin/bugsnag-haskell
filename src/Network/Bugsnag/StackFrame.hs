@@ -7,8 +7,7 @@ module Network.Bugsnag.StackFrame
     , BugsnagStackFrame(..)
     , bugsnagStackFrame
     , currentStackFrame
-    )
-where
+    ) where
 
 import Prelude
 

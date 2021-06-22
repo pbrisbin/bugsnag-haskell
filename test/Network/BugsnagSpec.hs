@@ -2,8 +2,7 @@
 
 module Network.BugsnagSpec
     ( spec
-    )
-where
+    ) where
 
 import Prelude
 

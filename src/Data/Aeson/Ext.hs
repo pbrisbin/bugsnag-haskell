@@ -6,8 +6,7 @@
 --
 module Data.Aeson.Ext
     ( bsAesonOptions
-    )
-where
+    ) where
 
 import Prelude
 

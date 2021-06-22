@@ -8,8 +8,7 @@
 module Network.Bugsnag.Session
     ( BugsnagSession(..)
     , bugsnagSession
-    )
-where
+    ) where
 
 import Prelude
 

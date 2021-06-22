@@ -4,8 +4,7 @@ module Network.Bugsnag.Severity
     , BugsnagSeverityReasonAttributes(..)
     , bugsnagSeverityReasonAttributes
     , BugsnagSeverityReasonType(..)
-    )
-where
+    ) where
 
 import Prelude
 

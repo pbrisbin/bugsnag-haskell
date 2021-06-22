@@ -1,8 +1,7 @@
 module Network.Bugsnag.Thread
     ( BugsnagThread(..)
     , bugsnagThread
-    )
-where
+    ) where
 
 import Prelude
 
