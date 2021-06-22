@@ -49,6 +49,8 @@ ghc-options: -fwrite-ide-info
   -Wno-safe
   -Wno-unsafe
   -Wno-missing-import-lists
+  -Wno-missing-safe-haskell-mode
+  -Wno-prepositive-qualified-module
   -Wno-all-missed-specialisations
 
 library:

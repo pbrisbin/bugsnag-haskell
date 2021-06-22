@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 705a706e8df712f47840c94e870a97e1391c8884772f0937060b27e1f40b8147
+-- hash: f0b89aa1f178039f4ecaa398b7769ae58af7ec821a7510c1f824ac3642f13899
 
 name:           bugsnag-haskell
 version:        0.0.4.1
@@ -82,7 +82,7 @@ library
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       Glob >=0.9.0
     , aeson >=1.3.0.0
@@ -136,7 +136,7 @@ executable example-cli
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       base >=4.11.0 && <5
     , bugsnag-haskell
@@ -175,7 +175,7 @@ executable example-simple
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       base >=4.11.0 && <5
     , bugsnag-haskell
@@ -214,7 +214,7 @@ executable example-warp
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       base >=4.11.0 && <5
     , bugsnag-haskell
@@ -255,7 +255,7 @@ executable example-yesod
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       base >=4.11.0 && <5
     , bugsnag-haskell
@@ -299,7 +299,7 @@ test-suite doctest
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       aeson
     , base >=4.11.0 && <5
@@ -342,7 +342,7 @@ test-suite spec
       StandaloneDeriving
       TypeApplications
       TypeFamilies
-  ghc-options: -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-all-missed-specialisations
+  ghc-options: -fwrite-ide-info -Weverything -Wno-safe -Wno-unsafe -Wno-missing-import-lists -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -Wno-all-missed-specialisations
   build-depends:
       aeson
     , aeson-qq

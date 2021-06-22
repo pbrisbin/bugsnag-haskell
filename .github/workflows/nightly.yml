@@ -16,7 +16,4 @@ jobs:
     - uses: freckle/stack-cache-action@main
     - uses: freckle/stack-action@main
       with:
-        stack-arguments: >
-          --resolver nightly
-          --skip doctest
-          --ghc-options="-Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module"
+        stack-arguments: --resolver nightly --skip doctest
