@@ -1,4 +1,4 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...master)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...main)
 
 None.
 

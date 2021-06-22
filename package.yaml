@@ -44,7 +44,8 @@ default-extensions:
   - TypeApplications
   - TypeFamilies
 
-ghc-options: -Weverything
+ghc-options: -fwrite-ide-info
+  -Weverything
   -Wno-safe
   -Wno-unsafe
   -Wno-missing-import-lists
