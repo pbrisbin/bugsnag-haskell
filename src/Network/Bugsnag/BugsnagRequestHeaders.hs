@@ -7,6 +7,7 @@ module Network.Bugsnag.BugsnagRequestHeaders
 import Prelude
 
 import Data.Aeson
+import Data.Aeson.Ext
 import Data.ByteString (ByteString)
 import Data.CaseInsensitive (CI)
 import qualified Data.CaseInsensitive as CI
@@ -25,7 +26,7 @@ instance ToJSON BugsnagRequestHeaders where
 
 headerToKeyValue :: KeyValue kv => (CI ByteString, ByteString) -> kv
 headerToKeyValue (name, value) =
-    TE.decodeUtf8 (CI.original name) .= String (TE.decodeUtf8 value)
+    fromText (TE.decodeUtf8 (CI.original name)) .= String (TE.decodeUtf8 value)
 
 -- | Create 'BugsnagRequestHeaders'
 bugsnagRequestHeaders :: RequestHeaders -> BugsnagRequestHeaders

@@ -6,6 +6,7 @@ module Network.Bugsnag.Event
 import Prelude
 
 import Data.Aeson
+import Data.Aeson.Ext
 import Data.Aeson.Types
 import Data.Text (Text)
 import Network.Bugsnag.App
@@ -55,7 +56,7 @@ instance ToJSON BugsnagEvent where
       where
         -- For implementing "omit Nothing fields"
         (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
-        (.=?) k = maybe [] (pure . (k .=))
+        (.=?) k = maybe [] (pure . (fromText k .=))
 
 bugsnagEvent :: BugsnagException -> BugsnagEvent
 bugsnagEvent exception = BugsnagEvent
