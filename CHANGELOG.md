@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...main)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.2...main)
 
 None.
+
+## [v0.0.4.2](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...v0.0.4.2)
+
+- Support Aeson 2.0
 
 ## [v0.0.4.1](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.0...v0.0.4.1)
 

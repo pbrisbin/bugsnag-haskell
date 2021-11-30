@@ -1,5 +1,5 @@
 name: bugsnag-haskell
-version: 0.0.4.1
+version: 0.0.4.2
 synopsis: Bugsnag error reporter for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
