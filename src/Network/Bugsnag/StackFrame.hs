@@ -71,11 +71,6 @@ bugsnagStackFrame path ln method = BugsnagStackFrame
 --
 -- Unfortunately there's no way to know the function, so that must be given:
 --
--- >>> :set -XOverloadedStrings -XTemplateHaskell
--- >>> :m +Control.Arrow
--- >>> (bsfFile &&& bsfMethod) $ $(currentStackFrame) "myFunc"
--- ("<interactive>","myFunc")
---
 currentStackFrame :: Q Exp
 currentStackFrame = [|locStackFrame $(qLocation >>= liftLoc)|]
 
