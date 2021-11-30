@@ -14,6 +14,7 @@ restylers:
   - brittany:
       include:
         - "**/*.hs"
+        - "!src/Data/Aeson/Ext.hs" # CCP error
         - "!examples/yesod/Main.hs" # CCP error
   - prettier:
       include:
