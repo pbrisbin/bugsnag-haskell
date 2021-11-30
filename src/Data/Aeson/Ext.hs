@@ -21,10 +21,8 @@ import Data.Text.Encoding (decodeUtf8)
 
 #if MIN_VERSION_aeson(2,0,0)
 import Data.Aeson.Key (fromText)
-
 #else
 import Data.Text (Text)
-
 fromText :: Text -> Text
 fromText = id
 #endif
