@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -5,7 +6,8 @@
 -- Orphan instances and shared @'Generic'@ JSON options.
 --
 module Data.Aeson.Ext
-    ( bsAesonOptions
+    ( fromText
+    , bsAesonOptions
     ) where
 
 import Prelude
@@ -16,6 +18,16 @@ import Data.Char (toLower)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe)
 import Data.Text.Encoding (decodeUtf8)
+
+#if MIN_VERSION_aeson(2,0,0)
+import Data.Aeson.Key (fromText)
+
+#else
+import Data.Text (Text)
+
+fromText :: Text -> Text
+fromText = id
+#endif
 
 instance ToJSON ByteString where
     toJSON = String . decodeUtf8
