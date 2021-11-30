@@ -18,4 +18,4 @@ instance FromJSON Package where
 main :: IO ()
 main = do
     Package extensions <- Yaml.decodeFileThrow "package.yaml"
-    doctest $ ["-isrc", "src/"] <> map ("-X" <>) extensions
+    doctest $ ["src"] <> map ("-X" <>) extensions
