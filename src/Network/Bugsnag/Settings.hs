@@ -91,7 +91,6 @@ bugsnagSettings apiKey manager = BugsnagSettings
 
 -- | Should this @'BugsnagEvent'@ trigger notification?
 --
--- >>> :set -XOverloadedStrings
 -- >>> settings <- newBugsnagSettings ""
 -- >>> let event = bugsnagEvent $ bugsnagException "" "" []
 -- >>> bugsnagShouldNotify settings event
@@ -123,7 +122,6 @@ bugsnagShouldNotify settings event
 --
 -- Uses @'getGlobalManager'@.
 --
--- >>> :set -XOverloadedStrings
 -- >>> settings <- newBugsnagSettings "API_KEY"
 -- >>> bsApiKey settings
 -- API_KEY
