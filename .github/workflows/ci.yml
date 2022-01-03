@@ -32,7 +32,7 @@ jobs:
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         uses: freckle/weeder-action@v1
         with:
-          version: 2.2.0
+          weeder-version: 2.2.0
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
