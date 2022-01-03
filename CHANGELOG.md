@@ -1,6 +1,12 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.2...main)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.3...main)
 
 None.
+
+## [v0.0.4.3](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.2...v0.0.4.3)
+
+- Include `package.yaml` in release tarball
+
+  We read `default-extensions` out of it for doctests.
 
 ## [v0.0.4.2](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.1...v0.0.4.2)
 
