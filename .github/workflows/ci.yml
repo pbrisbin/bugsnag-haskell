@@ -29,8 +29,10 @@ jobs:
           stack-yaml: ${{ matrix.stack-yaml }}
           stack-arguments: --flag bugsnag-haskell:examples --coverage
 
-      # - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
-      #   uses: freckle/weeder-action@v1
+      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
+        uses: freckle/weeder-action@v1
+        with:
+          version: 2.2.0
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
