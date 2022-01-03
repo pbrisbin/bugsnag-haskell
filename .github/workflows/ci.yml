@@ -23,22 +23,23 @@ jobs:
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
 
-      - uses: freckle/stack-action@v3
+      - id: stack
+        uses: freckle/stack-action@v3
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
           stack-arguments: --flag bugsnag-haskell:examples --coverage
 
-      - if: ${{ matrix.stack-yaml == stack.yaml }}
+      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         uses: freckle/weeder-action@v1
 
-      - if: ${{ matrix.stack-yaml == stack.yaml }}
+      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
         run: |
           tix='${{ steps.stack.outputs.local-hpc-root }}/combined/all/all.tix'
           stack --no-terminal install --copy-compiler-tool hpc-lcov
           stack --no-terminal exec -- hpc-lcov --file "$tix"
 
-      - if: ${{ matrix.stack-yaml == stack.yaml }}
+      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Upload coverage
         uses: codecov/codecov-action@v2
         with:
