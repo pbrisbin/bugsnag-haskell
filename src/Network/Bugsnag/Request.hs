@@ -1,91 +1,51 @@
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
 module Network.Bugsnag.Request
-    ( BugsnagRequest(..)
-    , bugsnagRequest
-    , bugsnagRequestFromWaiRequest
+    ( bugsnagRequestFromWaiRequest
     ) where
 
 import Prelude
 
 import Control.Applicative ((<|>))
-import Data.Aeson
-import Data.Aeson.Ext
-import Data.Aeson.Types
+import Control.Arrow ((***))
+import Data.Bugsnag
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
+import qualified Data.CaseInsensitive as CI
+import Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HashMap
 import Data.IP
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
-import GHC.Generics
-import Network.Bugsnag.BugsnagRequestHeaders
 import Network.HTTP.Types
 import Network.Socket
-import Network.Wai
+import qualified Network.Wai as Wai
 
--- | The web request being handled when the error was encountered
-data BugsnagRequest = BugsnagRequest
-    { brClientIp :: Maybe ByteString
-    , brHeaders :: Maybe BugsnagRequestHeaders
-    , brHttpMethod :: Maybe Method
-    , brUrl :: Maybe ByteString
-    , brReferer :: Maybe ByteString
+-- | Constructs a 'Request' from a 'Wai.Request'
+bugsnagRequestFromWaiRequest :: Wai.Request -> Request
+bugsnagRequestFromWaiRequest request = defaultRequest
+    { request_clientIp = decodeUtf8 <$> clientIp
+    , request_headers = Just $ fromRequestHeaders $ Wai.requestHeaders request
+    , request_httpMethod = Just $ decodeUtf8 $ Wai.requestMethod request
+    , request_url = Just $ decodeUtf8 $ requestUrl request
+    , request_referer = decodeUtf8 <$> Wai.requestHeaderReferer request
     }
-    deriving stock Generic
+  where
+    clientIp =
+        requestRealIp request <|> Just (sockAddrToIp $ Wai.remoteHost request)
 
-instance ToJSON BugsnagRequest where
-    toJSON BugsnagRequest {..} = object
-        (("clientIp" .=? (decodeUtf8 <$> brClientIp))
-        <> ("headers" .=? brHeaders)
-        <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
-        <> ("url" .=? (decodeUtf8 <$> brUrl))
-        <> ("referer" .=? (decodeUtf8 <$> brReferer))
-        )
-      where
-        -- For implementing "omit Nothing fields"
-        (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
-        (.=?) k = maybe [] (pure . (fromText k .=))
-    toEncoding BugsnagRequest {..} = pairs
-        (("clientIp" .=? (decodeUtf8 <$> brClientIp))
-        <> ("headers" .=? brHeaders)
-        <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
-        <> ("url" .=? (decodeUtf8 <$> brUrl))
-        <> ("referer" .=? (decodeUtf8 <$> brReferer))
-        )
-      where
-        -- For implementing "omit Nothing fields"
-        (.=?) :: ToJSON v => Text -> Maybe v -> Series
-        k .=? mv = maybe mempty (\v -> fromText k .= v) mv
+fromRequestHeaders :: [(HeaderName, ByteString)] -> HashMap Text Text
+fromRequestHeaders =
+    HashMap.fromList . map (decodeUtf8 . CI.original *** decodeUtf8)
 
--- | Constructs an empty @'BugsnagRequest'@
-bugsnagRequest :: BugsnagRequest
-bugsnagRequest = BugsnagRequest
-    { brClientIp = Nothing
-    , brHeaders = Nothing
-    , brHttpMethod = Nothing
-    , brUrl = Nothing
-    , brReferer = Nothing
-    }
+requestRealIp :: Wai.Request -> Maybe ByteString
+requestRealIp request = requestForwardedFor request
+    <|> lookup "X-Real-IP" (Wai.requestHeaders request)
 
--- | Constructs a @'BugsnagRequest'@ from a WAI @'Request'@
-bugsnagRequestFromWaiRequest :: Request -> BugsnagRequest
-bugsnagRequestFromWaiRequest request = bugsnagRequest
-    { brClientIp = requestRealIp request
-        <|> Just (sockAddrToIp $ remoteHost request)
-    , brHeaders = Just $ bugsnagRequestHeaders $ requestHeaders request
-    , brHttpMethod = Just $ requestMethod request
-    , brUrl = Just $ requestUrl request
-    , brReferer = requestHeaderReferer request
-    }
-
-requestRealIp :: Request -> Maybe ByteString
-requestRealIp request =
-    requestForwardedFor request <|> lookup "X-Real-IP" (requestHeaders request)
-
-requestForwardedFor :: Request -> Maybe ByteString
+requestForwardedFor :: Wai.Request -> Maybe ByteString
 requestForwardedFor request =
-    readForwardedFor =<< lookup "X-Forwarded-For" (requestHeaders request)
+    readForwardedFor =<< lookup "X-Forwarded-For" (Wai.requestHeaders request)
 
 -- |
 --
@@ -103,24 +63,25 @@ readForwardedFor bs
     | C8.null bs = Nothing
     | otherwise = Just $ fst $ C8.break (== ',') bs
 
-requestUrl :: Request -> ByteString
+requestUrl :: Wai.Request -> ByteString
 requestUrl request =
     requestProtocol
         <> "://"
         <> requestHost request
-        <> prependIfNecessary "/" (rawPathInfo request)
-        <> rawQueryString request
+        <> prependIfNecessary "/" (Wai.rawPathInfo request)
+        <> Wai.rawQueryString request
   where
     clientProtocol :: ByteString
-    clientProtocol = if isSecure request then "https" else "http"
+    clientProtocol = if Wai.isSecure request then "https" else "http"
 
-    requestHost :: Request -> ByteString
-    requestHost = fromMaybe "<unknown>" . requestHeaderHost
+    requestHost :: Wai.Request -> ByteString
+    requestHost = fromMaybe "<unknown>" . Wai.requestHeaderHost
 
     requestProtocol :: ByteString
     requestProtocol =
-        fromMaybe clientProtocol $ lookup "X-Forwarded-Proto" $ requestHeaders
-            request
+        fromMaybe clientProtocol
+            $ lookup "X-Forwarded-Proto"
+            $ Wai.requestHeaders request
 
     prependIfNecessary c x
         | c `C8.isPrefixOf` x = x

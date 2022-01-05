@@ -1,74 +1,48 @@
--- |
---
--- <https://docs.bugsnag.com/api/error-reporting/#application-settings>
---
 module Network.Bugsnag.Settings
-    ( BugsnagApiKey(..)
-    , BugsnagSettings(..)
-    , newBugsnagSettings
-    , bugsnagSettings
-    , bugsnagShouldNotify
+    ( Settings(..)
+    , defaultSettings
     ) where
 
 import Prelude
 
-import Data.Aeson (FromJSON)
-import Data.String
+import Data.Bugsnag
 import Data.Text (Text)
-import qualified Data.Text as T
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.CodeIndex
-import Network.Bugsnag.Event
-import Network.Bugsnag.Exception
-import Network.Bugsnag.ReleaseStage
-import Network.HTTP.Client
-import Network.HTTP.Client.TLS
+import Network.HTTP.Client (HttpException)
 
-newtype BugsnagApiKey = BugsnagApiKey
-    { unBugsnagApiKey :: Text
-    }
-    deriving newtype (FromJSON, IsString)
-
-instance Show BugsnagApiKey where
-    show = T.unpack . unBugsnagApiKey
-
--- | Notifier settings
---
--- See @'newBugsnagSettings'@.
---
-data BugsnagSettings = BugsnagSettings
-    { bsApiKey :: BugsnagApiKey
-    -- ^ Your Integration API Key.
-    , bsAppVersion :: Maybe Text
+data Settings = Settings
+    { settings_apiKey :: ApiKey
+    -- ^ Your Integration API Key
+    , settings_appVersion :: Maybe Text
     -- ^ The version of your application
     --
     -- Marking bugs as Fixed and having them auto-reopen in new versions
     -- requires you set this.
     --
-    , bsReleaseStage :: BugsnagReleaseStage
+    , settings_releaseStage :: Text
     -- ^ The current release-stage, Production by default
-    , bsNotifyReleaseStages :: [BugsnagReleaseStage]
+    , settings_enabledReleaseStages :: [Text]
     -- ^ Which release-stages to notify in. Only Production by default
-    , bsBeforeNotify :: BeforeNotify
+    , settings_beforeNotify :: BeforeNotify
     -- ^ Modify any events before they are sent
     --
     -- For example to attach a user, or set the context.
     --
-    , bsIgnoreException :: BugsnagException -> Bool
+    , settings_ignoreException :: Exception -> Bool
     -- ^ Exception filtering
     --
-    -- Functions like @'notifyBugsnag'@ will do nothing with exceptions that
-    -- pass this predicate. N.B. Something lower-level, like @'reportError'@
-    -- won't be aware of this.
+    -- Functions like 'notifyBugsnag' will do nothing with exceptions that pass
+    -- this predicate. N.B. Something lower-level, like 'reportError' won't be
+    -- aware of this.
     --
-    , bsHttpManager :: Manager
-    -- ^ The HTTP @Manager@ used to emit notifications
+    , settings_onNotifyException :: HttpException -> IO ()
+    -- ^ How to handle an exception reporting error events
     --
-    -- It's more efficient, and ensures proper resource cleanup, to share a
-    -- single manager across an application. Must be TLS-enabled.
+    -- Default is to ignore.
     --
-    , bsCodeIndex :: Maybe CodeIndex
-    -- ^ A @'CodeIndex'@ built at compile-time from project sources
+    , settings_codeIndex :: Maybe CodeIndex
+    -- ^ A 'CodeIndex' built at compile-time from project sources
     --
     -- If set, this will be used to update StackFrames to include lines of
     -- source code context as read out of this value. N.B. using this means
@@ -76,61 +50,14 @@ data BugsnagSettings = BugsnagSettings
     --
     }
 
--- | Construct settings purely, given an existing @'Manager'@
-bugsnagSettings :: BugsnagApiKey -> Manager -> BugsnagSettings
-bugsnagSettings apiKey manager = BugsnagSettings
-    { bsApiKey = apiKey
-    , bsAppVersion = Nothing
-    , bsReleaseStage = ProductionReleaseStage
-    , bsNotifyReleaseStages = [ProductionReleaseStage]
-    , bsBeforeNotify = id
-    , bsIgnoreException = const False
-    , bsHttpManager = manager
-    , bsCodeIndex = Nothing
+defaultSettings :: Text -> Settings
+defaultSettings k = Settings
+    { settings_apiKey = apiKey k
+    , settings_appVersion = Nothing
+    , settings_releaseStage = "production"
+    , settings_enabledReleaseStages = ["production"]
+    , settings_beforeNotify = mempty
+    , settings_ignoreException = const False
+    , settings_onNotifyException = const $ pure ()
+    , settings_codeIndex = Nothing
     }
-
--- | Should this @'BugsnagEvent'@ trigger notification?
---
--- >>> settings <- newBugsnagSettings ""
--- >>> let event = bugsnagEvent $ bugsnagException "" "" []
--- >>> bugsnagShouldNotify settings event
--- True
---
--- >>> let devSettings = settings { bsReleaseStage = DevelopmentReleaseStage }
--- >>> bugsnagShouldNotify devSettings event
--- False
---
--- >>> bugsnagShouldNotify devSettings { bsNotifyReleaseStages = [DevelopmentReleaseStage] } event
--- True
---
--- >>> let ignore = (== "IgnoreMe") . beErrorClass
--- >>> let ignoreSettings = settings { bsIgnoreException = ignore }
--- >>> let ignoreEvent = bugsnagEvent $ bugsnagException "IgnoreMe" "" []
--- >>> bugsnagShouldNotify ignoreSettings event
--- True
---
--- >>> bugsnagShouldNotify ignoreSettings ignoreEvent
--- False
---
-bugsnagShouldNotify :: BugsnagSettings -> BugsnagEvent -> Bool
-bugsnagShouldNotify settings event
-    | bsReleaseStage settings `notElem` bsNotifyReleaseStages settings = False
-    | bsIgnoreException settings $ beException event = False
-    | otherwise = True
-
--- | Construct settings with a new, TLS-enabled @'Manager'@
---
--- Uses @'getGlobalManager'@.
---
--- >>> settings <- newBugsnagSettings "API_KEY"
--- >>> bsApiKey settings
--- API_KEY
---
--- >>> bsReleaseStage settings
--- ProductionReleaseStage
---
--- >>> bsNotifyReleaseStages settings
--- [ProductionReleaseStage]
---
-newBugsnagSettings :: BugsnagApiKey -> IO BugsnagSettings
-newBugsnagSettings apiKey = bugsnagSettings apiKey <$> getGlobalManager

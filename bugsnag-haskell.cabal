@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d6315d06e41dee82aec890628f49bbf331b65fbbf1656ec7cb805fb12411bc6a
+-- hash: 4380c44d8fdbddbd91c06b2207b5603e94fd768f4a2a507ebce59592b8a333d4
 
 name:           bugsnag-haskell
 version:        0.0.4.4
@@ -31,29 +31,18 @@ flag examples
 
 library
   exposed-modules:
-      Data.Aeson.Ext
+      Data.Bugsnag
       Network.Bugsnag
-      Network.Bugsnag.App
       Network.Bugsnag.BeforeNotify
-      Network.Bugsnag.Breadcrumb
       Network.Bugsnag.BugsnagRequestHeaders
       Network.Bugsnag.CodeIndex
       Network.Bugsnag.Device
-      Network.Bugsnag.Event
       Network.Bugsnag.Exception
       Network.Bugsnag.Exception.Parse
-      Network.Bugsnag.Notifier
       Network.Bugsnag.Notify
-      Network.Bugsnag.ReleaseStage
-      Network.Bugsnag.Report
-      Network.Bugsnag.Reporter
       Network.Bugsnag.Request
-      Network.Bugsnag.Session
       Network.Bugsnag.Settings
-      Network.Bugsnag.Severity
       Network.Bugsnag.StackFrame
-      Network.Bugsnag.Thread
-      Network.Bugsnag.User
   other-modules:
       Paths_bugsnag_haskell
   hs-source-dirs:
@@ -85,14 +74,13 @@ library
       TypeFamilies
   build-depends:
       Glob >=0.9.0
-    , aeson >=1.3.0.0
     , base >=4.11.0 && <5
+    , bugsnag-hs
     , bytestring
     , case-insensitive
     , containers
     , http-client
     , http-client-tls
-    , http-conduit
     , http-types
     , iproute
     , network
@@ -100,8 +88,8 @@ library
     , template-haskell
     , text
     , th-lift-instances
-    , time
     , ua-parser
+    , unordered-containers
     , wai
   default-language: Haskell2010
 
@@ -306,9 +294,10 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Examples
+      Network.Bugsnag.BeforeNotifySpec
       Network.Bugsnag.CodeIndexSpec
-      Network.Bugsnag.ReportSpec
-      Network.BugsnagSpec
+      Network.Bugsnag.ExceptionSpec
       Paths_bugsnag_haskell
   hs-source-dirs:
       test
@@ -338,12 +327,9 @@ test-suite spec
       TypeApplications
       TypeFamilies
   build-depends:
-      aeson
-    , aeson-qq
-    , base >=4.11.0 && <5
+      base >=4.11.0 && <5
     , bugsnag-haskell
     , hspec
     , text
-    , time
     , unliftio
   default-language: Haskell2010

@@ -2,19 +2,21 @@
 
 module Main
     ( main
-    )
-where
+    ) where
 
 import Prelude
 
-import Control.Exception (toException)
+import Data.Bugsnag
 import Network.Bugsnag
+import Network.Bugsnag.Exception
+import Network.Bugsnag.StackFrame
 
 main :: IO ()
 main = do
-    settings <- newBugsnagSettings "BUGSNAG_API_KEY"
+    let settings = defaultSettings "BUGSNAG_API_KEY"
 
-    notifyBugsnag settings $ toException $ bugsnagException
-        "Error"
-        "message"
-        [$(currentStackFrame) "myFunction"]
+    notifyBugsnag settings $ AsException $ defaultException
+        { exception_errorClass = "Error"
+        , exception_message = Just "message"
+        , exception_stacktrace = [$(currentStackFrame) "myFunction"]
+        }

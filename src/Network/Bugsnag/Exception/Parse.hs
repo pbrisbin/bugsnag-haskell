@@ -10,23 +10,22 @@ module Network.Bugsnag.Exception.Parse
 
 import Prelude
 
-import Control.Exception (ErrorCall, Exception, SomeException)
+import qualified Control.Exception as Exception
+    (ErrorCall, Exception, SomeException)
 import Control.Monad (void)
 import Data.Bifunctor (first)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Network.Bugsnag.StackFrame
-import Numeric.Natural
+import Data.Bugsnag
+import Data.Text (Text, pack)
 import Text.Parsec
 import Text.Parsec.String
 
 data MessageWithStackFrames = MessageWithStackFrames
     { mwsfMessage :: Text
-    , mwsfStackFrames :: [BugsnagStackFrame]
+    , mwsfStackFrames :: [StackFrame]
     }
 
 -- | Parse an @'ErrorCall'@ for @'HasCallStack'@ information
-parseErrorCall :: ErrorCall -> Either String MessageWithStackFrames
+parseErrorCall :: Exception.ErrorCall -> Either String MessageWithStackFrames
 parseErrorCall = parse' errorCallParser
 
 -- | Parse a @'StringException'@ for @'HasCallStack'@ information
@@ -35,7 +34,8 @@ parseErrorCall = parse' errorCallParser
 -- any one concrete library that has @'throwString'@ (there are two right now,
 -- sigh.)
 --
-parseStringException :: SomeException -> Either String MessageWithStackFrames
+parseStringException
+    :: Exception.SomeException -> Either String MessageWithStackFrames
 parseStringException = parse' stringExceptionParser
 
 -- brittany-disable-next-binding
@@ -47,21 +47,21 @@ errorCallParser = MessageWithStackFrames
   where
     messageParser :: Parser Text
     messageParser = do
-        msg <- T.pack <$> manyTill anyChar eol
+        msg <- pack <$> manyTill anyChar eol
         msg <$ (string "CallStack (from HasCallStack):" *> eol)
 
-    stackFrameParser :: Parser BugsnagStackFrame
+    stackFrameParser :: Parser StackFrame
     stackFrameParser = do
         func <- stackFrameFunctionTill $ string ", called at "
         (path, ln, cl) <- stackFrameLocationTill $ eol <|> eof
 
-        pure BugsnagStackFrame
-            { bsfFile = path
-            , bsfLineNumber = ln
-            , bsfColumnNumber = Just cl
-            , bsfMethod = func
-            , bsfInProject = Just True
-            , bsfCode = Nothing
+        pure defaultStackFrame
+            { stackFrame_file = pack path
+            , stackFrame_lineNumber = ln
+            , stackFrame_columnNumber = Just cl
+            , stackFrame_method = func
+            , stackFrame_inProject = Just True
+            , stackFrame_code = Nothing
             }
 
 -- brittany-disable-next-binding
@@ -74,26 +74,26 @@ stringExceptionParser = MessageWithStackFrames
     messageParser :: Parser Text
     messageParser = do
         manyTill anyChar (try $ string "throwString called with:") *> eol *> eol
-        T.pack <$> manyTill anyChar (try $ eol *> string "Called from:" *> eol)
+        pack <$> manyTill anyChar (try $ eol *> string "Called from:" *> eol)
 
-    stackFrameParser :: Parser BugsnagStackFrame
+    stackFrameParser :: Parser StackFrame
     stackFrameParser = do
         func <- stackFrameFunctionTill $ string " ("
         (path, ln, cl) <- stackFrameLocationTill $ char ')' *> eol <|> eof
 
-        pure BugsnagStackFrame
-            { bsfFile = path
-            , bsfLineNumber = ln
-            , bsfColumnNumber = Just cl
-            , bsfMethod = func
-            , bsfInProject = Just True
-            , bsfCode = Nothing
+        pure defaultStackFrame
+            { stackFrame_file = pack path
+            , stackFrame_lineNumber = ln
+            , stackFrame_columnNumber = Just cl
+            , stackFrame_method = func
+            , stackFrame_inProject = Just True
+            , stackFrame_code = Nothing
             }
 
 stackFrameFunctionTill :: Parser a -> Parser Text
-stackFrameFunctionTill p = spaces *> (T.pack <$> manyTill anyChar p)
+stackFrameFunctionTill p = spaces *> (pack <$> manyTill anyChar p)
 
-stackFrameLocationTill :: Parser a -> Parser (FilePath, Natural, Natural)
+stackFrameLocationTill :: Parser a -> Parser (FilePath, Int, Int)
 stackFrameLocationTill p = do
     result <-
         (,,)
@@ -109,7 +109,7 @@ stackFrameLocationTill p = do
     pure result
 
 parse'
-    :: Exception e
+    :: Exception.Exception e
     => Parser MessageWithStackFrames
     -> e
     -> Either String MessageWithStackFrames

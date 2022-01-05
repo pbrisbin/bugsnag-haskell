@@ -5,67 +5,47 @@ module Network.Bugsnag.Notify
 
 import Prelude
 
-import Control.Exception (SomeException)
-import Control.Monad (when)
-import Data.Maybe (isJust)
-import Network.Bugsnag.App
+import qualified Control.Exception as Exception
+import Control.Monad (unless)
+import Data.Bugsnag
 import Network.Bugsnag.BeforeNotify
-import Network.Bugsnag.CodeIndex
-import Network.Bugsnag.Event
 import Network.Bugsnag.Exception
-import Network.Bugsnag.Report
-import Network.Bugsnag.Reporter
 import Network.Bugsnag.Settings
-import Network.Bugsnag.StackFrame
+import Network.HTTP.Client.TLS (getGlobalManager)
 
--- | Notify Bugsnag of a single exception
-notifyBugsnag :: BugsnagSettings -> SomeException -> IO ()
-notifyBugsnag = notifyBugsnagWith id
+notifyBugsnag :: Exception.Exception e => Settings -> e -> IO ()
+notifyBugsnag = notifyBugsnagWith mempty
 
--- | Notify Bugsnag of a single exception, modifying the event
---
--- This is used to (e.g.) change severity for a specific error. Note that the
--- given function runs after any configured @'bsBeforeNotify'@, or changes
--- caused by other aspects of settings (e.g. grouping hash).
---
-notifyBugsnagWith :: BeforeNotify -> BugsnagSettings -> SomeException -> IO ()
-notifyBugsnagWith f settings ex = do
-    let event =
-            f
-                . bsBeforeNotify settings
-                . modifyStackFrames (bsCodeIndex settings)
-                . createApp settings
-                . bugsnagEvent
-                $ bugsnagExceptionFromSomeException ex
+notifyBugsnagWith
+    :: Exception.Exception e => BeforeNotify -> Settings -> e -> IO ()
+notifyBugsnagWith f settings = reportEvent settings . buildEvent bn
+    where bn = f <> globalBeforeNotify settings
 
-        manager = bsHttpManager settings
-        apiKey = bsApiKey settings
-        report = bugsnagReport [event]
+reportEvent :: Settings -> Event -> IO ()
+reportEvent Settings {..} event = unless (null $ event_exceptions event) $ do
+    m <- getGlobalManager
+    result <- sendEvents m settings_apiKey [event]
+    either settings_onNotifyException pure result
 
-    -- N.B. all notify functions should go through here. We need to maintain
-    -- this as the single point where (e.g.) should-notify is checked,
-    -- before-notify is applied, stack-frame filtering, etc.
-    when (bugsnagShouldNotify settings event)
-        $ reportError manager apiKey report
+buildEvent :: Exception.Exception e => BeforeNotify -> e -> Event
+buildEvent bn e = runBeforeNotify bn e
+    $ defaultEvent { event_exceptions = [ex] }
+    where ex = bugsnagExceptionFromSomeException $ Exception.toException e
 
--- |
---
--- If we have a @'CodeIndex'@ set the Code and then set InProject based on if we
--- found any. Otherwise we just assume everything is InProject.
---
-modifyStackFrames :: Maybe CodeIndex -> BeforeNotify
-modifyStackFrames Nothing = setStackFramesInProject $ const True
-modifyStackFrames (Just index) =
-    setStackFramesInProjectBy bsfCode isJust . setStackFramesCode index
+globalBeforeNotify :: Settings -> BeforeNotify
+globalBeforeNotify Settings {..} =
+    filterExceptions (not . ignoreException)
+        <> settings_beforeNotify
+        <> maybe mempty setStackFramesCode settings_codeIndex
+        <> updateEvent setApp
+  where
+    ignoreException e
+        | settings_releaseStage `notElem` settings_enabledReleaseStages = True
+        | otherwise = settings_ignoreException e
 
--- |
---
--- N.B. safe to clobber because we're only used on a fresh event.
---
-createApp :: BugsnagSettings -> BeforeNotify
-createApp settings event = event
-    { beApp = Just $ bugsnagApp
-        { baVersion = bsAppVersion settings
-        , baReleaseStage = Just $ bsReleaseStage settings
+    setApp event = event
+        { event_app = Just $ defaultApp
+            { app_version = settings_appVersion
+            , app_releaseStage = Just settings_releaseStage
+            }
         }
-    }

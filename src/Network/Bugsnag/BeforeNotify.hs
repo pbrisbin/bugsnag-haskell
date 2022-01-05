@@ -1,32 +1,28 @@
 module Network.Bugsnag.BeforeNotify
     ( BeforeNotify
+    , beforeNotify
+    , runBeforeNotify
 
-    -- * Modifying the Exception
-    , updateException
+    -- * Modifying the underlying Exceptions
+    , updateExceptions
+    , filterExceptions
     , updateStackFrames
     , filterStackFrames
     , setStackFramesCode
     , setStackFramesInProject
+    , setStackFramesInProjectByFile
     , setStackFramesInProjectBy
-    , setGroupingHash
-    , setGroupingHashBy
 
     -- * Modifying the Event
-    , updateEventFromException
+    , updateEvent
     , updateEventFromOriginalException
-    , updateEventFromSession
     , updateEventFromWaiRequest
     , updateEventFromWaiRequestUnredacted
-
-    -- * Modifying the Request
     , redactRequestHeaders
-
-    -- * Simple setters
+    , setGroupingHash
+    , setGroupingHashBy
     , setDevice
     , setRequest
-    , setStacktrace
-
-    -- * Setting severity
     , setWarningSeverity
     , setErrorSeverity
     , setInfoSeverity
@@ -34,113 +30,117 @@ module Network.Bugsnag.BeforeNotify
 
 import Prelude
 
-import Control.Exception (Exception, fromException)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
+import qualified Control.Exception as Exception
+import Data.Bugsnag
+import Data.Maybe (isJust)
+import Data.Text (Text, unpack)
 import Network.Bugsnag.BugsnagRequestHeaders
 import Network.Bugsnag.CodeIndex
 import Network.Bugsnag.Device
-import Network.Bugsnag.Event
-import Network.Bugsnag.Exception
 import Network.Bugsnag.Request
-import Network.Bugsnag.Session
-import Network.Bugsnag.Severity
 import Network.Bugsnag.StackFrame
 import Network.HTTP.Types.Header (HeaderName)
-import Network.Wai (Request)
+import qualified Network.Wai as Wai (Request)
 
-type BeforeNotify = BugsnagEvent -> BugsnagEvent
+-- $setup
+-- >>> import qualified Data.HashMap.Strict as HashMap
+-- >>> import Data.Maybe (fromMaybe)
 
--- | Modify just the Exception part of an Event
+-- | A function from 'Event' to 'Event' that is applied before notifying
 --
--- This may be used to set more specific information for exception types in
--- scope in your application:
+-- The wrapped function also accepts the original exception, for cases in which
+-- that's useful -- but it's often not. Most 'BeforeNotify's use 'updateEvent',
+-- which discards it.
 --
--- > notifyBugsnagWith (updateException forSqlError) settings ex
--- >
--- > forSqlError :: BugsnagException -> BugsnagException
--- > forSqlError ex =
--- >     case fromException =<< beOriginalException ex of
--- >         Just SqlError{..} -> ex
--- >             { beErrorClass = "SqlError-" <> sqlErrorCode
--- >             , beMessage = Just sqlErrorMessage
--- >             }
--- >         _ -> ex
+-- 'BeforeNotify' implements 'Semigroup' and 'Monoid', which means the /no
+-- nothing/ 'BeforeNotify' is 'mempty' and two 'BeforeNotify's @doThis@ then
+-- @doThat@ can be implemented as @doThat <> doThis@.
 --
-updateException :: (BugsnagException -> BugsnagException) -> BeforeNotify
-updateException f event = event { beException = f $ beException event }
+newtype BeforeNotify = BeforeNotify
+    { _unBeforeNotify :: forall e. Exception.Exception e => e -> Event -> Event
+    }
 
--- | Apply a function to each @'BugsnagStackFrame'@ in the Exception
-updateStackFrames :: (BugsnagStackFrame -> BugsnagStackFrame) -> BeforeNotify
-updateStackFrames f =
-    updateException $ \ex -> ex { beStacktrace = map f $ beStacktrace ex }
+instance Semigroup BeforeNotify where
+    BeforeNotify f <> BeforeNotify g = BeforeNotify $ \e -> f e . g e
 
--- | Filter out StackFrames matching a predicate
-filterStackFrames :: (BugsnagStackFrame -> Bool) -> BeforeNotify
-filterStackFrames p =
-    updateException $ \ex -> ex { beStacktrace = filter p $ beStacktrace ex }
+instance Monoid BeforeNotify where
+    mempty = BeforeNotify $ const id
 
--- | Set @'bsfCode'@ using the given index
+beforeNotify
+    :: (forall e . Exception.Exception e => e -> Event -> Event)
+    -> BeforeNotify
+beforeNotify = BeforeNotify
+
+runBeforeNotify :: Exception.Exception e => BeforeNotify -> e -> Event -> Event
+runBeforeNotify (BeforeNotify f) = f
+
+updateExceptions :: (Exception -> Exception) -> BeforeNotify
+updateExceptions f = updateEvent
+    $ \event -> event { event_exceptions = map f $ event_exceptions event }
+
+filterExceptions :: (Exception -> Bool) -> BeforeNotify
+filterExceptions p = updateEvent $ \event ->
+    event { event_exceptions = filter p $ event_exceptions event }
+
+updateStackFrames :: (StackFrame -> StackFrame) -> BeforeNotify
+updateStackFrames f = updateExceptions
+    $ \e -> e { exception_stacktrace = map f $ exception_stacktrace e }
+
+filterStackFrames :: (StackFrame -> Bool) -> BeforeNotify
+filterStackFrames p = updateExceptions
+    $ \e -> e { exception_stacktrace = filter p $ exception_stacktrace e }
+
 setStackFramesCode :: CodeIndex -> BeforeNotify
-setStackFramesCode = updateStackFrames . attachBugsnagCode
+setStackFramesCode =
+    (setStackFramesInProjectBy (isJust . stackFrame_code) <>)
+        . updateStackFrames
+        . attachBugsnagCode
 
--- | Set @'bsIsInProject'@ using the given predicate, applied to the Filename
-setStackFramesInProject :: (FilePath -> Bool) -> BeforeNotify
-setStackFramesInProject = setStackFramesInProjectBy bsfFile
+setStackFramesInProject :: Bool -> BeforeNotify
+setStackFramesInProject = setStackFramesInProjectBy . const
 
-setStackFramesInProjectBy
-    :: (BugsnagStackFrame -> a) -> (a -> Bool) -> BeforeNotify
-setStackFramesInProjectBy f p =
-    updateStackFrames $ \sf -> sf { bsfInProject = Just $ p $ f sf }
+setStackFramesInProjectByFile :: (FilePath -> Bool) -> BeforeNotify
+setStackFramesInProjectByFile f =
+    setStackFramesInProjectBy $ f . unpack . stackFrame_file
 
--- | Set @'beGroupingHash'@
-setGroupingHash :: Text -> BeforeNotify
-setGroupingHash hash = setGroupingHashBy $ const $ Just hash
+setStackFramesInProjectBy :: (StackFrame -> Bool) -> BeforeNotify
+setStackFramesInProjectBy f =
+    updateStackFrames $ \sf -> sf { stackFrame_inProject = Just $ f sf }
 
--- | Set @'beGroupingHash'@ based on the Event
-setGroupingHashBy :: (BugsnagEvent -> Maybe Text) -> BeforeNotify
-setGroupingHashBy f event = event { beGroupingHash = f event }
+updateEvent :: (Event -> Event) -> BeforeNotify
+updateEvent f = beforeNotify $ \_e event -> f event
 
--- | Update the @'BugsnagEvent'@ based on its @'BugsnagException'@
---
--- Use this instead of @'updateException'@ if you want to do other things to the
--- Event, such as set its @'beGroupingHash'@ based on the Exception.
---
-updateEventFromException :: (BugsnagException -> BeforeNotify) -> BeforeNotify
-updateEventFromException f event = f (beException event) event
-
--- | Update the @'BugsnagEvent'@ based on the original exception
+-- | Update the 'Event' based on the original exception
 --
 -- This allows updating the Event after casting to an exception type that this
 -- library doesn't know about (e.g. @SqlError@). Because the result of your
--- function is itself a @'BeforeNotify'@, you can (and should) use other
+-- function is itself a 'BeforeNotify', you can (and should) use other
 -- helpers:
 --
 -- @
 -- myBeforeNotify =
 --     'defaultBeforeNotify'
---         . 'updateEventFromOriginalException' asSqlError
---         . 'updateEventFromOriginalException' asHttpError
---         . -- ...
+--         <> 'updateEventFromOriginalException' asSqlError
+--         <> 'updateEventFromOriginalException' asHttpError
+--         <> -- ...
 --
 -- asSqlError :: SqlError -> BeforeNotify
 -- asSqlError SqlError{..} =
---     'setGroupingHash' sqlErrorCode . 'updateException' $ \ex -> ex
---         { beErrorClass = sqlErrorCode
---         , beMessage = sqlErrorMessage
---         }
+--     'setGroupingHash' sqlErrorCode <> 'updateException' (\e -> e
+--         { exception_errorClass = sqlErrorCode
+--         , exception_message = Just sqlErrorMessage
+--         })
 -- @
 --
--- If there is no original exception, or the cast fails, the event is unchanged.
+-- If the cast fails, the event is unchanged.
 --
 updateEventFromOriginalException
-    :: Exception e => (e -> BeforeNotify) -> BeforeNotify
-updateEventFromOriginalException f event = fromMaybe event $ do
-    someException <- beOriginalException $ beException event
-    yourException <- fromException someException
-    pure $ f yourException event
+    :: forall e . Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
+updateEventFromOriginalException f = beforeNotify $ \e event ->
+    let bn = maybe mempty f $ Exception.fromException $ Exception.toException e
+    in runBeforeNotify bn e event
 
--- | Set the events @'BugsnagEvent'@ and @'BugsnagDevice'@
+-- | Set the events 'Event' and 'Device'
 --
 -- This function redacts the following Request headers:
 --
@@ -148,24 +148,19 @@ updateEventFromOriginalException f event = fromMaybe event $ do
 -- - Cookie
 -- - X-XSRF-TOKEN (CSRF token header used by Yesod)
 --
--- To avoid this, use @'updateEventFromWaiRequestUnredacted'@.
+-- To avoid this, use 'updateEventFromWaiRequestUnredacted'.
 --
-updateEventFromWaiRequest :: Request -> BeforeNotify
+updateEventFromWaiRequest :: Wai.Request -> BeforeNotify
 updateEventFromWaiRequest wrequest =
     redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
-        . updateEventFromWaiRequestUnredacted wrequest
+        <> updateEventFromWaiRequestUnredacted wrequest
 
-updateEventFromWaiRequestUnredacted :: Request -> BeforeNotify
+updateEventFromWaiRequestUnredacted :: Wai.Request -> BeforeNotify
 updateEventFromWaiRequestUnredacted wrequest =
     let
         mdevice = bugsnagDeviceFromWaiRequest wrequest
         request = bugsnagRequestFromWaiRequest wrequest
-    in maybe id setDevice mdevice . setRequest request
-
--- | Update the Event's Context and User from the Session
-updateEventFromSession :: BugsnagSession -> BeforeNotify
-updateEventFromSession session event =
-    event { beContext = bsContext session, beUser = bsUser session }
+    in maybe mempty setDevice mdevice <> setRequest request
 
 -- | Redact the given request headers
 --
@@ -175,54 +170,56 @@ updateEventFromSession session event =
 -- > redactRequestHeaders ["Authorization", "Cookie"]
 --
 redactRequestHeaders :: [HeaderName] -> BeforeNotify
-redactRequestHeaders headers event =
-    event { beRequest = redactHeaders headers <$> beRequest event }
+redactRequestHeaders headers = updateEvent $ \event ->
+    event { event_request = redactHeaders headers <$> event_request event }
 
 -- |
 --
 -- >>> let headers = [("Authorization", "secret"), ("X-Foo", "Bar")]
--- >>> let req = bugsnagRequest { brHeaders = Just $ bugsnagRequestHeaders headers }
--- >>> brHeaders $ redactHeaders ["Authorization"] req
--- Just (BugsnagRequestHeaders {unBugsnagRequestHeaders = [("Authorization","<redacted>"),("X-Foo","Bar")]})
+-- >>> let req = defaultRequest { request_headers = Just $ HashMap.fromList headers }
+-- >>> fmap HashMap.toList $ request_headers $ redactHeaders ["Authorization"] req
+-- Just [("Authorization","<redacted>"),("X-Foo","Bar")]
 --
-redactHeaders :: [HeaderName] -> BugsnagRequest -> BugsnagRequest
+redactHeaders :: [HeaderName] -> Request -> Request
 redactHeaders headers request = request
-    { brHeaders = redactBugsnagRequestHeaders headers <$> brHeaders request
+    { request_headers = redactBugsnagRequestHeaders headers
+        <$> request_headers request
     }
+
+setGroupingHash :: Text -> BeforeNotify
+setGroupingHash hash = setGroupingHashBy $ const $ Just hash
+
+setGroupingHashBy :: (Event -> Maybe Text) -> BeforeNotify
+setGroupingHashBy f =
+    updateEvent $ \event -> event { event_groupingHash = f event }
 
 -- | Set the Event's Request
 --
--- See @'bugsnagRequestFromWaiRequest'@
+-- See 'bugsnagRequestFromWaiRequest'
 --
-setRequest :: BugsnagRequest -> BeforeNotify
-setRequest request event = event { beRequest = Just request }
+setRequest :: Request -> BeforeNotify
+setRequest request =
+    updateEvent $ \event -> event { event_request = Just request }
 
 -- | Set the Event's Device
 --
--- See @'bugsnagDeviceFromWaiRequest'@
+-- See 'bugsnagDeviceFromWaiRequest'
 --
-setDevice :: BugsnagDevice -> BeforeNotify
-setDevice device event = event { beDevice = Just device }
+setDevice :: Device -> BeforeNotify
+setDevice device = updateEvent $ \event -> event { event_device = Just device }
 
--- | Set the stacktrace on the reported exception
---
--- > notifyBugsnagWith (setStacktrace [$(currentStackFrame) "myFunc"]) ...
---
-setStacktrace :: [BugsnagStackFrame] -> BeforeNotify
-setStacktrace stacktrace =
-    updateException $ \ex -> ex { beStacktrace = stacktrace }
-
--- | Set to @'ErrorSeverity'@
+-- | Set to 'ErrorSeverity'
 setErrorSeverity :: BeforeNotify
-setErrorSeverity = setSeverity ErrorSeverity
+setErrorSeverity = setSeverity errorSeverity
 
--- | Set to @'WarningSeverity'@
+-- | Set to 'WarningSeverity'
 setWarningSeverity :: BeforeNotify
-setWarningSeverity = setSeverity WarningSeverity
+setWarningSeverity = setSeverity warningSeverity
 
--- | Set to @'InfoSeverity'@
+-- | Set to 'InfoSeverity'
 setInfoSeverity :: BeforeNotify
-setInfoSeverity = setSeverity InfoSeverity
+setInfoSeverity = setSeverity infoSeverity
 
-setSeverity :: BugsnagSeverity -> BeforeNotify
-setSeverity severity event = event { beSeverity = Just severity }
+setSeverity :: Severity -> BeforeNotify
+setSeverity severity =
+    updateEvent $ \event -> event { event_severity = Just severity }

@@ -3,6 +3,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 
+-- | Compile-time snapshot of your project source
+--
+-- This is necessary to attach source code snippets to exceptions reported to
+-- Bugsnag. We do this by reading the project source at compile-time and
+-- stashing the result in 'Settings'.
+--
+-- **WARNING**: This feature (probably) means you will be holding all indexed
+-- source code in memory during the life of your process. And in larger
+-- projects, it will embed substantial amounts of source code in a single file,
+-- which can significantly degrade compilation time.
+--
 module Network.Bugsnag.CodeIndex
     ( CodeIndex
     , buildCodeIndex
@@ -11,7 +22,6 @@ module Network.Bugsnag.CodeIndex
 
 import Prelude
 
-import Data.List (genericLength)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Text (Text)
@@ -20,7 +30,6 @@ import qualified Data.Text.IO as T
 import Data.Traversable (for)
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Syntax
-import Numeric.Natural (Natural)
 import System.FilePath.Glob (glob)
 
 newtype CodeIndex = CodeIndex
@@ -28,18 +37,6 @@ newtype CodeIndex = CodeIndex
     }
     deriving stock (Lift, Show)
 
--- | Index code for attaching lines of source to 'StackFrame's
---
--- See the 'bsCodeIndex' field of 'BugsnagSettings' for details.
---
--- **WARNING**: This feature comes with a number of caveats.
---
--- 1. It's not frequently used and may not work.
--- 2. It (probably) means you will be holding all indexed source code in memory
---    during the life of your process.
--- 3. In larger projects, it will embed substantial amounts of source code in a
---    single file, which can significantly degrade compilation time.
---
 buildCodeIndex :: String -> Q Exp
 buildCodeIndex p = do
     index <- qRunIO $ buildCodeIndex' p
@@ -54,8 +51,8 @@ buildCodeIndex' p = do
     indexPath fp = (fp, ) <$> buildFileIndex fp
 
 data FileIndex = FileIndex
-    { fiSourceLines :: Map Natural Text
-    , fiLastLine :: Natural
+    { fiSourceLines :: Map Int Text
+    , fiLastLine :: Int
     }
     deriving stock (Lift, Show)
 
@@ -65,11 +62,10 @@ buildFileIndex path = do
 
     pure FileIndex
         { fiSourceLines = Map.fromList $ zip [0 ..] lns
-        , fiLastLine = genericLength lns - 1
+        , fiLastLine = length lns - 1
         }
 
-findSourceRange
-    :: FilePath -> (Natural, Natural) -> CodeIndex -> Maybe [(Natural, Text)]
+findSourceRange :: FilePath -> (Int, Int) -> CodeIndex -> Maybe [(Int, Text)]
 findSourceRange path (begin, end) index = do
     FileIndex {..} <- Map.lookup path $ unCodeIndex index
 

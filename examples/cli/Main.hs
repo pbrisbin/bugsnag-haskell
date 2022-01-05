@@ -1,20 +1,19 @@
 module Main
     ( main
-    )
-where
+    ) where
 
 import Prelude
 
-import Control.Exception (catch)
+import Control.Exception (SomeException, catch)
 import Network.Bugsnag
 import System.Exit (die)
 
 main :: IO ()
 main = do
-    settings <- newBugsnagSettings "BUGSNAG_API_KEY"
+    let settings = defaultSettings "BUGSNAG_API_KEY"
 
     appMain `catch` \ex -> do
-        notifyBugsnag settings ex
+        notifyBugsnag @SomeException settings ex
         die $ show ex
 
 -- Actual program logic

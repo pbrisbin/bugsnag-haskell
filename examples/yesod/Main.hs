@@ -12,7 +12,7 @@ module Main (main) where
 
 import Prelude
 
-import Control.Exception (SomeException, fromException, toException)
+import Control.Exception (SomeException, fromException)
 import Control.Monad (unless)
 import Network.Bugsnag
 import Network.Wai.Handler.Warp (run)
@@ -25,7 +25,7 @@ import UnliftIO.Exception (throwIO)
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
 
-newtype App = App { appBugsnag :: BugsnagSettings }
+newtype App = App { appBugsnag :: Settings }
 mkYesod "App" [parseRoutes|/ RootR GET|]
 
 getRootR :: Handler Html
@@ -51,9 +51,10 @@ bugsnagYesodMiddleware handler = do
 
     handler `catch` \ex -> do
         unless (isHandlerContents ex)
-            $ forkHandler (const $ pure ()) $ liftIO
+            $ forkHandler (const $ pure ())
+            $ liftIO
             $ notifyBugsnagWith (updateEventFromWaiRequest request) settings ex
-        throwIO $ toException ex
+        throwIO ex
   where
     isHandlerContents :: SomeException -> Bool
     isHandlerContents ex =
@@ -63,7 +64,7 @@ bugsnagYesodMiddleware handler = do
 
 main :: IO ()
 main = do
-    appBugsnag <- newBugsnagSettings "BUGSNAG_API_KEY"
+    let appBugsnag = defaultSettings "BUGSNAG_API_KEY"
 
     -- N.B. You should also consider setting Warp's onException
     run 3000 =<< toWaiApp App{..}

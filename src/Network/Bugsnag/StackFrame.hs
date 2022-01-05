@@ -2,72 +2,42 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Network.Bugsnag.StackFrame
-    ( BugsnagCode(..)
-    , attachBugsnagCode
-    , BugsnagStackFrame(..)
-    , bugsnagStackFrame
+    ( attachBugsnagCode
     , currentStackFrame
     ) where
 
 import Prelude
 
-import Data.Aeson
-import Data.Aeson.Ext
-import Data.Text (Text)
-import GHC.Generics
+import Data.Bugsnag
+import Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HashMap
+import Data.Text (Text, pack, unpack)
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Syntax
 import Network.Bugsnag.CodeIndex
-import Numeric.Natural (Natural)
 
--- | Lines of code surrounding the error
---
--- Pairs of @(line-number, line-of-code)@, up to 3 on either side.
---
-newtype BugsnagCode = BugsnagCode [(Natural, Text)]
-    deriving newtype (Show, ToJSON)
-
--- | Attempt to attach a @'BugsnagCode'@ to a @'BugsnagStackFrame'@
+-- | Attempt to attach code to a 'StackFrame'
 --
 -- Looks up the content in the Index by File/LineNumber and, if found, sets it
 -- on the record.
 --
-attachBugsnagCode :: CodeIndex -> BugsnagStackFrame -> BugsnagStackFrame
-attachBugsnagCode index sf =
-    sf { bsfCode = findBugsnagCode (bsfFile sf) (bsfLineNumber sf) index }
+attachBugsnagCode :: CodeIndex -> StackFrame -> StackFrame
+attachBugsnagCode index sf = sf
+    { stackFrame_code = findBugsnagCode
+        (unpack $ stackFrame_file sf)
+        (stackFrame_lineNumber sf)
+        index
+    }
 
-findBugsnagCode :: FilePath -> Natural -> CodeIndex -> Maybe BugsnagCode
-findBugsnagCode path n = fmap BugsnagCode . findSourceRange path (begin, n + 3)
+findBugsnagCode :: FilePath -> Int -> CodeIndex -> Maybe (HashMap Int Text)
+findBugsnagCode path n = fmap HashMap.fromList
+    . findSourceRange path (begin, n + 3)
   where
     begin
         | n < 3 = 0
         | otherwise = n - 3
 
-data BugsnagStackFrame = BugsnagStackFrame
-    { bsfFile :: FilePath
-    , bsfLineNumber :: Natural
-    , bsfColumnNumber :: Maybe Natural
-    , bsfMethod :: Text -- ^ Function, in our parlance
-    , bsfInProject :: Maybe Bool
-    , bsfCode :: Maybe BugsnagCode
-    }
-    deriving stock (Generic, Show)
-
-instance ToJSON BugsnagStackFrame where
-    toJSON = genericToJSON $ bsAesonOptions "bsf"
-    toEncoding = genericToEncoding $ bsAesonOptions "bsf"
-
-bugsnagStackFrame :: FilePath -> Natural -> Text -> BugsnagStackFrame
-bugsnagStackFrame path ln method = BugsnagStackFrame
-    { bsfFile = path
-    , bsfLineNumber = ln
-    , bsfColumnNumber = Nothing
-    , bsfMethod = method
-    , bsfInProject = Nothing
-    , bsfCode = Nothing
-    }
-
--- | Construct a @'BugsnagStackFrame'@ from the point of this splice
+-- | Construct a 'StackFrame' from the point of this splice
 --
 -- Unfortunately there's no way to know the function, so that must be given:
 --
@@ -76,18 +46,18 @@ currentStackFrame = [|locStackFrame $(qLocation >>= liftLoc)|]
 
 -- brittany-disable-next-binding
 
-locStackFrame :: Loc -> Text -> BugsnagStackFrame
+locStackFrame :: Loc -> Text -> StackFrame
 locStackFrame (Loc path _ _ (ls, cs) _) func =
-    BugsnagStackFrame
-        { bsfFile = path
-        , bsfLineNumber = fromIntegral ls
-        , bsfColumnNumber = Just $ fromIntegral cs
-        , bsfMethod = func
-        , bsfInProject = Just True
+    defaultStackFrame
+        { stackFrame_file = pack path
+        , stackFrame_lineNumber = ls
+        , stackFrame_columnNumber = Just cs
+        , stackFrame_method = func
+        , stackFrame_inProject = Just True
         -- N.B. this assumes we're unlikely to see adoption within libraries, or
         -- that such a thing would even work. If this function's used, it's
         -- assumed to be in end-user code.
-        , bsfCode = Nothing
+        , stackFrame_code = Nothing
         }
 
 -- brittany-disable-next-binding
