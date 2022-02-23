@@ -36,22 +36,22 @@ data BugsnagRequest = BugsnagRequest
 
 instance ToJSON BugsnagRequest where
     toJSON BugsnagRequest {..} = object
-        ( "clientIp" .=? (decodeUtf8 <$> brClientIp)
-        <> "headers" .=? brHeaders
-        <> "httpMethod" .=? (decodeUtf8 <$> brHttpMethod)
-        <> "url" .=? (decodeUtf8 <$> brUrl)
-        <> "referer" .=? (decodeUtf8 <$> brReferer)
+        ( ("clientIp" .=? (decodeUtf8 <$> brClientIp))
+        <> ("headers" .=? brHeaders)
+        <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
+        <> ("url" .=? (decodeUtf8 <$> brUrl))
+        <> ("referer" .=? (decodeUtf8 <$> brReferer))
         )
       where
         -- For implementing "omit Nothing fields"
         (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
         (.=?) k = maybe [] (pure . (fromText k .=))
     toEncoding BugsnagRequest {..} = pairs
-        ( "clientIp" .=? (decodeUtf8 <$> brClientIp)
-        <> "headers" .=? brHeaders
-        <> "httpMethod" .=? (decodeUtf8 <$> brHttpMethod)
-        <> "url" .=? (decodeUtf8 <$> brUrl)
-        <> "referer" .=? (decodeUtf8 <$> brReferer)
+        ( ("clientIp" .=? (decodeUtf8 <$> brClientIp))
+        <> ("headers" .=? brHeaders)
+        <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
+        <> ("url" .=? (decodeUtf8 <$> brUrl))
+        <> ("referer" .=? (decodeUtf8 <$> brReferer))
         )
       where
         -- For implementing "omit Nothing fields"
