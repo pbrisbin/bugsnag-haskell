@@ -36,7 +36,7 @@ data BugsnagRequest = BugsnagRequest
 
 instance ToJSON BugsnagRequest where
     toJSON BugsnagRequest {..} = object
-        ( ("clientIp" .=? (decodeUtf8 <$> brClientIp))
+        (("clientIp" .=? (decodeUtf8 <$> brClientIp))
         <> ("headers" .=? brHeaders)
         <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
         <> ("url" .=? (decodeUtf8 <$> brUrl))
@@ -47,7 +47,7 @@ instance ToJSON BugsnagRequest where
         (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
         (.=?) k = maybe [] (pure . (fromText k .=))
     toEncoding BugsnagRequest {..} = pairs
-        ( ("clientIp" .=? (decodeUtf8 <$> brClientIp))
+        (("clientIp" .=? (decodeUtf8 <$> brClientIp))
         <> ("headers" .=? brHeaders)
         <> ("httpMethod" .=? (decodeUtf8 <$> brHttpMethod))
         <> ("url" .=? (decodeUtf8 <$> brUrl))
