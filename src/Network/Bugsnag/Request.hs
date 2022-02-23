@@ -11,10 +11,13 @@ import Prelude
 import Control.Applicative ((<|>))
 import Data.Aeson
 import Data.Aeson.Ext
+import Data.Aeson.Types
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
 import Data.IP
 import Data.Maybe (fromMaybe)
+import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8)
 import GHC.Generics
 import Network.Bugsnag.BugsnagRequestHeaders
 import Network.HTTP.Types
@@ -32,8 +35,28 @@ data BugsnagRequest = BugsnagRequest
     deriving stock Generic
 
 instance ToJSON BugsnagRequest where
-    toJSON = genericToJSON $ bsAesonOptions "br"
-    toEncoding = genericToEncoding $ bsAesonOptions "br"
+    toJSON BugsnagRequest {..} = object
+        ( "clientIp" .=? (decodeUtf8 <$> brClientIp)
+        <> "headers" .=? brHeaders
+        <> "httpMethod" .=? (decodeUtf8 <$> brHttpMethod)
+        <> "url" .=? (decodeUtf8 <$> brUrl)
+        <> "referer" .=? (decodeUtf8 <$> brReferer)
+        )
+      where
+        -- For implementing "omit Nothing fields"
+        (.=?) :: ToJSON v => Text -> Maybe v -> [Pair]
+        (.=?) k = maybe [] (pure . (fromText k .=))
+    toEncoding BugsnagRequest {..} = pairs
+        ( "clientIp" .=? (decodeUtf8 <$> brClientIp)
+        <> "headers" .=? brHeaders
+        <> "httpMethod" .=? (decodeUtf8 <$> brHttpMethod)
+        <> "url" .=? (decodeUtf8 <$> brUrl)
+        <> "referer" .=? (decodeUtf8 <$> brReferer)
+        )
+      where
+        -- For implementing "omit Nothing fields"
+        (.=?) :: ToJSON v => Text -> Maybe v -> Series
+        k .=? mv = maybe mempty (\v -> fromText k .= v) mv
 
 -- | Constructs an empty @'BugsnagRequest'@
 bugsnagRequest :: BugsnagRequest

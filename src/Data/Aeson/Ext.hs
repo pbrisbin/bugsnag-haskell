@@ -13,11 +13,9 @@ module Data.Aeson.Ext
 import Prelude
 
 import Data.Aeson
-import Data.ByteString (ByteString)
 import Data.Char (toLower)
 import Data.List (stripPrefix)
 import Data.Maybe (fromMaybe)
-import Data.Text.Encoding (decodeUtf8)
 
 #if MIN_VERSION_aeson(2,0,0)
 import Data.Aeson.Key (fromText)
@@ -26,9 +24,6 @@ import Data.Text (Text)
 fromText :: Text -> Text
 fromText = id
 #endif
-
-instance ToJSON ByteString where
-    toJSON = String . decodeUtf8
 
 -- | Our custom Aeson @'Options'@
 --
