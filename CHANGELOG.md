@@ -1,6 +1,6 @@
 ## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.3...main)
 
-None.
+- Remove the orphan instance ToJSON ByteString
 
 ## [v0.0.4.3](https://github.com/pbrisbin/bugsnag-haskell/compare/v0.0.4.2...v0.0.4.3)
 
