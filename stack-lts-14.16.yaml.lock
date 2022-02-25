@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: bugsnag-hs-0.2.0.8@sha256:978e699292a3910040f1525335284fb066c1c81f82130769df146c134dfecc64,1525
+    pantry-tree:
+      size: 456
+      sha256: b3959ee9116623e6a44a842521bd8a4396549d22c118d249d77ebc02c6ab8630
+  original:
+    hackage: bugsnag-hs-0.2.0.8@sha256:978e699292a3910040f1525335284fb066c1c81f82130769df146c134dfecc64,1525
 snapshots:
 - completed:
     size: 524804
