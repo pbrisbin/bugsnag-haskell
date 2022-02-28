@@ -17,10 +17,9 @@ import Control.Monad (unless)
 import Network.Bugsnag
 import Network.Wai.Handler.Warp (run)
 #if MIN_VERSION_yesod_core(1,6,0)
-import UnliftIO.Exception (catch, throwIO)
+import UnliftIO.Exception (withException)
 #else
-import Control.Monad.Catch (catch)
-import UnliftIO.Exception (throwIO)
+import Control.Monad.Catch (withException)
 #endif
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
@@ -49,12 +48,11 @@ bugsnagYesodMiddleware handler = do
     settings <- getsYesod appBugsnag
     request <- waiRequest
 
-    handler `catch` \ex -> do
+    handler `withException` \ex ->
         unless (isHandlerContents ex)
             $ forkHandler (const $ pure ())
             $ liftIO
             $ notifyBugsnagWith (updateEventFromWaiRequest request) settings ex
-        throwIO ex
   where
     isHandlerContents :: SomeException -> Bool
     isHandlerContents ex =
