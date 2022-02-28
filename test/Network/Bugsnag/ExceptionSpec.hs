@@ -30,6 +30,16 @@ spec = do
             stackFrame_inProject frame `shouldBe` Just True
 
         describe "bugsnagExceptionFromSomeException" $ do
+            it "sets errorClass" $ do
+                let
+                    ex =
+                        bugsnagExceptionFromSomeException
+                            $ toException
+                            $ userError "Oops"
+
+                exception_errorClass ex `shouldBe` "IOException"
+                exception_message ex `shouldBe` Just "user error (Oops)"
+
             it "can parse errors with callstacks" $ do
                 e <- evaluate brokenFunction `catch` pure
 

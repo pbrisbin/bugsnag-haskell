@@ -1,5 +1,8 @@
 module Network.Bugsnag.Device
     ( bugsnagDeviceFromWaiRequest
+
+    -- * Exported for testing
+    , bugsnagDeviceFromUserAgent
     ) where
 
 import Prelude
@@ -18,23 +21,6 @@ bugsnagDeviceFromWaiRequest request = do
     userAgent <- lookup "User-Agent" $ Wai.requestHeaders request
     pure $ bugsnagDeviceFromUserAgent userAgent
 
--- |
---
--- >>> device = bugsnagDeviceFromUserAgent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36"
--- >>> device_osName device
--- Just "Linux"
---
--- N.B. we always return a Device, it may just be lacking some or all fields.
---
--- >>> device_osVersion device
--- Nothing
---
--- >>> device_browserName device
--- Just "Chrome"
---
--- >>> device_browserVersion device
--- Just "64.0.3282"
---
 bugsnagDeviceFromUserAgent :: ByteString -> Device
 bugsnagDeviceFromUserAgent userAgent = defaultDevice
     { device_osName = osrFamily <$> osResult

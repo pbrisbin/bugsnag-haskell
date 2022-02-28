@@ -18,10 +18,6 @@ import Data.Typeable (typeRep)
 import Instances.TH.Lift ()
 import Network.Bugsnag.Exception.Parse
 
--- $setup
--- >>> import Control.Arrow
--- >>> import System.IO.Error
-
 -- | Newtype over 'Exception', so it can be thrown and caught
 newtype AsException = AsException
     { unAsException :: Exception
@@ -30,10 +26,6 @@ newtype AsException = AsException
     deriving anyclass Exception.Exception
 
 -- | Construct a 'Exception' from a 'SomeException'
---
--- >>> (exception_errorClass &&& exception_message) $ bugsnagExceptionFromSomeException $ toException $ userError "Oops"
--- ("IOException",Just "user error (Oops)")
---
 bugsnagExceptionFromSomeException :: SomeException -> Exception
 bugsnagExceptionFromSomeException ex = fromMaybe fallback $ asum
     [ unAsException <$> fromException ex
@@ -65,12 +57,5 @@ bugsnagExceptionFromException ex = defaultException
     }
 
 -- | Show an exception's "error class"
---
--- >>> exErrorClass (undefined :: IOException)
--- "IOException"
---
--- >>> exErrorClass (undefined :: SomeException)
--- "SomeException"
---
 exErrorClass :: forall e . Exception.Exception e => e -> Text
 exErrorClass _ = pack $ show $ typeRep $ Proxy @e

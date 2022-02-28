@@ -2,6 +2,9 @@
 
 module Network.Bugsnag.Request
     ( bugsnagRequestFromWaiRequest
+
+    -- * Exported for testing
+    , readForwardedFor
     ) where
 
 import Prelude
@@ -47,17 +50,6 @@ requestForwardedFor :: Wai.Request -> Maybe ByteString
 requestForwardedFor request =
     readForwardedFor =<< lookup "X-Forwarded-For" (Wai.requestHeaders request)
 
--- |
---
--- >>> readForwardedFor ""
--- Nothing
---
--- >>> readForwardedFor "123.123.123"
--- Just "123.123.123"
---
--- >>> readForwardedFor "123.123.123, 45.45.45"
--- Just "123.123.123"
---
 readForwardedFor :: ByteString -> Maybe ByteString
 readForwardedFor bs
     | C8.null bs = Nothing

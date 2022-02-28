@@ -42,10 +42,6 @@ import Network.Bugsnag.StackFrame
 import Network.HTTP.Types.Header (HeaderName)
 import qualified Network.Wai as Wai (Request)
 
--- $setup
--- >>> import qualified Data.HashMap.Strict as HashMap
--- >>> import Data.Maybe (fromMaybe)
-
 -- | A function from 'Event' to 'Event' that is applied before notifying
 --
 -- The wrapped function also accepts the original exception, for cases in which
@@ -173,13 +169,6 @@ redactRequestHeaders :: [HeaderName] -> BeforeNotify
 redactRequestHeaders headers = updateEvent $ \event ->
     event { event_request = redactHeaders headers <$> event_request event }
 
--- |
---
--- >>> let headers = [("Authorization", "secret"), ("X-Foo", "Bar")]
--- >>> let req = defaultRequest { request_headers = Just $ HashMap.fromList headers }
--- >>> fmap HashMap.toList $ request_headers $ redactHeaders ["Authorization"] req
--- Just [("Authorization","<redacted>"),("X-Foo","Bar")]
---
 redactHeaders :: [HeaderName] -> Request -> Request
 redactHeaders headers request = request
     { request_headers = redactBugsnagRequestHeaders headers

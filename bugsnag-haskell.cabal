@@ -4,7 +4,7 @@ cabal-version: 1.18
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4380c44d8fdbddbd91c06b2207b5603e94fd768f4a2a507ebce59592b8a333d4
+-- hash: a8c1b3ddef6658386b9b696e0117ba86e106bca062ce47fe3fddf9d95ce9516b
 
 name:           bugsnag-haskell
 version:        0.0.4.4
@@ -251,45 +251,6 @@ executable example-yesod
     buildable: False
   default-language: Haskell2010
 
-test-suite doctest
-  type: exitcode-stdio-1.0
-  main-is: DocTest.hs
-  other-modules:
-      Paths_bugsnag_haskell
-  hs-source-dirs:
-      ./
-  default-extensions:
-      BangPatterns
-      DataKinds
-      DeriveAnyClass
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DerivingStrategies
-      FlexibleContexts
-      FlexibleInstances
-      GADTs
-      GeneralizedNewtypeDeriving
-      LambdaCase
-      MultiParamTypeClasses
-      NoImplicitPrelude
-      NoMonomorphismRestriction
-      OverloadedStrings
-      RankNTypes
-      RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TypeApplications
-      TypeFamilies
-  build-depends:
-      aeson
-    , base >=4.11.0 && <5
-    , doctest
-    , yaml
-  default-language: Haskell2010
-
 test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
@@ -297,7 +258,9 @@ test-suite spec
       Examples
       Network.Bugsnag.BeforeNotifySpec
       Network.Bugsnag.CodeIndexSpec
+      Network.Bugsnag.DeviceSpec
       Network.Bugsnag.ExceptionSpec
+      Network.Bugsnag.RequestSpec
       Paths_bugsnag_haskell
   hs-source-dirs:
       test
@@ -332,4 +295,5 @@ test-suite spec
     , hspec
     , text
     , unliftio
+    , unordered-containers
   default-language: Haskell2010

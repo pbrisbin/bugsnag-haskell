@@ -128,14 +128,7 @@ tests:
       - bugsnag-haskell
       - text
       - unliftio
-
-  doctest:
-    main: DocTest.hs
-    source-dirs: .
-    dependencies:
-      - aeson
-      - doctest
-      - yaml
+      - unordered-containers
 
 flags:
   examples:
