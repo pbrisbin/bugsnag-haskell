@@ -1,8 +1,8 @@
-# WAI integration for Bugsnag
+# Yesod integration for Bugsnag
 
 ## Examples
 
-- [WAI/Warp](./example/Main.hs)
+- [Yesod/Warp](./example/Main.hs)
 
 Examples can be built locally with:
 

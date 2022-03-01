@@ -1,6 +1,6 @@
-name: bugsnag
+name: bugsnag-yesod
 version: 0.0.0.1
-synopsis: Bugsnag error reporter for Haskell
+synopsis: Yesod integration for Bugsnag error reporting for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
 author: Patrick Brisbin
@@ -17,7 +17,6 @@ extra-doc-files:
 
 extra-source-files:
   - package.yaml
-  - test/fixtures/**/*
 
 default-extensions:
   - BangPatterns
@@ -48,47 +47,32 @@ default-extensions:
 library:
   source-dirs: src
   dependencies:
-    - Glob >= 0.9.0
-    - bugsnag-hs
-    - bytestring
-    - containers
-    - http-client
-    - http-client-tls
-    - parsec
-    - template-haskell
-    - text
-    - th-lift-instances
-    - ua-parser
-    - unordered-containers
+    - bugsnag
+    - bugsnag-wai
+    - yesod-core
+    - wai
+    - unliftio
 
 executables:
-  example-simple:
-    source-dirs: examples/simple
+  example-warp:
+    source-dirs: example
     main: Main.hs
     dependencies:
       - bugsnag
+      - bugsnag-yesod
+      - warp
+      - yesod-core > 1.6
     when:
       - condition: ! "!(flag(examples))"
         buildable: false
 
-  example-cli:
-    source-dirs: examples/cli
-    main: Main.hs
-    dependencies:
-      - bugsnag
-    when:
-      - condition: ! "!(flag(examples))"
-        buildable: false
-
-tests:
-  spec:
-    main: Spec.hs
-    source-dirs: test
-    dependencies:
-      - hspec
-      - bugsnag
-      - text
-      - unliftio
+# tests:
+#   spec:
+#     main: Spec.hs
+#     source-dirs: test
+#     dependencies:
+#       - hspec
+#       - bugsnag-yesod
 
 flags:
   examples:

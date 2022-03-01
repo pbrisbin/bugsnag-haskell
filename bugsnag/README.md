@@ -1,8 +1,5 @@
 # Bugsnag error reporter for Haskell
 
-[![CI](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml)
-[![Stackage nightly](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml)
-
 Catch exceptions in your Haskell code and report then to Bugsnag.
 
 ## Configuration
