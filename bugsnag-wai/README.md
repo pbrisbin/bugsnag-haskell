@@ -7,7 +7,7 @@
 Examples can be built locally with:
 
 ```console
-stack build --flag bugsnag-haskell:examples
+stack build --flag bugsnag-wai:examples
 ```
 
 ---

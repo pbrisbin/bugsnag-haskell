@@ -15,9 +15,6 @@ extra-doc-files:
   - CHANGELOG.md
   - README.md
 
-extra-source-files:
-  - package.yaml
-
 default-extensions:
   - BangPatterns
   - DataKinds

@@ -1,8 +1,0 @@
----
-- package:
-    - name: bugsnag-haskell
-    - section:
-        - name: exe:example-yesod
-        - message:
-            - name: Redundant build-depends entry
-            - depends: exceptions

@@ -8,5 +8,5 @@ First released version.
 
 ---
 
-For CHANGELOG details prior to the released version see
+For CHANGELOG details prior to the package re-organization, see
 [`archive/CHANGELOG.md`](../archive/CHANGELOG.md).

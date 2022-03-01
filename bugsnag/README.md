@@ -23,8 +23,8 @@ let
     }
 ```
 
-In order to treat it like an actual Haskell `Exception`, wrap it in
-`AsException`:
+In order to treat it like an actual Haskell `Exception` (including to report
+it), wrap it in `AsException`:
 
 ```hs
 notifyBugsnag settings $ AsException ex
@@ -48,13 +48,11 @@ throwIO $ AsException ex
 
 - [Simple](./examples/simple/Main.hs)
 - [Command-Line](./examples/cli/Main.hs)
-- [WAI/Warp](./examples/warp/Main.hs)
-- [Yesod](./examples/yesod/Main.hs)
 
 Examples can be built locally with:
 
 ```console
-stack build --flag bugsnag-haskell:examples
+stack build --flag bugsnag:examples
 ```
 
 ## `bugsnag-hs`

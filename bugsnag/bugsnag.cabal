@@ -16,7 +16,6 @@ license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    package.yaml
     test/fixtures/index-project/Foo.hs
 extra-doc-files:
     CHANGELOG.md
