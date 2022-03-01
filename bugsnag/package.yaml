@@ -1,5 +1,5 @@
-name: bugsnag-haskell
-version: 0.0.4.4
+name: bugsnag
+version: 0.0.0.1
 synopsis: Bugsnag error reporter for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
@@ -45,16 +45,6 @@ default-extensions:
   - TypeApplications
   - TypeFamilies
 
-# Doing this via stack.yaml so that other GHC builds don't see it
-# ghc-options: -fwrite-ide-info
-#   -Weverything
-#   -Wno-safe
-#   -Wno-unsafe
-#   -Wno-missing-import-lists
-#   -Wno-missing-safe-haskell-mode
-#   -Wno-prepositive-qualified-module
-#   -Wno-all-missed-specialisations
-
 library:
   source-dirs: src
   dependencies:
@@ -66,22 +56,19 @@ library:
     - http-client
     - http-client-tls
     - http-types
-    - iproute
-    - network
     - parsec
     - template-haskell
     - text
     - th-lift-instances
     - ua-parser
     - unordered-containers
-    - wai
 
 executables:
   example-simple:
     source-dirs: examples/simple
     main: Main.hs
     dependencies:
-      - bugsnag-haskell
+      - bugsnag
     when:
       - condition: ! "!(flag(examples))"
         buildable: false
@@ -90,34 +77,34 @@ executables:
     source-dirs: examples/cli
     main: Main.hs
     dependencies:
-      - bugsnag-haskell
+      - bugsnag
     when:
       - condition: ! "!(flag(examples))"
         buildable: false
 
-  example-warp:
-    source-dirs: examples/warp
-    main: Main.hs
-    dependencies:
-      - bugsnag-haskell
-      - wai
-      - warp
-    when:
-      - condition: ! "!(flag(examples))"
-        buildable: false
+  # example-warp:
+  #   source-dirs: examples/warp
+  #   main: Main.hs
+  #   dependencies:
+  #     - bugsnag
+  #     - wai
+  #     - warp
+  #   when:
+  #     - condition: ! "!(flag(examples))"
+  #       buildable: false
 
-  example-yesod:
-    source-dirs: examples/yesod
-    main: Main.hs
-    dependencies:
-      - bugsnag-haskell
-      - unliftio
-      - wai
-      - warp
-      - yesod-core
-    when:
-      - condition: ! "!(flag(examples))"
-        buildable: false
+  # example-yesod:
+  #   source-dirs: examples/yesod
+  #   main: Main.hs
+  #   dependencies:
+  #     - bugsnag
+  #     - unliftio
+  #     - wai
+  #     - warp
+  #     - yesod-core
+  #   when:
+  #     - condition: ! "!(flag(examples))"
+  #       buildable: false
 
 tests:
   spec:
@@ -125,10 +112,9 @@ tests:
     source-dirs: test
     dependencies:
       - hspec
-      - bugsnag-haskell
+      - bugsnag
       - text
       - unliftio
-      - unordered-containers
 
 flags:
   examples:

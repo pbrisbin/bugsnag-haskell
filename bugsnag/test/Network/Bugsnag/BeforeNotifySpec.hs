@@ -7,7 +7,6 @@ import Prelude
 
 import Control.Exception
 import Data.Bugsnag hiding (Exception)
-import qualified Data.HashMap.Strict as HashMap
 import Network.Bugsnag.BeforeNotify
 import Test.Hspec
 
@@ -43,23 +42,3 @@ spec = do
 
             event_groupingHash (runBeforeNotify bn BazException defaultEvent)
                 `shouldBe` Nothing
-
-    describe "redactRequestHeaders" $ do
-        it "redacts the given headers" $ do
-            let bn = redactRequestHeaders ["Authorization"]
-
-                event = runBeforeNotify bn FooException $ defaultEvent
-                    { event_request = Just defaultRequest
-                        { request_headers =
-                            Just $ HashMap.fromList
-                                [("Authorization", "secret"), ("X-Foo", "Bar")]
-                        }
-                    }
-
-                eventRequestHeaders e = do
-                    r <- event_request e
-                    hs <- request_headers r
-                    pure $ HashMap.toList hs
-
-            eventRequestHeaders event `shouldBe` Just
-                [("Authorization", "<redacted>"), ("X-Foo", "Bar")]

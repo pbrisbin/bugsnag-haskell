@@ -16,9 +16,6 @@ module Network.Bugsnag.BeforeNotify
     -- * Modifying the Event
     , updateEvent
     , updateEventFromOriginalException
-    , updateEventFromWaiRequest
-    , updateEventFromWaiRequestUnredacted
-    , redactRequestHeaders
     , setGroupingHash
     , setGroupingHashBy
     , setDevice
@@ -34,13 +31,8 @@ import qualified Control.Exception as Exception
 import Data.Bugsnag
 import Data.Maybe (isJust)
 import Data.Text (Text, unpack)
-import Network.Bugsnag.BugsnagRequestHeaders
 import Network.Bugsnag.CodeIndex
-import Network.Bugsnag.Device
-import Network.Bugsnag.Request
 import Network.Bugsnag.StackFrame
-import Network.HTTP.Types.Header (HeaderName)
-import qualified Network.Wai as Wai (Request)
 
 -- | A function from 'Event' to 'Event' that is applied before notifying
 --
@@ -135,45 +127,6 @@ updateEventFromOriginalException
 updateEventFromOriginalException f = beforeNotify $ \e event ->
     let bn = maybe mempty f $ Exception.fromException $ Exception.toException e
     in runBeforeNotify bn e event
-
--- | Set the events 'Event' and 'Device'
---
--- This function redacts the following Request headers:
---
--- - Authorization
--- - Cookie
--- - X-XSRF-TOKEN (CSRF token header used by Yesod)
---
--- To avoid this, use 'updateEventFromWaiRequestUnredacted'.
---
-updateEventFromWaiRequest :: Wai.Request -> BeforeNotify
-updateEventFromWaiRequest wrequest =
-    redactRequestHeaders ["Authorization", "Cookie", "X-XSRF-TOKEN"]
-        <> updateEventFromWaiRequestUnredacted wrequest
-
-updateEventFromWaiRequestUnredacted :: Wai.Request -> BeforeNotify
-updateEventFromWaiRequestUnredacted wrequest =
-    let
-        mdevice = bugsnagDeviceFromWaiRequest wrequest
-        request = bugsnagRequestFromWaiRequest wrequest
-    in maybe mempty setDevice mdevice <> setRequest request
-
--- | Redact the given request headers
---
--- Headers like @Authorization@ may contain information you don't want to report
--- to Bugsnag.
---
--- > redactRequestHeaders ["Authorization", "Cookie"]
---
-redactRequestHeaders :: [HeaderName] -> BeforeNotify
-redactRequestHeaders headers = updateEvent $ \event ->
-    event { event_request = redactHeaders headers <$> event_request event }
-
-redactHeaders :: [HeaderName] -> Request -> Request
-redactHeaders headers request = request
-    { request_headers = redactBugsnagRequestHeaders headers
-        <$> request_headers request
-    }
 
 setGroupingHash :: Text -> BeforeNotify
 setGroupingHash hash = setGroupingHashBy $ const $ Just hash

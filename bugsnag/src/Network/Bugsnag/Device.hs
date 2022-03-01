@@ -1,8 +1,5 @@
 module Network.Bugsnag.Device
-    ( bugsnagDeviceFromWaiRequest
-
-    -- * Exported for testing
-    , bugsnagDeviceFromUserAgent
+    ( bugsnagDeviceFromUserAgent
     ) where
 
 import Prelude
@@ -11,15 +8,8 @@ import Data.Bugsnag
 import Data.ByteString (ByteString)
 import Data.Text (pack, unpack)
 import Data.Version
-import qualified Network.Wai as Wai
 import Text.Read (readMaybe)
 import Web.UAParser
-
--- | /Attempt/ to divine a 'Device' from a request's User Agent
-bugsnagDeviceFromWaiRequest :: Wai.Request -> Maybe Device
-bugsnagDeviceFromWaiRequest request = do
-    userAgent <- lookup "User-Agent" $ Wai.requestHeaders request
-    pure $ bugsnagDeviceFromUserAgent userAgent
 
 bugsnagDeviceFromUserAgent :: ByteString -> Device
 bugsnagDeviceFromUserAgent userAgent = defaultDevice

@@ -5,29 +5,29 @@
 
 packages:
 - completed:
-    hackage: dhall-1.40.2@sha256:db1d5f81912de498eeb8cf4535aebd76c695c016a8c5710970b61e83f3d345cb,34786
+    hackage: dhall-1.40.2@sha256:81c161bde08bc1fa71f70d0b1f3356c7fbcb6d05d7f0c6a4d1fbf2f0ed1cb857,35550
     pantry-tree:
       size: 316011
-      sha256: 4f87e4e4a327a9bffacd130a3efee3a5eb3a49d3ec85ade58eecd6c3d9608b63
+      sha256: 1018ad42fcd8ca1f874c3a05aac2b3381424cebae41c4c0e77226b598e63d1a7
   original:
-    hackage: dhall-1.40.2@sha256:db1d5f81912de498eeb8cf4535aebd76c695c016a8c5710970b61e83f3d345cb,34786
+    hackage: dhall-1.40.2
 - completed:
     hackage: generic-lens-2.2.0.0@sha256:4008a39f464e377130346e46062e2ac1211f9d2e256bbb1857216e889c7196be,3867
     pantry-tree:
       size: 2470
       sha256: 93d7aae1de4cbbb2e3320b357cd744618cb17356989bd417d374aa73331e7370
   original:
-    hackage: generic-lens-2.2.0.0@sha256:4008a39f464e377130346e46062e2ac1211f9d2e256bbb1857216e889c7196be,3867
+    hackage: generic-lens-2.2.0.0
 - completed:
     hackage: generic-lens-core-2.2.0.0@sha256:b6b69e992f15fa80001de737f41f2123059011a1163d6c8941ce2e3ab44f8c03,2913
     pantry-tree:
       size: 2202
       sha256: 6918fb47f34ecf4246778b229911693b6e20fc2ce94ae8c89d69a89db4e72269
   original:
-    hackage: generic-lens-core-2.2.0.0@sha256:b6b69e992f15fa80001de737f41f2123059011a1163d6c8941ce2e3ab44f8c03,2913
+    hackage: generic-lens-core-2.2.0.0
 snapshots:
 - completed:
-    size: 585393
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/0.yaml
-    sha256: c632012da648385b9fa3c29f4e0afd56ead299f1c5528ee789058be410e883c0
-  original: lts-18.0
+    size: 590102
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/27.yaml
+    sha256: 79a786674930a89301b0e908fad2822a48882f3d01486117693c377b8edffdbe
+  original: lts-18.27

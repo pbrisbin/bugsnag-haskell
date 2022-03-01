@@ -3,11 +3,9 @@ cabal-version: 1.18
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: a8c1b3ddef6658386b9b696e0117ba86e106bca062ce47fe3fddf9d95ce9516b
 
-name:           bugsnag-haskell
-version:        0.0.4.4
+name:           bugsnag
+version:        0.0.0.1
 synopsis:       Bugsnag error reporter for Haskell
 description:    Please see README.md
 category:       Web
@@ -40,11 +38,10 @@ library
       Network.Bugsnag.Exception
       Network.Bugsnag.Exception.Parse
       Network.Bugsnag.Notify
-      Network.Bugsnag.Request
       Network.Bugsnag.Settings
       Network.Bugsnag.StackFrame
   other-modules:
-      Paths_bugsnag_haskell
+      Paths_bugsnag
   hs-source-dirs:
       src
   default-extensions:
@@ -82,21 +79,18 @@ library
     , http-client
     , http-client-tls
     , http-types
-    , iproute
-    , network
     , parsec
     , template-haskell
     , text
     , th-lift-instances
     , ua-parser
     , unordered-containers
-    , wai
   default-language: Haskell2010
 
 executable example-cli
   main-is: Main.hs
   other-modules:
-      Paths_bugsnag_haskell
+      Paths_bugsnag
   hs-source-dirs:
       examples/cli
   default-extensions:
@@ -126,7 +120,7 @@ executable example-cli
       TypeFamilies
   build-depends:
       base >=4.11.0 && <5
-    , bugsnag-haskell
+    , bugsnag
   if !(flag(examples))
     buildable: False
   default-language: Haskell2010
@@ -134,7 +128,7 @@ executable example-cli
 executable example-simple
   main-is: Main.hs
   other-modules:
-      Paths_bugsnag_haskell
+      Paths_bugsnag
   hs-source-dirs:
       examples/simple
   default-extensions:
@@ -164,89 +158,7 @@ executable example-simple
       TypeFamilies
   build-depends:
       base >=4.11.0 && <5
-    , bugsnag-haskell
-  if !(flag(examples))
-    buildable: False
-  default-language: Haskell2010
-
-executable example-warp
-  main-is: Main.hs
-  other-modules:
-      Paths_bugsnag_haskell
-  hs-source-dirs:
-      examples/warp
-  default-extensions:
-      BangPatterns
-      DataKinds
-      DeriveAnyClass
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DerivingStrategies
-      FlexibleContexts
-      FlexibleInstances
-      GADTs
-      GeneralizedNewtypeDeriving
-      LambdaCase
-      MultiParamTypeClasses
-      NoImplicitPrelude
-      NoMonomorphismRestriction
-      OverloadedStrings
-      RankNTypes
-      RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TypeApplications
-      TypeFamilies
-  build-depends:
-      base >=4.11.0 && <5
-    , bugsnag-haskell
-    , wai
-    , warp
-  if !(flag(examples))
-    buildable: False
-  default-language: Haskell2010
-
-executable example-yesod
-  main-is: Main.hs
-  other-modules:
-      Paths_bugsnag_haskell
-  hs-source-dirs:
-      examples/yesod
-  default-extensions:
-      BangPatterns
-      DataKinds
-      DeriveAnyClass
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DerivingStrategies
-      FlexibleContexts
-      FlexibleInstances
-      GADTs
-      GeneralizedNewtypeDeriving
-      LambdaCase
-      MultiParamTypeClasses
-      NoImplicitPrelude
-      NoMonomorphismRestriction
-      OverloadedStrings
-      RankNTypes
-      RecordWildCards
-      ScopedTypeVariables
-      StandaloneDeriving
-      TypeApplications
-      TypeFamilies
-  build-depends:
-      base >=4.11.0 && <5
-    , bugsnag-haskell
-    , unliftio
-    , wai
-    , warp
-    , yesod-core
+    , bugsnag
   if !(flag(examples))
     buildable: False
   default-language: Haskell2010
@@ -260,8 +172,7 @@ test-suite spec
       Network.Bugsnag.CodeIndexSpec
       Network.Bugsnag.DeviceSpec
       Network.Bugsnag.ExceptionSpec
-      Network.Bugsnag.RequestSpec
-      Paths_bugsnag_haskell
+      Paths_bugsnag
   hs-source-dirs:
       test
   default-extensions:
@@ -291,9 +202,8 @@ test-suite spec
       TypeFamilies
   build-depends:
       base >=4.11.0 && <5
-    , bugsnag-haskell
+    , bugsnag
     , hspec
     , text
     , unliftio
-    , unordered-containers
   default-language: Haskell2010
