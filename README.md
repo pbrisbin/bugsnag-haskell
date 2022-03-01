@@ -3,44 +3,51 @@
 [![CI](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/ci.yml)
 [![Stackage nightly](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml/badge.svg)](https://github.com/pbrisbin/bugsnag-haskell/actions/workflows/nightly.yml)
 
-Catch and report exceptions in your Haskell code.
+Catch exceptions in your Haskell code and report then to Bugsnag.
 
 ## Configuration
 
 ```hs
-settings <- newBugsnagSettings "BUGSNAG_API_KEY"
+let settings = defaultSettings "A_BUGSNAG_API_KEY"
 ```
 
 See
 [`Network.Bugsnag.Settings`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Settings.html).
 
-## Reporting an Error
+## Building an Error to Report
+
+`Data.Bugsnag.Exception` is the type of actual exceptions included in the event
+reported to Bugsnag. Constructing it directly can be useful to attach the
+current source location as a stack frame.
 
 ```hs
-notifyBugsnag settings $ toException
-    $ bugsnagException "Error" "message"
-        [ $(currentStackFrame) "myFunction"
-        ]
+let ex defaultException
+        { exception_errorClass = "Error"
+        , exception_message = Just "message"
+        , exception_stacktrace = [$(currentStackFrame) "myFunction"]
+        }
+```
+
+In order to treat it like an actual Haskell `Exception` wrap it in
+`AsException`:
+
+```hs
+notifyBugsnag settings $ AsException ex
 ```
 
 See
-[`Network.Bugsnag.Notify`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Notify.html).
+[`Network.Bugsnag.Exception`](http://hackage.haskell.org/package/bugsnag-haskell/docs/Network-Bugsnag-Exception.html).
 
 ## Throwing & Catching
 
-Throw a `BugsnagException` yourself:
-
 ```hs
-throw
-    $ bugsnagException "Error" "message" [$(currentStackFrame) "myFunction"]
+throwIO $ AsException ex
 ```
 
-Catch any exceptions, notify, and re-throw it:
+Catch any exceptions, notify, and re-throw:
 
 ```hs
-myFunction `catch` \ex -> do
-    notifyBugsnag settings ex
-    throw ex
+myFunction `withException` notifyBugsnag @SomeException settings
 ```
 
 ## Examples
