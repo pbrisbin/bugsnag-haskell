@@ -16,6 +16,7 @@ import Prelude
 
 import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
+import Data.Bugsnag.Settings
 import Network.Bugsnag
 import Network.Bugsnag.Wai
 import qualified Network.Wai as Wai

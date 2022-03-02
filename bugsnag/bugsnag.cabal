@@ -29,6 +29,7 @@ flag examples
 library
   exposed-modules:
       Data.Bugsnag
+      Data.Bugsnag.Settings
       Network.Bugsnag
       Network.Bugsnag.BeforeNotify
       Network.Bugsnag.CodeIndex
@@ -36,7 +37,6 @@ library
       Network.Bugsnag.Exception
       Network.Bugsnag.Exception.Parse
       Network.Bugsnag.Notify
-      Network.Bugsnag.Settings
       Network.Bugsnag.StackFrame
   other-modules:
       Paths_bugsnag

@@ -5,6 +5,7 @@ module Main
 import Prelude
 
 import Control.Exception (SomeException, catch)
+import Data.Bugsnag.Settings
 import Network.Bugsnag
 import System.Exit (die)
 

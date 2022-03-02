@@ -8,7 +8,7 @@ module Main where
 
 import Prelude
 
-import Network.Bugsnag
+import Data.Bugsnag.Settings
 import Network.Bugsnag.Yesod
 import Network.Wai.Handler.Warp (run)
 import Yesod.Core

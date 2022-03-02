@@ -4,7 +4,7 @@ module Main
 
 import Prelude
 
-import qualified Network.Bugsnag as Bugsnag
+import qualified Data.Bugsnag.Settings as Bugsnag
 import Network.Bugsnag.Wai (bugsnagOnException)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp

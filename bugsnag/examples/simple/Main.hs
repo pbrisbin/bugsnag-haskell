@@ -7,6 +7,7 @@ module Main
 import Prelude
 
 import Data.Bugsnag
+import Data.Bugsnag.Settings
 import Network.Bugsnag
 import Network.Bugsnag.Exception
 import Network.Bugsnag.StackFrame

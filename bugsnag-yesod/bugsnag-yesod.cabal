@@ -15,8 +15,6 @@ maintainer:     pbrisbin@gmail.com
 license:        MIT
 license-file:   LICENSE
 build-type:     Simple
-extra-source-files:
-    package.yaml
 extra-doc-files:
     CHANGELOG.md
     README.md

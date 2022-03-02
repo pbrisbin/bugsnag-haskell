@@ -18,6 +18,7 @@ import Control.Concurrent (forkIO)
 import Control.Exception (SomeException)
 import Control.Monad (void, when)
 import Data.Bugsnag
+import Data.Bugsnag.Settings
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as C8
 import qualified Data.CaseInsensitive as CI

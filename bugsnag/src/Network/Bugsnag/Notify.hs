@@ -8,9 +8,9 @@ import Prelude
 import qualified Control.Exception as Exception
 import Control.Monad (unless)
 import Data.Bugsnag
+import Data.Bugsnag.Settings
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Exception
-import Network.Bugsnag.Settings
 import Network.HTTP.Client.TLS (getGlobalManager)
 
 notifyBugsnag :: Exception.Exception e => Settings -> e -> IO ()

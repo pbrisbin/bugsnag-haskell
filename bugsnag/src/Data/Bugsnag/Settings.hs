@@ -1,4 +1,4 @@
-module Network.Bugsnag.Settings
+module Data.Bugsnag.Settings
     ( Settings(..)
     , defaultSettings
     ) where

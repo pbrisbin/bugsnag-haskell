@@ -1,11 +1,7 @@
 module Network.Bugsnag
     (
-    -- * Settings
-      Settings(..)
-    , defaultSettings
-
     -- * Notifying
-    , notifyBugsnag
+      notifyBugsnag
     , notifyBugsnagWith
 
     -- * Modifying events on notification
@@ -14,4 +10,3 @@ module Network.Bugsnag
 
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Notify
-import Network.Bugsnag.Settings
