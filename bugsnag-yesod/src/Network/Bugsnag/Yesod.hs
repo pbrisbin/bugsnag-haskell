@@ -10,6 +10,7 @@
 --
 module Network.Bugsnag.Yesod
     ( bugsnagYesodMiddleware
+    , bugsnagYesodMiddlewareWith
     ) where
 
 import Prelude

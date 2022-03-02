@@ -1,5 +1,6 @@
 module Network.Bugsnag.Wai
     ( bugsnagOnException
+    , bugsnagOnExceptionWith
     , updateEventFromWaiRequest
     , updateEventFromWaiRequestUnredacted
     , bugsnagRequestFromWaiRequest
@@ -27,6 +28,7 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.IP
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8)
 import qualified Data.Text.Encoding as TE
 import Network.Bugsnag
@@ -132,10 +134,11 @@ updateEventFromWaiRequest wrequest =
 
 updateEventFromWaiRequestUnredacted :: Wai.Request -> BeforeNotify
 updateEventFromWaiRequestUnredacted wrequest =
-    let
-        mdevice = bugsnagDeviceFromWaiRequest wrequest
-        request = bugsnagRequestFromWaiRequest wrequest
-    in maybe mempty setDevice mdevice <> setRequest request
+    maybe mempty setDevice mdevice <> setRequest request <> setContext context
+  where
+    mdevice = bugsnagDeviceFromWaiRequest wrequest
+    request = bugsnagRequestFromWaiRequest wrequest
+    context = "/" <> T.intercalate "/" (Wai.pathInfo wrequest)
 
 -- | Redact the given request headers
 --

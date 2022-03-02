@@ -19,6 +19,7 @@ module Network.Bugsnag.BeforeNotify
     , setGroupingHash
     , setGroupingHashBy
     , setDevice
+    , setContext
     , setRequest
     , setWarningSeverity
     , setErrorSeverity
@@ -134,6 +135,11 @@ setGroupingHash hash = setGroupingHashBy $ const $ Just hash
 setGroupingHashBy :: (Event -> Maybe Text) -> BeforeNotify
 setGroupingHashBy f =
     updateEvent $ \event -> event { event_groupingHash = f event }
+
+-- | Set the Event's Context
+setContext :: Text -> BeforeNotify
+setContext context =
+    updateEvent $ \event -> event { event_context = Just context }
 
 -- | Set the Event's Request
 --
