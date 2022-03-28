@@ -1,7 +1,5 @@
-resolver: lts-14.16
+resolver: nightly-2022-03-28
 packages:
   - bugsnag
   - bugsnag-wai
   - bugsnag-yesod
-extra-deps:
-  - bugsnag-hs-0.2.0.8
