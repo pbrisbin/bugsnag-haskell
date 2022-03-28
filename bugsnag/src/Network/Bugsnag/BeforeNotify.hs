@@ -41,7 +41,7 @@ import Network.Bugsnag.StackFrame
 -- that's useful -- but it's often not. Most 'BeforeNotify's use 'updateEvent',
 -- which discards it.
 --
--- 'BeforeNotify' implements 'Semigroup' and 'Monoid', which means the /no
+-- 'BeforeNotify' implements 'Semigroup' and 'Monoid', which means the /do
 -- nothing/ 'BeforeNotify' is 'mempty' and two 'BeforeNotify's @doThis@ then
 -- @doThat@ can be implemented as @doThat <> doThis@.
 --
