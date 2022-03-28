@@ -1,8 +1,8 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v0.0.0.1...main)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...main)
 
 - None
 
-## [v0.0.0.1](https://github.com/pbrisbin/bugsnag-haskell/tree/bugsnag-v0.0.0.1)
+## [v1.0.0.0](https://github.com/pbrisbin/bugsnag-haskell/tree/bugsnag-v1.0.0.0)
 
 First released version.
 

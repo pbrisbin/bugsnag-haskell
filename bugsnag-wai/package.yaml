@@ -1,5 +1,5 @@
 name: bugsnag-wai
-version: 0.0.0.1
+version: 1.0.0.0
 synopsis: WAI integration for Bugsnag error reporting for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme

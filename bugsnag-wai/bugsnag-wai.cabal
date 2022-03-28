@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           bugsnag-wai
-version:        0.0.0.1
+version:        1.0.0.0
 synopsis:       WAI integration for Bugsnag error reporting for Haskell
 description:    Please see README.md
 category:       Web
