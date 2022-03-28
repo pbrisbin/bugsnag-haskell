@@ -11,11 +11,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: freckle/stack-cache-action@main
-    - uses: freckle/stack-action@main
-      with:
-        stack-arguments: --resolver nightly --skip doctest
-        hlint: false
-        weeder: false
+      - uses: actions/checkout@v2
+      - uses: freckle/stack-cache-action@v1
+        with:
+          stack-yaml: stack-nightly.yaml
+
+      - id: stack
+        uses: freckle/stack-action@v3
+        with:
+          stack-yaml: stack-nightly.yaml
+          stack-arguments: --resolver nightly
