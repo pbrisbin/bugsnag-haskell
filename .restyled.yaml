@@ -3,21 +3,11 @@ remote_files:
     path: brittany.yaml
   - url: https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
     path: .hlint.yaml
-  - url: https://raw.githubusercontent.com/pbrisbin/dotfiles/master/stylish-haskell.yaml
-    path: .stylish-haskell.yaml
 
 restylers_version: dev
 
 restylers:
   - hlint
   - stylish-haskell
-  - brittany:
-      include:
-        - "**/*.hs"
-        - "!src/Data/Aeson/Ext.hs" # CCP error
-        - "!examples/yesod/Main.hs" # CCP error
-  - prettier:
-      include:
-        - "**/*.yaml"
-        - "**/*.yml"
+  - brittany
   - "*"

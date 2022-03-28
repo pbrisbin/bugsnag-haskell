@@ -1,0 +1,85 @@
+name: bugsnag-wai
+version: 0.0.0.1
+synopsis: WAI integration for Bugsnag error reporting for Haskell
+description: Please see README.md
+homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
+author: Patrick Brisbin
+maintainer: pbrisbin@gmail.com
+category: Web
+license: MIT
+
+dependencies:
+  - base >= 4.11.0 && < 5
+
+extra-doc-files:
+  - CHANGELOG.md
+  - README.md
+
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+
+library:
+  source-dirs: src
+  dependencies:
+    - bugsnag
+    - bytestring
+    - case-insensitive
+    - http-types
+    - iproute
+    - network
+    - text
+    - unordered-containers
+    - wai
+    - warp
+
+executables:
+  example-warp:
+    source-dirs: example
+    main: Main.hs
+    dependencies:
+      - bugsnag
+      - bugsnag-wai
+      - wai
+      - warp
+    when:
+      - condition: ! "!(flag(examples))"
+        buildable: false
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - hspec
+      - bugsnag
+      - bugsnag-wai
+      - unordered-containers
+
+flags:
+  examples:
+    description: Build the examples
+    manual: false
+    default: false

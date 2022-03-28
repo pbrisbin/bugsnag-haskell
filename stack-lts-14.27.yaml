@@ -1,0 +1,7 @@
+resolver: lts-14.27
+packages:
+  - bugsnag
+  - bugsnag-wai
+  - bugsnag-yesod
+extra-deps:
+  - bugsnag-hs-0.2.0.8

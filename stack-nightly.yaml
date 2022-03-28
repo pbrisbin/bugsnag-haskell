@@ -1,0 +1,5 @@
+resolver: nightly-2022-03-28
+packages:
+  - bugsnag
+  - bugsnag-wai
+  - bugsnag-yesod
