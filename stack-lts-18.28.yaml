@@ -1,4 +1,4 @@
-resolver: nightly-2022-03-30
+resolver: lts-18.28
 packages:
   - bugsnag
   - bugsnag-wai

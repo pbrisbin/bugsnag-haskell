@@ -86,7 +86,6 @@ tests:
     dependencies:
       - hspec
       - bugsnag
-      - text
       - unliftio
 
 flags:

@@ -200,6 +200,5 @@ test-suite spec
       base >=4.11.0 && <5
     , bugsnag
     , hspec
-    , text
     , unliftio
   default-language: Haskell2010

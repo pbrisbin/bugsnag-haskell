@@ -1,15 +1,17 @@
-resolver: lts-18.28
+resolver: lts-19.1
 
 packages:
   - bugsnag
   - bugsnag-wai
   - bugsnag-yesod
 
-extra-deps:
-  # for weeder
-  - dhall-1.40.2
-  - generic-lens-2.2.0.0
-  - generic-lens-core-2.2.0.0
+flags:
+  bugsnag:
+    examples: true
+  bugsnag-wai:
+    examples: true
+  bugsnag-yesod:
+    examples: true
 
 ghc-options:
   "$locals": >

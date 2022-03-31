@@ -13,6 +13,8 @@ jobs:
       matrix:
         stack-yaml:
           - stack.yaml
+          - stack-nightly.yaml
+          - stack-lts-18.28.yaml
           - stack-lts-16.31.yaml
           - stack-lts-14.27.yaml
       fail-fast: false
@@ -41,18 +43,6 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           files: ./lcov.info
-
-      # Only build examples with stack.yaml. Keep --coverage so we don't lose
-      # the build cache, even though we uploaded already.
-      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
-        uses: freckle/stack-action@v3
-        with:
-          stack-yaml: ${{ matrix.stack-yaml }}
-          stack-arguments: >-
-            --flag bugsnag:examples
-            --flag bugsnag-wai:examples
-            --flag bugsnag-yesod:examples
-            --coverage
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         uses: freckle/weeder-action@v1
