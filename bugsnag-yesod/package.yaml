@@ -51,7 +51,7 @@ library:
     - unliftio
 
 executables:
-  example-warp:
+  example-yesod:
     source-dirs: example
     main: Main.hs
     dependencies:
