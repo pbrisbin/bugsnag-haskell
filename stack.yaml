@@ -1,4 +1,4 @@
-resolver: lts-18.28
+resolver: lts-19.1
 
 packages:
   - bugsnag
@@ -6,10 +6,8 @@ packages:
   - bugsnag-yesod
 
 extra-deps:
-  # for weeder
-  - dhall-1.40.2
-  - generic-lens-2.2.0.0
-  - generic-lens-core-2.2.0.0
+  # For weeder
+  - algebraic-graphs-0.5
 
 ghc-options:
   "$locals": >
@@ -22,3 +20,11 @@ ghc-options:
     -Wno-prepositive-qualified-module
     -Wno-safe
     -Wno-unsafe
+
+flags:
+  bugsnag:
+    examples: true
+  bugsnag-wai:
+    examples: true
+  bugsnag-yesod:
+    examples: true

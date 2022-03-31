@@ -1,6 +1,10 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...main)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.1...main)
 
 - None
+
+## [v1.0.0.1](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...bugsnag-v1.0.0.1)
+
+- Support GHCs 9.0 and 9.2
 
 ## [v1.0.0.0](https://github.com/pbrisbin/bugsnag-haskell/tree/bugsnag-v1.0.0.0)
 

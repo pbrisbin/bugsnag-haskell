@@ -1,5 +1,5 @@
 name: bugsnag-yesod
-version: 1.0.0.0
+version: 1.0.0.1
 synopsis: Yesod integration for Bugsnag error reporting for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
@@ -51,7 +51,7 @@ library:
     - unliftio
 
 executables:
-  example-warp:
+  example-yesod:
     source-dirs: example
     main: Main.hs
     dependencies:

@@ -5,29 +5,15 @@
 
 packages:
 - completed:
-    hackage: dhall-1.40.2@sha256:81c161bde08bc1fa71f70d0b1f3356c7fbcb6d05d7f0c6a4d1fbf2f0ed1cb857,35550
+    hackage: algebraic-graphs-0.5@sha256:6eeec5ed1687ff7aa916e7bf9f02f51aaabde6f314dc0b7b1a84156974d7da73,8071
     pantry-tree:
-      size: 316011
-      sha256: 1018ad42fcd8ca1f874c3a05aac2b3381424cebae41c4c0e77226b598e63d1a7
+      size: 4128
+      sha256: cca4a0348bb126506cacd8436948a68aad62e75d45df8c71f4090a00e69b45ee
   original:
-    hackage: dhall-1.40.2
-- completed:
-    hackage: generic-lens-2.2.0.0@sha256:4008a39f464e377130346e46062e2ac1211f9d2e256bbb1857216e889c7196be,3867
-    pantry-tree:
-      size: 2470
-      sha256: 93d7aae1de4cbbb2e3320b357cd744618cb17356989bd417d374aa73331e7370
-  original:
-    hackage: generic-lens-2.2.0.0
-- completed:
-    hackage: generic-lens-core-2.2.0.0@sha256:b6b69e992f15fa80001de737f41f2123059011a1163d6c8941ce2e3ab44f8c03,2913
-    pantry-tree:
-      size: 2202
-      sha256: 6918fb47f34ecf4246778b229911693b6e20fc2ce94ae8c89d69a89db4e72269
-  original:
-    hackage: generic-lens-core-2.2.0.0
+    hackage: algebraic-graphs-0.5
 snapshots:
 - completed:
-    size: 590100
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
-    sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
-  original: lts-18.28
+    size: 617355
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/1.yaml
+    sha256: cbd5e8593869445794924668479b5bd9f1738d075898623dceacc13b2576b6e3
+  original: lts-19.1

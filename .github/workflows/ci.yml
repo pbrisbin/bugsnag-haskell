@@ -13,8 +13,11 @@ jobs:
       matrix:
         stack-yaml:
           - stack.yaml
+          - stack-nightly.yaml
+          - stack-lts-18.28.yaml
           - stack-lts-16.31.yaml
           - stack-lts-14.27.yaml
+          - stack-lts-12.26.yaml
       fail-fast: false
 
     steps:
@@ -33,8 +36,8 @@ jobs:
         name: Reformat coverage
         run: |
           tix='${{ steps.stack.outputs.local-hpc-root }}/combined/all/all.tix'
-          stack --no-terminal install --copy-compiler-tool hpc-lcov
-          stack --no-terminal exec -- hpc-lcov --file "$tix"
+          stack --resolver lts-18.28 --no-terminal install --copy-compiler-tool hpc-lcov
+          stack --resolver lts-18.28 --no-terminal exec -- hpc-lcov --file "$tix"
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Upload coverage
@@ -42,22 +45,8 @@ jobs:
         with:
           files: ./lcov.info
 
-      # Only build examples with stack.yaml. Keep --coverage so we don't lose
-      # the build cache, even though we uploaded already.
-      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
-        uses: freckle/stack-action@v3
-        with:
-          stack-yaml: ${{ matrix.stack-yaml }}
-          stack-arguments: >-
-            --flag bugsnag:examples
-            --flag bugsnag-wai:examples
-            --flag bugsnag-yesod:examples
-            --coverage
-
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         uses: freckle/weeder-action@v1
-        with:
-          weeder-version: 2.2.0
 
   hlint:
     runs-on: ubuntu-latest
