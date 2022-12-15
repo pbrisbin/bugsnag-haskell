@@ -32,6 +32,8 @@ import Instances.TH.Lift ()
 import Language.Haskell.TH.Syntax
 import System.FilePath.Glob (glob)
 
+{-# ANN module ("HLint: ignore Unused LANGUAGE pragma" :: String) #-}
+
 newtype CodeIndex = CodeIndex
     { unCodeIndex :: Map FilePath FileIndex
     }
