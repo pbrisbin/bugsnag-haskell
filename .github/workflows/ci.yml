@@ -45,16 +45,15 @@ jobs:
         with:
           files: ./lcov.info
 
-      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
-        uses: freckle/weeder-action@v1
-
   hlint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: rwe/actions-hlint-setup@v1
+      - uses: haskell/actions/hlint-setup@v2
+        with:
+          version: 3.5
       - run: |
           curl -o .hlint.yaml https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
-      - uses: rwe/actions-hlint-run@v2
+      - uses: haskell/actions/hlint-run@v2
         with:
           fail-on: warning
