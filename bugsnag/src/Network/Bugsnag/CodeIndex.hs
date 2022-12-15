@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveLift #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 
 -- | Compile-time snapshot of your project source
