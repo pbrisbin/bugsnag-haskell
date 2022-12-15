@@ -1,5 +1,9 @@
 # Bugsnag error reporter for Haskell
 
+[![Hackage](https://img.shields.io/hackage/v/bugsnag.svg?style=flat)](https://hackage.haskell.org/package/bugsnag)
+[![Stackage Nightly](http://stackage.org/package/bugsnag/badge/nightly)](http://stackage.org/nightly/package/bugsnag)
+[![Stackage LTS](http://stackage.org/package/bugsnag/badge/lts)](http://stackage.org/lts/package/bugsnag)
+
 Catch exceptions in your Haskell code and report then to Bugsnag.
 
 ## Configuration
