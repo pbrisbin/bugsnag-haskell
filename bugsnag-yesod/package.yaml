@@ -1,5 +1,5 @@
 name: bugsnag-yesod
-version: 1.0.0.1
+version: 1.0.1.0
 synopsis: Yesod integration for Bugsnag error reporting for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
@@ -44,6 +44,7 @@ default-extensions:
 library:
   source-dirs: src
   dependencies:
+    - annotated-exception
     - bugsnag
     - bugsnag-wai
     - yesod-core

@@ -4,4 +4,5 @@ packages:
   - bugsnag-wai
   - bugsnag-yesod
 extra-deps:
+  - annotated-exception-0.2.0.3
   - bugsnag-hs-0.2.0.8
