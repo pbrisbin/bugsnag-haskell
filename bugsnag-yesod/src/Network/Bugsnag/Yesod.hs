@@ -1,3 +1,5 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 -- | A 'yesodMiddleware' that notifies Bugsnag of exceptions
 --
 -- 'yesodMiddleware' is the only way to handle things as actual exceptions. The
@@ -15,13 +17,16 @@ module Network.Bugsnag.Yesod
 
 import Prelude
 
+import Control.Exception.Annotated (AnnotatedException)
 import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
 import Data.Bugsnag.Settings
+import Data.Maybe (isJust)
 import Network.Bugsnag
 import Network.Bugsnag.Wai
 import qualified Network.Wai as Wai
-import UnliftIO.Exception (SomeException, fromException, withException)
+import UnliftIO.Exception
+    (Exception, SomeException, fromException, withException)
 import Yesod.Core (forkHandler, getsYesod, waiRequest)
 import Yesod.Core.Types (HandlerContents, HandlerFor)
 
@@ -45,6 +50,8 @@ bugsnagYesodMiddlewareWith mkBeforeNotify getSettings handler = do
             $ notifyBugsnagWith (mkBeforeNotify request) settings ex
 
 isHandlerContents :: SomeException -> Bool
-isHandlerContents ex = case (fromException ex :: Maybe HandlerContents) of
-    Just _ -> True
-    Nothing -> False
+isHandlerContents ex =
+    is @HandlerContents ex || is @(AnnotatedException HandlerContents) ex
+
+is :: forall e . Exception e => SomeException -> Bool
+is = isJust . fromException @e

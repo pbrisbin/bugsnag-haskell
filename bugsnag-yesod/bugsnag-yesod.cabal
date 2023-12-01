@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           bugsnag-yesod
-version:        1.0.0.1
+version:        1.0.1.0
 synopsis:       Yesod integration for Bugsnag error reporting for Haskell
 description:    Please see README.md
 category:       Web
@@ -57,7 +57,8 @@ library
       TypeApplications
       TypeFamilies
   build-depends:
-      base >=4.11.0 && <5
+      annotated-exception
+    , base >=4.11.0 && <5
     , bugsnag
     , bugsnag-wai
     , unliftio

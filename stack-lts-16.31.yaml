@@ -3,3 +3,5 @@ packages:
   - bugsnag
   - bugsnag-wai
   - bugsnag-yesod
+extra-deps:
+  - annotated-exception-0.2.0.4
