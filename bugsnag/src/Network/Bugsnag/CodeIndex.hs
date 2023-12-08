@@ -42,7 +42,7 @@ newtype CodeIndex = CodeIndex
 buildCodeIndex :: String -> Q Exp
 buildCodeIndex p = do
     index <- qRunIO $ buildCodeIndex' p
-    [|index|]
+    [| $(lift index) |]
 
 buildCodeIndex' :: String -> IO CodeIndex
 buildCodeIndex' p = do
