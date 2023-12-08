@@ -5,7 +5,6 @@ module Network.Bugsnag.ExceptionSpec
 import Prelude
 
 import Control.Exception
-import Control.Exception.Annotated (checkpointCallStack)
 import Data.Bugsnag
 import Examples
 import Network.Bugsnag.Exception
@@ -23,7 +22,7 @@ spec = do
 
             let frame = head $ exception_stacktrace ex
             stackFrame_file frame `shouldBe` "test/Examples.hs"
-            stackFrame_lineNumber frame `shouldBe` 25
+            stackFrame_lineNumber frame `shouldBe` 26
             -- different versions of GHC disagree on where splices start
             stackFrame_columnNumber frame
                 `shouldSatisfy` (`elem` [Just 32, Just 33])
@@ -41,6 +40,23 @@ spec = do
                 exception_errorClass ex `shouldBe` "IOException"
                 exception_message ex `shouldBe` Just "user error (Oops)"
 
+            it "can parse errors with callstacks" $ do
+                e <- evaluate brokenFunction `catch` pure
+
+                let ex = bugsnagExceptionFromSomeException e
+                exception_errorClass ex `shouldBe` "ErrorCall"
+                exception_message ex `shouldBe` Just "empty list"
+                exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
+
+                let frame = head $ exception_stacktrace ex
+                stackFrame_file frame `shouldBe` "test/Examples.hs"
+                stackFrame_lineNumber frame `shouldBe` 34
+                stackFrame_columnNumber frame `shouldBe` Just 15
+                stackFrame_method frame `shouldBe` "error"
+
+                map stackFrame_method (exception_stacktrace ex)
+                    `shouldBe` ["error", "sillyHead", "brokenFunction"]
+
             it "parses StringException" $ do
                 e <- brokenFunction' `catch` pure
 
@@ -51,7 +67,7 @@ spec = do
 
                 let frame = head $ exception_stacktrace ex
                 stackFrame_file frame `shouldBe` "test/Examples.hs"
-                stackFrame_lineNumber frame `shouldBe` 40
+                stackFrame_lineNumber frame `shouldBe` 41
                 stackFrame_columnNumber frame `shouldBe` Just 16
                 stackFrame_method frame `shouldBe` "throwString"
 
@@ -69,7 +85,7 @@ spec = do
 
                 let frame = head $ exception_stacktrace ex
                 stackFrame_file frame `shouldBe` "test/Examples.hs"
-                stackFrame_lineNumber frame `shouldBe` 47
+                stackFrame_lineNumber frame `shouldBe` 48
                 stackFrame_columnNumber frame `shouldBe` Just 17
                 stackFrame_method frame `shouldBe` "throwString"
 
@@ -80,19 +96,18 @@ spec = do
                                ]
 
             it "parses (AnnotatedException StringException)" $ do
-                e <- checkpointCallStack brokenFunction' `catch` pure
+                e <- brokenFunctionAnnotated `catch` pure
 
                 let ex = bugsnagExceptionFromSomeException e
                 exception_errorClass ex `shouldBe` "StringException"
                 exception_message ex `shouldBe` Just "empty list"
-                exception_stacktrace ex `shouldSatisfy` ((== 1) . length)
+                exception_stacktrace ex `shouldSatisfy` ((== 2) . length)
 
                 let frame = head $ exception_stacktrace ex
-                stackFrame_file frame
-                    `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
-                stackFrame_lineNumber frame `shouldBe` 83
-                stackFrame_columnNumber frame `shouldBe` Just 22
+                stackFrame_file frame `shouldBe` "test/Examples.hs"
+                stackFrame_lineNumber frame `shouldBe` 51
+                stackFrame_columnNumber frame `shouldBe` Just 27
                 stackFrame_method frame `shouldBe` "checkpointCallStack"
 
                 map stackFrame_method (exception_stacktrace ex)
-                    `shouldBe` ["checkpointCallStack"]
+                    `shouldBe` ["checkpointCallStack", "brokenFunctionAnnotated"]

@@ -18,9 +18,6 @@
   - `bugsnagExceptionFromSomeException` now has special cases to handle
     `StringException` well.
 
-- Removes module `Network.Bugsnag.Exception.Parse`.
-  Parsing of stack traces is no longer supported.
-
 ## [v1.0.0.1](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...bugsnag-v1.0.0.1)
 
 - Support GHCs 9.0 and 9.2

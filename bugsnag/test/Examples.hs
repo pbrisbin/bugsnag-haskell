@@ -17,6 +17,7 @@ import GHC.Stack (HasCallStack)
 import Network.Bugsnag.Exception
 import Network.Bugsnag.StackFrame
 import UnliftIO.Exception (throwString)
+import Control.Exception.Annotated (checkpointCallStack)
 
 brokenFunctionIO :: IO a
 brokenFunctionIO = throw $ AsException $ defaultException
@@ -45,3 +46,6 @@ brokenFunction'' = sillyHead'' []
 sillyHead'' :: HasCallStack => [a] -> IO a
 sillyHead'' (x : _) = pure x
 sillyHead'' _ = throwString "empty list\n and message with newlines\n\n"
+
+brokenFunctionAnnotated :: HasCallStack => IO a
+brokenFunctionAnnotated = checkpointCallStack $ sillyHead' []
