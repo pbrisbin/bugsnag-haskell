@@ -5,11 +5,11 @@ module Network.Bugsnag.ExceptionSpec
 import Prelude
 
 import Control.Exception
+import Control.Exception.Annotated (checkpointCallStack)
 import Data.Bugsnag
 import Examples
 import Network.Bugsnag.Exception
 import Test.Hspec
-import Control.Exception.Annotated (checkpointCallStack)
 
 spec :: Spec
 spec = do
@@ -88,7 +88,8 @@ spec = do
                 exception_stacktrace ex `shouldSatisfy` ((== 1) . length)
 
                 let frame = head $ exception_stacktrace ex
-                stackFrame_file frame `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
+                stackFrame_file frame
+                    `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
                 stackFrame_lineNumber frame `shouldBe` 83
                 stackFrame_columnNumber frame `shouldBe` Just 22
                 stackFrame_method frame `shouldBe` "checkpointCallStack"
