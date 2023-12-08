@@ -9,7 +9,6 @@ import Data.Bugsnag
 import Examples
 import Network.Bugsnag.Exception
 import Test.Hspec
-import GHC.Stack (withFrozenCallStack)
 import Control.Exception.Annotated (checkpointCallStack)
 
 spec :: Spec
