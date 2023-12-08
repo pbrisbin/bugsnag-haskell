@@ -5,12 +5,12 @@ module Network.Bugsnag.ExceptionSpec
 import Prelude
 
 import Control.Exception
+import Control.Exception.Annotated (checkpointCallStack)
 import Data.Bugsnag
 import Examples
+import GHC.Stack (withFrozenCallStack)
 import Network.Bugsnag.Exception
 import Test.Hspec
-import GHC.Stack (withFrozenCallStack)
-import Control.Exception.Annotated (checkpointCallStack)
 
 spec :: Spec
 spec = do
