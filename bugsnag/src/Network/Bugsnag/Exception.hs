@@ -21,8 +21,8 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Typeable (Proxy(..), Typeable, typeRep)
 import GHC.Stack (CallStack, SrcLoc(..), getCallStack)
-import UnliftIO.Exception (StringException(StringException))
 import Network.Bugsnag.Exception.Parse
+import UnliftIO.Exception (StringException(StringException))
 
 -- | Newtype over 'Exception', so it can be thrown and caught
 newtype AsException = AsException
