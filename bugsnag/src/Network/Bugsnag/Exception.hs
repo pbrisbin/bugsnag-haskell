@@ -79,28 +79,32 @@ bugsnagExceptionFromAnnotatedStringException ae@AnnotatedException { exception =
 bugsnagExceptionFromAnnotatedException
     :: AnnotatedException SomeException -> Exception
 bugsnagExceptionFromAnnotatedException ae =
-  case annotatedExceptionCallStack ae of
-    Just stack ->
-      defaultException
-        { exception_errorClass = exErrorClass $ Annotated.exception ae
-        , exception_message = Just $ T.pack $ displayException $ Annotated.exception ae
-        , exception_stacktrace = callStackToStackFrames stack
-        }
-    Nothing ->
-      let
-        parseResult = asum
-          [ fromException (Annotated.exception ae) >>= (either (const Nothing) Just . parseErrorCall)
-          , either (const Nothing) Just $ parseStringException (Annotated.exception ae)
-          ]
-      in
-        defaultException
-          { exception_errorClass = exErrorClass $ Annotated.exception ae
-          , exception_message = asum
-              [ mwsfMessage <$> parseResult
-              , Just $ T.pack $ displayException $ Annotated.exception ae
-              ]
-          , exception_stacktrace = foldMap mwsfStackFrames parseResult
-          }
+    case annotatedExceptionCallStack ae of
+        Just stack -> defaultException
+            { exception_errorClass = exErrorClass $ Annotated.exception ae
+            , exception_message =
+                Just $ T.pack $ displayException $ Annotated.exception ae
+            , exception_stacktrace = callStackToStackFrames stack
+            }
+        Nothing ->
+            let
+                parseResult = asum
+                    [ fromException (Annotated.exception ae)
+                        >>= (either (const Nothing) Just . parseErrorCall)
+                    , either (const Nothing) Just
+                        $ parseStringException (Annotated.exception ae)
+                    ]
+            in
+                defaultException
+                    { exception_errorClass = exErrorClass
+                        $ Annotated.exception ae
+                    , exception_message = asum
+                        [ mwsfMessage <$> parseResult
+                        , Just $ T.pack $ displayException $ Annotated.exception
+                            ae
+                        ]
+                    , exception_stacktrace = foldMap mwsfStackFrames parseResult
+                    }
 
 -- | Unwrap the 'SomeException' newtype to get the actual underlying type name
 exErrorClass :: SomeException -> Text
