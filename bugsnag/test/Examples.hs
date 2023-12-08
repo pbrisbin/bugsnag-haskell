@@ -12,12 +12,12 @@ module Examples where
 import Prelude
 
 import Control.Exception
+import Control.Exception.Annotated (checkpointCallStack)
 import Data.Bugsnag
 import GHC.Stack (HasCallStack)
 import Network.Bugsnag.Exception
 import Network.Bugsnag.StackFrame
 import UnliftIO.Exception (throwString)
-import Control.Exception.Annotated (checkpointCallStack)
 
 brokenFunctionIO :: IO a
 brokenFunctionIO = throw $ AsException $ defaultException

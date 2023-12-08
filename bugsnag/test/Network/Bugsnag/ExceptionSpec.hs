@@ -110,4 +110,6 @@ spec = do
                 stackFrame_method frame `shouldBe` "checkpointCallStack"
 
                 map stackFrame_method (exception_stacktrace ex)
-                    `shouldBe` ["checkpointCallStack", "brokenFunctionAnnotated"]
+                    `shouldBe` [ "checkpointCallStack"
+                               , "brokenFunctionAnnotated"
+                               ]
