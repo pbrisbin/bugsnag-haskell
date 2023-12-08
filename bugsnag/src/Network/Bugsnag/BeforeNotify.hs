@@ -139,8 +139,10 @@ updateEventFromOriginalException f =
 -- If the original exception was not wrapped in 'AnnotatedException', it
 -- will match as an 'AnnotatedException' with an empty annotation list.
 updateEventFromOriginalAnnotatedException
-    :: forall e . Exception.Exception e
-    => (AnnotatedException e -> BeforeNotify) -> BeforeNotify
+    :: forall e
+     . Exception.Exception e
+    => (AnnotatedException e -> BeforeNotify)
+    -> BeforeNotify
 updateEventFromOriginalAnnotatedException f = beforeNotify $ \e event ->
     let bn = maybe mempty f $ Exception.fromException $ Exception.toException e
     in runBeforeNotify bn e event
