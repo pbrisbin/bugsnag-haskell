@@ -1,5 +1,5 @@
 name: bugsnag
-version: 1.0.1.0
+version: 1.1.0.0
 synopsis: Bugsnag error reporter for Haskell
 description: Please see README.md
 homepage: https://github.com/pbrisbin/bugsnag-haskell#readme
@@ -59,6 +59,7 @@ library:
     - text
     - th-lift-instances
     - ua-parser
+    - unliftio
     - unordered-containers
 
 executables:
@@ -85,6 +86,7 @@ tests:
     main: Spec.hs
     source-dirs: test
     dependencies:
+      - annotated-exception
       - hspec
       - bugsnag
       - unliftio

@@ -9,6 +9,8 @@ import Data.Bugsnag
 import Examples
 import Network.Bugsnag.Exception
 import Test.Hspec
+import GHC.Stack (withFrozenCallStack)
+import Control.Exception.Annotated (checkpointCallStack)
 
 spec :: Spec
 spec = do
@@ -40,24 +42,7 @@ spec = do
                 exception_errorClass ex `shouldBe` "IOException"
                 exception_message ex `shouldBe` Just "user error (Oops)"
 
-            it "can parse errors with callstacks" $ do
-                e <- evaluate brokenFunction `catch` pure
-
-                let ex = bugsnagExceptionFromSomeException e
-                exception_errorClass ex `shouldBe` "ErrorCall"
-                exception_message ex `shouldBe` Just "empty list"
-                exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
-
-                let frame = head $ exception_stacktrace ex
-                stackFrame_file frame `shouldBe` "test/Examples.hs"
-                stackFrame_lineNumber frame `shouldBe` 33
-                stackFrame_columnNumber frame `shouldBe` Just 15
-                stackFrame_method frame `shouldBe` "error"
-
-                map stackFrame_method (exception_stacktrace ex)
-                    `shouldBe` ["error", "sillyHead", "brokenFunction"]
-
-            it "also parses StringException" $ do
+            it "parses StringException" $ do
                 e <- brokenFunction' `catch` pure
 
                 let ex = bugsnagExceptionFromSomeException e
@@ -74,7 +59,7 @@ spec = do
                 map stackFrame_method (exception_stacktrace ex)
                     `shouldBe` ["throwString", "sillyHead'", "brokenFunction'"]
 
-            it "also parses StringExceptions with newlines" $ do
+            it "parses StringExceptions with newlines" $ do
                 e <- brokenFunction'' `catch` pure
 
                 let ex = bugsnagExceptionFromSomeException e
@@ -94,3 +79,20 @@ spec = do
                                , "sillyHead''"
                                , "brokenFunction''"
                                ]
+
+            it "parses (AnnotatedException StringException)" $ do
+                e <- checkpointCallStack brokenFunction' `catch` pure
+
+                let ex = bugsnagExceptionFromSomeException e
+                exception_errorClass ex `shouldBe` "StringException"
+                exception_message ex `shouldBe` Just "empty list"
+                exception_stacktrace ex `shouldSatisfy` ((== 1) . length)
+
+                let frame = head $ exception_stacktrace ex
+                stackFrame_file frame `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
+                stackFrame_lineNumber frame `shouldBe` 84
+                stackFrame_columnNumber frame `shouldBe` Just 22
+                stackFrame_method frame `shouldBe` "checkpointCallStack"
+
+                map stackFrame_method (exception_stacktrace ex)
+                    `shouldBe` ["checkpointCallStack"]
