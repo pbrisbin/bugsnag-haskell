@@ -11,16 +11,9 @@ packages:
       size: 776
   original:
     hackage: annotated-exception-0.2.0.5
-- completed:
-    hackage: algebraic-graphs-0.5@sha256:6eeec5ed1687ff7aa916e7bf9f02f51aaabde6f314dc0b7b1a84156974d7da73,8071
-    pantry-tree:
-      sha256: cca4a0348bb126506cacd8436948a68aad62e75d45df8c71f4090a00e69b45ee
-      size: 4128
-  original:
-    hackage: algebraic-graphs-0.5
 snapshots:
 - completed:
-    sha256: 64d66303f927e87ffe6b8ccf736229bf608731e80d7afdf62bdd63c59f857740
-    size: 640037
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/11.yaml
-  original: lts-21.11
+    sha256: 5a59b2a405b3aba3c00188453be172b85893cab8ebc352b1ef58b0eae5d248a2
+    size: 650475
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/26.yaml
+  original: lts-20.26

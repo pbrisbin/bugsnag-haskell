@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           bugsnag
-version:        1.0.0.1
+version:        1.0.1.0
 synopsis:       Bugsnag error reporter for Haskell
 description:    Please see README.md
 category:       Web
@@ -69,6 +69,7 @@ library
       TypeFamilies
   build-depends:
       Glob >=0.9.0
+    , annotated-exception
     , base >=4.11.0 && <5
     , bugsnag-hs
     , bytestring
