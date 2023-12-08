@@ -16,8 +16,7 @@ import Control.Exception.Annotated
 import qualified Control.Exception.Annotated as Annotated
 import Data.Bugsnag
 import Data.Foldable (asum)
-import Data.Maybe (fromMaybe, isNothing)
-import Control.Monad (guard)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Typeable (Proxy(..), Typeable, typeRep)
