@@ -41,7 +41,8 @@ bugsnagExceptionFromSomeException ex = fromMaybe defaultException $ asum
 
 -- | Respect 'AsException' as-is without modifications.
 --   If it's wrapped in 'AnnotatedException', ignore the annotations.
-bugsnagExceptionFromAnnotatedAsException :: AnnotatedException AsException -> Exception
+bugsnagExceptionFromAnnotatedAsException
+    :: AnnotatedException AsException -> Exception
 bugsnagExceptionFromAnnotatedAsException = unAsException . Annotated.exception
 
 -- | When a 'StringException' is thrown, we use its message and trace.
@@ -59,31 +60,35 @@ bugsnagExceptionFromStringException (StringException message stack) =
 --   'StringException' trace if no 'CallStack' annotation is present.
 bugsnagExceptionFromAnnotatedStringException
     :: AnnotatedException StringException -> Exception
-bugsnagExceptionFromAnnotatedStringException
-        ae@AnnotatedException{ exception = StringException message stringExceptionStack } =
-    defaultException
+bugsnagExceptionFromAnnotatedStringException ae@AnnotatedException { exception = StringException message stringExceptionStack }
+    = defaultException
         { exception_errorClass = typeName @StringException
         , exception_message = Just $ T.pack message
         , exception_stacktrace =
-            maybe (callStackToStackFrames stringExceptionStack) callStackToStackFrames $ annotatedExceptionCallStack ae
+            maybe
+                    (callStackToStackFrames stringExceptionStack)
+                    callStackToStackFrames
+                $ annotatedExceptionCallStack ae
         }
 
 -- | For an 'AnnotatedException' exception, derive the error class and message
 --   from the wrapped exception.
 --   If a 'CallStack' annotation is present, use that as the stacetrace.
-bugsnagExceptionFromAnnotatedException :: AnnotatedException SomeException -> Exception
-bugsnagExceptionFromAnnotatedException ae =
-    defaultException
-        { exception_errorClass = exErrorClass $ Annotated.exception ae
-        , exception_message = Just $ T.pack $ displayException $ Annotated.exception ae
-        , exception_stacktrace = foldMap callStackToStackFrames $ annotatedExceptionCallStack ae
-        }
+bugsnagExceptionFromAnnotatedException
+    :: AnnotatedException SomeException -> Exception
+bugsnagExceptionFromAnnotatedException ae = defaultException
+    { exception_errorClass = exErrorClass $ Annotated.exception ae
+    , exception_message = Just $ T.pack $ displayException $ Annotated.exception
+        ae
+    , exception_stacktrace = foldMap callStackToStackFrames
+        $ annotatedExceptionCallStack ae
+    }
 
 -- | Unwrap the 'SomeException' newtype to get the actual underlying type name
 exErrorClass :: SomeException -> Text
 exErrorClass (SomeException (_ :: e)) = typeName @e
 
-typeName :: forall a. Typeable a => Text
+typeName :: forall a . Typeable a => Text
 typeName = T.pack $ show $ typeRep $ Proxy @a
 
 -- | Converts a GHC call stack to a list of stack frames suitable
@@ -92,8 +97,7 @@ callStackToStackFrames :: CallStack -> [StackFrame]
 callStackToStackFrames = fmap callSiteToStackFrame . getCallStack
 
 callSiteToStackFrame :: (String, SrcLoc) -> StackFrame
-callSiteToStackFrame (str, loc) =
-  defaultStackFrame
+callSiteToStackFrame (str, loc) = defaultStackFrame
     { stackFrame_method = T.pack str
     , stackFrame_file = T.pack $ srcLocFile loc
     , stackFrame_lineNumber = srcLocStartLine loc

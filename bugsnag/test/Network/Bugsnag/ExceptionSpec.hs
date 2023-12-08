@@ -89,7 +89,8 @@ spec = do
                 exception_stacktrace ex `shouldSatisfy` ((== 1) . length)
 
                 let frame = head $ exception_stacktrace ex
-                stackFrame_file frame `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
+                stackFrame_file frame
+                    `shouldBe` "test/Network/Bugsnag/ExceptionSpec.hs"
                 stackFrame_lineNumber frame `shouldBe` 84
                 stackFrame_columnNumber frame `shouldBe` Just 22
                 stackFrame_method frame `shouldBe` "checkpointCallStack"
