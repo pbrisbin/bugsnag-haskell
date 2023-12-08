@@ -31,6 +31,7 @@
               p.case-insensitive
               p.http-client
               p.http-client-tls
+              p.hspec
               p.iproute
               p.network
               p.QuickCheck
