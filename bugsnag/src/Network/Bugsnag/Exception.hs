@@ -13,8 +13,8 @@ import Control.Exception.Annotated ( AnnotatedException(AnnotatedException), ann
 import qualified Control.Exception.Annotated as Annotated
 import Data.Bugsnag
 import Data.Foldable (asum)
-import Data.Maybe (fromMaybe, isJust)
-import Data.Text (Text, unpack)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text)
 import Data.Typeable (Proxy (..), Typeable, typeRep)
 import qualified Data.Text as T
 import GHC.Stack (CallStack, SrcLoc (..), getCallStack)
