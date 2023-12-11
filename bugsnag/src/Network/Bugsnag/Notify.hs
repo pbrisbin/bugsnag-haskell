@@ -9,7 +9,7 @@ import Control.Exception (SomeException, fromException, toException)
 import qualified Control.Exception as Exception
 import Control.Exception.Annotated (AnnotatedException)
 import qualified Control.Exception.Annotated as Annotated
-import Control.Monad (unless, (<=<))
+import Control.Monad ((<=<), unless)
 import Data.Annotation (tryAnnotations)
 import Data.Bugsnag
 import Data.Bugsnag.Settings
@@ -35,15 +35,20 @@ reportEvent Settings {..} event = unless (null $ event_exceptions event) $ do
     either settings_onNotifyException pure result
 
 buildEvent :: Exception.Exception e => BeforeNotify -> e -> Event
-buildEvent bn e = runBeforeNotify bn e
-    $ defaultEvent { event_exceptions = [ex], event_metaData = unMetaData <$> metaDataFromException e }
+buildEvent bn e = runBeforeNotify bn e $ defaultEvent
+    { event_exceptions = [ex]
+    , event_metaData = unMetaData <$> metaDataFromException e
+    }
     where ex = bugsnagExceptionFromSomeException $ Exception.toException e
 
 metaDataFromException :: Exception.Exception e => e -> Maybe MetaData
-metaDataFromException = metaDataFromAnnotatedException <=< (fromException @(AnnotatedException SomeException) . toException)
+metaDataFromException =
+    metaDataFromAnnotatedException
+        <=< (fromException @(AnnotatedException SomeException) . toException)
 
 metaDataFromAnnotatedException :: AnnotatedException e -> Maybe MetaData
-metaDataFromAnnotatedException = fmap fold . nonEmpty . fst . tryAnnotations . Annotated.annotations
+metaDataFromAnnotatedException =
+    fmap fold . nonEmpty . fst . tryAnnotations . Annotated.annotations
 
 globalBeforeNotify :: Settings -> BeforeNotify
 globalBeforeNotify Settings {..} =

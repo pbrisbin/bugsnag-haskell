@@ -1,8 +1,8 @@
 -- | Working with Bugsnag's 'event_metaData' field
 module Network.Bugsnag.MetaData
-  ( MetaData (..)
-  , metaData
-  ) where
+    ( MetaData(..)
+    , metaData
+    ) where
 
 import Prelude
 
@@ -21,24 +21,24 @@ instance Semigroup MetaData where
   --
   -- The chosen bias ensures that adding metadata in smaller scopes (later)
   -- overrides values from larger scopes.
-  MetaData x <> MetaData y = MetaData $ unionObjects y x
-   where
-    unionObjects :: Object -> Object -> Object
-    unionObjects = Data.Aeson.KeyMap.unionWith unionValues
+    MetaData x <> MetaData y = MetaData $ unionObjects y x
+      where
+        unionObjects :: Object -> Object -> Object
+        unionObjects = Data.Aeson.KeyMap.unionWith unionValues
 
-    unionValues (Object a) (Object b) = Object $ unionObjects a b
-    unionValues a _ = a
+        unionValues (Object a) (Object b) = Object $ unionObjects a b
+        unionValues a _ = a
 
 instance Monoid MetaData where
-  mempty = MetaData mempty
+    mempty = MetaData mempty
 
 -- | Construct 'MetaData' from 'Pair's
 metaData
-  :: Aeson.Key
+    :: Aeson.Key
   -- ^ The Tab within which the values will display
-  -> [Aeson.Pair]
+    -> [Aeson.Pair]
   -- ^ The Key-Values themselves
-  -> MetaData
+    -> MetaData
 metaData key = MetaData . Data.Aeson.KeyMap.fromList . pure . (key .=) . object
 
 -- $details

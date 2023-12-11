@@ -129,7 +129,11 @@ updateEvent f = beforeNotify $ \_e event -> f event
 updateEventFromOriginalException
     :: forall e . Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
 updateEventFromOriginalException f = beforeNotify $ \e event ->
-    let bn = maybe mempty (f . Annotated.exception) $ Exception.fromException $ Exception.toException e
+    let
+        bn =
+            maybe mempty (f . Annotated.exception)
+                $ Exception.fromException
+                $ Exception.toException e
     in runBeforeNotify bn e event
 
 setGroupingHash :: Text -> BeforeNotify
