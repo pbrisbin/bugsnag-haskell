@@ -5,4 +5,4 @@ module Data.Bugsnag
   ( module Network.Bugsnag
   ) where
 
-import "bugsnag-hs" Network.Bugsnag
+import           "bugsnag-hs" Network.Bugsnag

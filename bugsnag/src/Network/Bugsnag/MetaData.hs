@@ -4,9 +4,9 @@ module Network.Bugsnag.MetaData
   , metaData
   ) where
 
-import Prelude
+import           Prelude
 
-import Data.Aeson.Compat (Object, Value (Object), object, (.=))
+import           Data.Aeson.Compat (Object, Value (Object), object, (.=))
 import qualified Data.Aeson.Compat as Aeson
 
 newtype MetaData = MetaData
@@ -25,7 +25,7 @@ instance Semigroup MetaData where
     unionObjects = Aeson.unionWith unionValues
 
     unionValues (Object a) (Object b) = Object $ unionObjects a b
-    unionValues a _ = a
+    unionValues a _                   = a
 
 instance Monoid MetaData where
   mempty = MetaData mempty

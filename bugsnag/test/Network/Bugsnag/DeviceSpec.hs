@@ -2,11 +2,11 @@ module Network.Bugsnag.DeviceSpec
   ( spec
   ) where
 
-import Prelude
+import           Prelude
 
-import Data.Bugsnag (Device (..))
-import Network.Bugsnag.Device
-import Test.Hspec
+import           Data.Bugsnag           (Device (..))
+import           Network.Bugsnag.Device
+import           Test.Hspec
 
 spec :: Spec
 spec = do

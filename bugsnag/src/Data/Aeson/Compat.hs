@@ -23,17 +23,20 @@ module Data.Aeson.Compat
   , (.=)
   ) where
 
-import Data.Aeson.Types (Object, Pair, Value (Object), object, (.=))
+import           Data.Aeson.Types    (Object, Pair, Value (Object), object,
+                                      (.=))
 #if MIN_VERSION_aeson(2, 0, 0)
-import Data.Aeson.Key (Key, fromText, toText)
-import Data.Aeson.KeyMap (KeyMap, empty, fromList, null, singleton, toList, unionWith)
+import           Data.Aeson.Key      (Key, fromText, toText)
+import           Data.Aeson.KeyMap   (KeyMap, empty, fromList, null, singleton,
+                                      toList, unionWith)
 -- Avoid unused-packages (unordered-containers) warning for this path
-import Data.HashMap.Strict ()
+import           Data.HashMap.Strict ()
 #else
-import Prelude (id)
+import           Prelude             (id)
 
-import Data.HashMap.Strict (HashMap, empty, fromList, null, singleton, toList, unionWith)
-import Data.Text (Text)
+import           Data.HashMap.Strict (HashMap, empty, fromList, null, singleton,
+                                      toList, unionWith)
+import           Data.Text           (Text)
 
 type Key = Text
 type KeyMap = HashMap Text

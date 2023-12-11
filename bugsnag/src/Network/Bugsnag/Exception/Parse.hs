@@ -7,22 +7,19 @@ module Network.Bugsnag.Exception.Parse
   , parseStringException
   ) where
 
-import Prelude
+import           Prelude
 
-import qualified Control.Exception as Exception
-  ( ErrorCall
-  , Exception
-  , SomeException
-  )
-import Control.Monad (void)
-import Data.Bifunctor (first)
-import Data.Bugsnag
-import Data.Text (Text, pack)
-import Text.Parsec
-import Text.Parsec.String
+import qualified Control.Exception  as Exception (ErrorCall, Exception,
+                                                  SomeException)
+import           Control.Monad      (void)
+import           Data.Bifunctor     (first)
+import           Data.Bugsnag
+import           Data.Text          (Text, pack)
+import           Text.Parsec
+import           Text.Parsec.String
 
 data MessageWithStackFrames = MessageWithStackFrames
-  { mwsfMessage :: Text
+  { mwsfMessage     :: Text
   , mwsfStackFrames :: [StackFrame]
   }
 

@@ -1,4 +1,4 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE AllowAmbiguousTypes       #-}
 {-# LANGUAGE ExistentialQuantification #-}
 
 module Network.Bugsnag.Exception
@@ -6,28 +6,25 @@ module Network.Bugsnag.Exception
   , bugsnagExceptionFromSomeException
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Exception
-  ( SomeException (SomeException)
-  , displayException
-  , fromException
-  )
-import qualified Control.Exception as Exception
-import Control.Exception.Annotated
-  ( AnnotatedException (AnnotatedException)
-  , annotatedExceptionCallStack
-  )
-import qualified Control.Exception.Annotated as Annotated
-import Data.Bugsnag
-import Data.Foldable (asum)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Data.Typeable (Proxy (..), Typeable, typeRep)
-import GHC.Stack (CallStack, SrcLoc (..), getCallStack)
-import Network.Bugsnag.Exception.Parse
-import UnliftIO.Exception (StringException (StringException))
+import           Control.Exception               (SomeException (SomeException),
+                                                  displayException,
+                                                  fromException)
+import qualified Control.Exception               as Exception
+import           Control.Exception.Annotated     (AnnotatedException (AnnotatedException),
+                                                  annotatedExceptionCallStack)
+import qualified Control.Exception.Annotated     as Annotated
+import           Data.Bugsnag
+import           Data.Foldable                   (asum)
+import           Data.Maybe                      (fromMaybe)
+import           Data.Text                       (Text)
+import qualified Data.Text                       as T
+import           Data.Typeable                   (Proxy (..), Typeable, typeRep)
+import           GHC.Stack                       (CallStack, SrcLoc (..),
+                                                  getCallStack)
+import           Network.Bugsnag.Exception.Parse
+import           UnliftIO.Exception              (StringException (StringException))
 
 -- | Newtype over 'Exception', so it can be thrown and caught
 newtype AsException = AsException

@@ -1,7 +1,7 @@
-{-# LANGUAGE DeriveLift #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE DeriveLift      #-}
+{-# LANGUAGE QuasiQuotes     #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TupleSections   #-}
 
 -- | Compile-time snapshot of your project source
 --
@@ -19,17 +19,17 @@ module Network.Bugsnag.CodeIndex
   , findSourceRange
   ) where
 
-import Prelude
+import           Prelude
 
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Data.Traversable (for)
-import Instances.TH.Lift ()
-import Language.Haskell.TH.Syntax
-import System.FilePath.Glob (glob)
+import           Data.Map.Strict            (Map)
+import qualified Data.Map.Strict            as Map
+import           Data.Text                  (Text)
+import qualified Data.Text                  as T
+import qualified Data.Text.IO               as T
+import           Data.Traversable           (for)
+import           Instances.TH.Lift          ()
+import           Language.Haskell.TH.Syntax
+import           System.FilePath.Glob       (glob)
 
 {-# ANN module ("HLint: ignore Unused LANGUAGE pragma" :: String) #-}
 
@@ -53,7 +53,7 @@ buildCodeIndex' p = do
 
 data FileIndex = FileIndex
   { fiSourceLines :: Map Int Text
-  , fiLastLine :: Int
+  , fiLastLine    :: Int
   }
   deriving stock (Lift, Show)
 

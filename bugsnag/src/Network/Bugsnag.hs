@@ -7,5 +7,5 @@ module Network.Bugsnag
   , module Network.Bugsnag.BeforeNotify
   ) where
 
-import Network.Bugsnag.BeforeNotify
-import Network.Bugsnag.Notify
+import           Network.Bugsnag.BeforeNotify
+import           Network.Bugsnag.Notify
