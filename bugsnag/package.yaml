@@ -46,6 +46,8 @@ default-extensions:
 
 library:
   source-dirs: src
+  other-modules:
+    - Data.Aeson.Compat
   dependencies:
     - Glob >= 0.9.0
     - aeson

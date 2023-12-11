@@ -6,10 +6,8 @@ module Network.Bugsnag.MetaData
 
 import Prelude
 
-import Data.Aeson (KeyValue ((.=)), Object, Value (..), object)
-import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.Types as Aeson
-import qualified Data.Aeson.KeyMap
+import Data.Aeson.Compat ((.=), Value(Object), Object, object)
+import qualified Data.Aeson.Compat as Aeson
 
 newtype MetaData = MetaData
   { unMetaData :: Object
@@ -24,7 +22,7 @@ instance Semigroup MetaData where
   MetaData x <> MetaData y = MetaData $ unionObjects y x
    where
     unionObjects :: Object -> Object -> Object
-    unionObjects = Data.Aeson.KeyMap.unionWith unionValues
+    unionObjects = Aeson.unionWith unionValues
 
     unionValues (Object a) (Object b) = Object $ unionObjects a b
     unionValues a _ = a
@@ -39,7 +37,7 @@ metaData
   -> [Aeson.Pair]
   -- ^ The Key-Values themselves
   -> MetaData
-metaData key = MetaData . Data.Aeson.KeyMap.fromList . pure . (key .=) . object
+metaData key = MetaData . Aeson.fromList . pure . (key .=) . object
 
 -- $details
 --
