@@ -29,6 +29,7 @@ module Network.Bugsnag.BeforeNotify
 import Prelude
 
 import qualified Control.Exception as Exception
+import qualified Control.Exception.Annotated as Annotated
 import Data.Bugsnag
 import Data.Maybe (isJust)
 import Data.Text (Text, unpack)
@@ -121,10 +122,15 @@ updateEvent f = beforeNotify $ \_e event -> f event
 -- @
 --
 -- If the cast fails, the event is unchanged.
+--
+-- The cast will match either @e@ or @'AnnotatedException' e@.
 updateEventFromOriginalException
   :: forall e. Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
 updateEventFromOriginalException f = beforeNotify $ \e event ->
-  let bn = maybe mempty f $ Exception.fromException $ Exception.toException e
+  let bn =
+        maybe mempty (f . Annotated.exception) $
+          Exception.fromException $
+            Exception.toException e
   in  runBeforeNotify bn e event
 
 setGroupingHash :: Text -> BeforeNotify
