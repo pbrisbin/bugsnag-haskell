@@ -5,10 +5,10 @@ module Network.Bugsnag.CodeIndexSpec
   ( spec
   ) where
 
-import Prelude
+import           Prelude
 
-import Network.Bugsnag.CodeIndex
-import Test.Hspec
+import           Network.Bugsnag.CodeIndex
+import           Test.Hspec
 
 spec :: Spec
 spec = do

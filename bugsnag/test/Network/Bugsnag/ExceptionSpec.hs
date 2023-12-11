@@ -2,13 +2,13 @@ module Network.Bugsnag.ExceptionSpec
   ( spec
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Exception
-import Data.Bugsnag
-import Examples
-import Network.Bugsnag.Exception
-import Test.Hspec
+import           Control.Exception
+import           Data.Bugsnag
+import           Examples
+import           Network.Bugsnag.Exception
+import           Test.Hspec
 
 spec :: Spec
 spec = do

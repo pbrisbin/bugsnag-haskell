@@ -2,12 +2,12 @@ module Network.Bugsnag.BeforeNotifySpec
   ( spec
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Exception
-import Data.Bugsnag hiding (Exception)
-import Network.Bugsnag.BeforeNotify
-import Test.Hspec
+import           Control.Exception
+import           Data.Bugsnag                 hiding (Exception)
+import           Network.Bugsnag.BeforeNotify
+import           Test.Hspec
 
 data FooException = FooException
   deriving stock (Show)

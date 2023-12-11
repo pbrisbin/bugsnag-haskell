@@ -8,14 +8,14 @@
 -- themselves
 module Examples where
 
-import Prelude
+import           Prelude
 
-import Control.Exception
-import Data.Bugsnag
-import GHC.Stack (HasCallStack)
-import Network.Bugsnag.Exception
-import Network.Bugsnag.StackFrame
-import UnliftIO.Exception (throwString)
+import           Control.Exception
+import           Data.Bugsnag
+import           GHC.Stack                  (HasCallStack)
+import           Network.Bugsnag.Exception
+import           Network.Bugsnag.StackFrame
+import           UnliftIO.Exception         (throwString)
 
 brokenFunctionIO :: IO a
 brokenFunctionIO =
@@ -32,18 +32,18 @@ brokenFunction = sillyHead [] `seq` undefined
 
 sillyHead :: HasCallStack => [a] -> a
 sillyHead (x : _) = x
-sillyHead _ = error "empty list"
+sillyHead _       = error "empty list"
 
 brokenFunction' :: HasCallStack => IO a
 brokenFunction' = sillyHead' []
 
 sillyHead' :: HasCallStack => [a] -> IO a
 sillyHead' (x : _) = pure x
-sillyHead' _ = throwString "empty list"
+sillyHead' _       = throwString "empty list"
 
 brokenFunction'' :: HasCallStack => IO a
 brokenFunction'' = sillyHead'' []
 
 sillyHead'' :: HasCallStack => [a] -> IO a
 sillyHead'' (x : _) = pure x
-sillyHead'' _ = throwString "empty list\n and message with newlines\n\n"
+sillyHead'' _       = throwString "empty list\n and message with newlines\n\n"

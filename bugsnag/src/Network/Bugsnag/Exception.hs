@@ -5,18 +5,18 @@ module Network.Bugsnag.Exception
   , bugsnagExceptionFromSomeException
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Exception hiding (Exception)
-import qualified Control.Exception as Exception
-import Data.Bugsnag
-import Data.Foldable (asum)
-import Data.Maybe (fromMaybe)
-import Data.Proxy (Proxy (..))
-import Data.Text (Text, pack)
-import Data.Typeable (typeRep)
-import Instances.TH.Lift ()
-import Network.Bugsnag.Exception.Parse
+import           Control.Exception               hiding (Exception)
+import qualified Control.Exception               as Exception
+import           Data.Bugsnag
+import           Data.Foldable                   (asum)
+import           Data.Maybe                      (fromMaybe)
+import           Data.Proxy                      (Proxy (..))
+import           Data.Text                       (Text, pack)
+import           Data.Typeable                   (typeRep)
+import           Instances.TH.Lift               ()
+import           Network.Bugsnag.Exception.Parse
 
 -- | Newtype over 'Exception', so it can be thrown and caught
 newtype AsException = AsException

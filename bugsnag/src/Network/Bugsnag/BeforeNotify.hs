@@ -26,14 +26,14 @@ module Network.Bugsnag.BeforeNotify
   , setInfoSeverity
   ) where
 
-import Prelude
+import           Prelude
 
-import qualified Control.Exception as Exception
-import Data.Bugsnag
-import Data.Maybe (isJust)
-import Data.Text (Text, unpack)
-import Network.Bugsnag.CodeIndex
-import Network.Bugsnag.StackFrame
+import qualified Control.Exception          as Exception
+import           Data.Bugsnag
+import           Data.Maybe                 (isJust)
+import           Data.Text                  (Text, unpack)
+import           Network.Bugsnag.CodeIndex
+import           Network.Bugsnag.StackFrame
 
 -- | A function from 'Event' to 'Event' that is applied before notifying
 --

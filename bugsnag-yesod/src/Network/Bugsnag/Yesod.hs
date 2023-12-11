@@ -14,24 +14,21 @@ module Network.Bugsnag.Yesod
   , bugsnagYesodMiddlewareWith
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Exception.Annotated (AnnotatedException)
-import Control.Monad (unless)
-import Control.Monad.IO.Class (liftIO)
-import Data.Bugsnag.Settings
-import Data.Maybe (isJust)
-import Network.Bugsnag
-import Network.Bugsnag.Wai
-import qualified Network.Wai as Wai
-import UnliftIO.Exception
-  ( Exception
-  , SomeException
-  , fromException
-  , withException
-  )
-import Yesod.Core (forkHandler, getsYesod, waiRequest)
-import Yesod.Core.Types (HandlerContents, HandlerFor)
+import           Control.Exception.Annotated (AnnotatedException)
+import           Control.Monad               (unless)
+import           Control.Monad.IO.Class      (liftIO)
+import           Data.Bugsnag.Settings
+import           Data.Maybe                  (isJust)
+import           Network.Bugsnag
+import           Network.Bugsnag.Wai
+import qualified Network.Wai                 as Wai
+import           UnliftIO.Exception          (Exception, SomeException,
+                                              fromException, withException)
+import           Yesod.Core                  (forkHandler, getsYesod,
+                                              waiRequest)
+import           Yesod.Core.Types            (HandlerContents, HandlerFor)
 
 bugsnagYesodMiddleware
   :: (app -> Settings) -> HandlerFor app a -> HandlerFor app a

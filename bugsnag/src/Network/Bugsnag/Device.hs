@@ -2,14 +2,14 @@ module Network.Bugsnag.Device
   ( bugsnagDeviceFromUserAgent
   ) where
 
-import Prelude
+import           Prelude
 
-import Data.Bugsnag
-import Data.ByteString (ByteString)
-import Data.Text (pack, unpack)
-import Data.Version
-import Text.Read (readMaybe)
-import Web.UAParser
+import           Data.Bugsnag
+import           Data.ByteString (ByteString)
+import           Data.Text       (pack, unpack)
+import           Data.Version
+import           Text.Read       (readMaybe)
+import           Web.UAParser
 
 bugsnagDeviceFromUserAgent :: ByteString -> Device
 bugsnagDeviceFromUserAgent userAgent =

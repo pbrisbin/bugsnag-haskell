@@ -11,31 +11,31 @@ module Network.Bugsnag.Wai
   , readForwardedFor
   ) where
 
-import Prelude
+import           Prelude
 
-import Control.Applicative ((<|>))
-import Control.Arrow ((***))
-import Control.Concurrent (forkIO)
-import Control.Exception (SomeException)
-import Control.Monad (void, when)
-import Data.Bugsnag
-import Data.Bugsnag.Settings
-import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as C8
-import qualified Data.CaseInsensitive as CI
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HashMap
-import Data.IP
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
-import qualified Data.Text as T
-import Data.Text.Encoding (decodeUtf8)
-import qualified Data.Text.Encoding as TE
-import Network.Bugsnag
-import Network.Bugsnag.Device
-import Network.HTTP.Types
-import Network.Socket
-import qualified Network.Wai as Wai
+import           Control.Applicative      ((<|>))
+import           Control.Arrow            ((***))
+import           Control.Concurrent       (forkIO)
+import           Control.Exception        (SomeException)
+import           Control.Monad            (void, when)
+import           Data.Bugsnag
+import           Data.Bugsnag.Settings
+import           Data.ByteString          (ByteString)
+import qualified Data.ByteString.Char8    as C8
+import qualified Data.CaseInsensitive     as CI
+import           Data.HashMap.Strict      (HashMap)
+import qualified Data.HashMap.Strict      as HashMap
+import           Data.IP
+import           Data.Maybe               (fromMaybe)
+import           Data.Text                (Text)
+import qualified Data.Text                as T
+import           Data.Text.Encoding       (decodeUtf8)
+import qualified Data.Text.Encoding       as TE
+import           Network.Bugsnag
+import           Network.Bugsnag.Device
+import           Network.HTTP.Types
+import           Network.Socket
+import qualified Network.Wai              as Wai
 import qualified Network.Wai.Handler.Warp as Warp
 
 bugsnagOnException :: Settings -> Maybe Wai.Request -> SomeException -> IO ()
@@ -109,9 +109,9 @@ requestUrl request =
     | otherwise = c <> x
 
 sockAddrToIp :: SockAddr -> ByteString
-sockAddrToIp (SockAddrInet _ h) = C8.pack $ show $ fromHostAddress h
+sockAddrToIp (SockAddrInet _ h)      = C8.pack $ show $ fromHostAddress h
 sockAddrToIp (SockAddrInet6 _ _ h _) = C8.pack $ show $ fromHostAddress6 h
-sockAddrToIp _ = "<socket>"
+sockAddrToIp _                       = "<socket>"
 
 -- | /Attempt/ to divine a 'Device' from a request's User Agent
 bugsnagDeviceFromWaiRequest :: Wai.Request -> Maybe Device

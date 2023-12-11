@@ -2,14 +2,14 @@ module Network.Bugsnag.WaiSpec
   ( spec
   ) where
 
-import Prelude
+import           Prelude
 
-import qualified Control.Exception as Exception
-import Data.Bugsnag
+import qualified Control.Exception   as Exception
+import           Data.Bugsnag
 import qualified Data.HashMap.Strict as HashMap
-import Network.Bugsnag
-import Network.Bugsnag.Wai
-import Test.Hspec
+import           Network.Bugsnag
+import           Network.Bugsnag.Wai
+import           Test.Hspec
 
 data TestException = TestException
   deriving stock (Show)

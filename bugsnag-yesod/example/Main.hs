@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes     #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
@@ -6,12 +6,12 @@
 
 module Main where
 
-import Prelude
+import           Prelude
 
-import Data.Bugsnag.Settings
-import Network.Bugsnag.Yesod
-import Network.Wai.Handler.Warp (run)
-import Yesod.Core
+import           Data.Bugsnag.Settings
+import           Network.Bugsnag.Yesod
+import           Network.Wai.Handler.Warp (run)
+import           Yesod.Core
 
 newtype App = App {appBugsnag :: Settings}
 mkYesod "App" [parseRoutes|/ RootR GET|]

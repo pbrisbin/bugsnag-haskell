@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes     #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Network.Bugsnag.StackFrame
@@ -6,15 +6,15 @@ module Network.Bugsnag.StackFrame
   , currentStackFrame
   ) where
 
-import Prelude
+import           Prelude
 
-import Data.Bugsnag
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HashMap
-import Data.Text (Text, pack, unpack)
-import Instances.TH.Lift ()
-import Language.Haskell.TH.Syntax
-import Network.Bugsnag.CodeIndex
+import           Data.Bugsnag
+import           Data.HashMap.Strict        (HashMap)
+import qualified Data.HashMap.Strict        as HashMap
+import           Data.Text                  (Text, pack, unpack)
+import           Instances.TH.Lift          ()
+import           Language.Haskell.TH.Syntax
+import           Network.Bugsnag.CodeIndex
 
 -- | Attempt to attach code to a 'StackFrame'
 --

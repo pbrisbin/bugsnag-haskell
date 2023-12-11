@@ -2,12 +2,12 @@ module Main
   ( main
   ) where
 
-import Prelude
+import           Prelude
 
-import qualified Data.Bugsnag.Settings as Bugsnag
-import Network.Bugsnag.Wai (bugsnagOnException)
-import Network.Wai (Application)
-import Network.Wai.Handler.Warp
+import qualified Data.Bugsnag.Settings    as Bugsnag
+import           Network.Bugsnag.Wai      (bugsnagOnException)
+import           Network.Wai              (Application)
+import           Network.Wai.Handler.Warp
 
 main :: IO ()
 main = do
