@@ -8,6 +8,5 @@ restylers_version: dev
 
 restylers:
   - hlint
-  - stylish-haskell
-  - brittany
+  - fourmolu
   - "*"
