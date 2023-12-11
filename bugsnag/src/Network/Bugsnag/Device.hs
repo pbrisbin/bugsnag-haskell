@@ -1,6 +1,6 @@
 module Network.Bugsnag.Device
-    ( bugsnagDeviceFromUserAgent
-    ) where
+  ( bugsnagDeviceFromUserAgent
+  ) where
 
 import Prelude
 
@@ -12,7 +12,8 @@ import Text.Read (readMaybe)
 import Web.UAParser
 
 bugsnagDeviceFromUserAgent :: ByteString -> Device
-bugsnagDeviceFromUserAgent userAgent = defaultDevice
+bugsnagDeviceFromUserAgent userAgent =
+  defaultDevice
     { device_osName = osrFamily <$> osResult
     , device_osVersion = do
         result <- osResult
@@ -29,6 +30,6 @@ bugsnagDeviceFromUserAgent userAgent = defaultDevice
         v3 <- readMaybe . unpack =<< uarV3 result
         pure $ pack $ showVersion $ makeVersion [v1, v2, v3]
     }
-  where
-    uaResult = parseUA userAgent
-    osResult = parseOS userAgent
+ where
+  uaResult = parseUA userAgent
+  osResult = parseOS userAgent

@@ -13,20 +13,20 @@ import Network.Bugsnag.Yesod
 import Network.Wai.Handler.Warp (run)
 import Yesod.Core
 
-newtype App = App { appBugsnag :: Settings }
+newtype App = App {appBugsnag :: Settings}
 mkYesod "App" [parseRoutes|/ RootR GET|]
 
 getRootR :: Handler Html
 getRootR = error "Boom"
 
 instance Yesod App where
-    defaultLayout _widget = withUrlRenderer [hamlet|<html>|]
-    yesodMiddleware =
-        bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
+  defaultLayout _widget = withUrlRenderer [hamlet|<html>|]
+  yesodMiddleware =
+    bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
 
 main :: IO ()
 main = do
-    let appBugsnag = defaultSettings "BUGSNAG_API_KEY"
+  let appBugsnag = defaultSettings "BUGSNAG_API_KEY"
 
-    -- N.B. You should also consider setting Warp's onException
-    run 3000 =<< toWaiApp App { .. }
+  -- N.B. You should also consider setting Warp's onException
+  run 3000 =<< toWaiApp App {..}

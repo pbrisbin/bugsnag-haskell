@@ -6,7 +6,6 @@
 -- These are used in the test suite but are define here so that, hopefully, the
 -- path/line/column will remain stable even if we re-organize the tests
 -- themselves
---
 module Examples where
 
 import Prelude
@@ -19,11 +18,14 @@ import Network.Bugsnag.StackFrame
 import UnliftIO.Exception (throwString)
 
 brokenFunctionIO :: IO a
-brokenFunctionIO = throw $ AsException $ defaultException
-    { exception_errorClass = "IOException"
-    , exception_message = Just "Something exploded"
-    , exception_stacktrace = [$(currentStackFrame) "brokenFunctionIO"]
-    }
+brokenFunctionIO =
+  throw $
+    AsException $
+      defaultException
+        { exception_errorClass = "IOException"
+        , exception_message = Just "Something exploded"
+        , exception_stacktrace = [$(currentStackFrame) "brokenFunctionIO"]
+        }
 
 brokenFunction :: HasCallStack => a
 brokenFunction = sillyHead [] `seq` undefined
