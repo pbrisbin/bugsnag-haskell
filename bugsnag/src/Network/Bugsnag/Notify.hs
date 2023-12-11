@@ -5,20 +5,20 @@ module Network.Bugsnag.Notify
 
 import Prelude
 
+import Control.Exception (SomeException, fromException, toException)
 import qualified Control.Exception as Exception
-import Control.Monad ( unless, (<=<) )
+import Control.Exception.Annotated (AnnotatedException)
+import qualified Control.Exception.Annotated as Annotated
+import Control.Monad (unless, (<=<))
+import Data.Annotation (tryAnnotations)
 import Data.Bugsnag
 import Data.Bugsnag.Settings
+import Data.Foldable (fold)
+import Data.List.NonEmpty (nonEmpty)
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Exception
-import Network.HTTP.Client.TLS (getGlobalManager)
-import Control.Exception.Annotated (AnnotatedException)
 import Network.Bugsnag.MetaData
-import Data.List.NonEmpty (nonEmpty)
-import Data.Foldable (fold)
-import Data.Annotation (tryAnnotations)
-import Control.Exception (SomeException, fromException, toException)
-import qualified Control.Exception.Annotated as Annotated
+import Network.HTTP.Client.TLS (getGlobalManager)
 
 notifyBugsnag :: Exception.Exception e => Settings -> e -> IO ()
 notifyBugsnag = notifyBugsnagWith mempty

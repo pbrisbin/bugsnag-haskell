@@ -6,10 +6,10 @@ module Network.Bugsnag.MetaData
 
 import Prelude
 
-import Data.Aeson (KeyValue ((.=)), Object, Value (..), object)
+import Data.Aeson (KeyValue((.=)), Object, Value(..), object)
 import qualified Data.Aeson as Aeson
-import qualified Data.Aeson.Types as Aeson
 import qualified Data.Aeson.KeyMap
+import qualified Data.Aeson.Types as Aeson
 
 newtype MetaData = MetaData
   { unMetaData :: Object
