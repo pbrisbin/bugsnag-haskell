@@ -6,12 +6,19 @@ module Network.Bugsnag.Notify
 import Prelude
 
 import qualified Control.Exception as Exception
-import Control.Monad (unless)
+import Control.Monad ( unless, (<=<) )
 import Data.Bugsnag
 import Data.Bugsnag.Settings
 import Network.Bugsnag.BeforeNotify
 import Network.Bugsnag.Exception
 import Network.HTTP.Client.TLS (getGlobalManager)
+import Control.Exception.Annotated (AnnotatedException)
+import Network.Bugsnag.MetaData
+import Data.List.NonEmpty (nonEmpty)
+import Data.Foldable (fold)
+import Data.Annotation (tryAnnotations)
+import Control.Exception (SomeException, fromException, toException)
+import qualified Control.Exception.Annotated as Annotated
 
 notifyBugsnag :: Exception.Exception e => Settings -> e -> IO ()
 notifyBugsnag = notifyBugsnagWith mempty
@@ -29,8 +36,14 @@ reportEvent Settings {..} event = unless (null $ event_exceptions event) $ do
 
 buildEvent :: Exception.Exception e => BeforeNotify -> e -> Event
 buildEvent bn e = runBeforeNotify bn e
-    $ defaultEvent { event_exceptions = [ex] }
+    $ defaultEvent { event_exceptions = [ex], event_metaData = unMetaData <$> metaDataFromException e }
     where ex = bugsnagExceptionFromSomeException $ Exception.toException e
+
+metaDataFromException :: Exception.Exception e => e -> Maybe MetaData
+metaDataFromException = metaDataFromAnnotatedException <=< (fromException @(AnnotatedException SomeException) . toException)
+
+metaDataFromAnnotatedException :: AnnotatedException e -> Maybe MetaData
+metaDataFromAnnotatedException = fmap fold . nonEmpty . fst . tryAnnotations . Annotated.annotations
 
 globalBeforeNotify :: Settings -> BeforeNotify
 globalBeforeNotify Settings {..} =

@@ -1,6 +1,6 @@
 cabal-version: 1.18
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -36,6 +36,7 @@ library
       Network.Bugsnag.Device
       Network.Bugsnag.Exception
       Network.Bugsnag.Exception.Parse
+      Network.Bugsnag.MetaData
       Network.Bugsnag.Notify
       Network.Bugsnag.StackFrame
   other-modules:
@@ -69,6 +70,7 @@ library
       TypeFamilies
   build-depends:
       Glob >=0.9.0
+    , aeson
     , annotated-exception
     , base >=4.11.0 && <5
     , bugsnag-hs
