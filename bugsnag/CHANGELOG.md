@@ -2,7 +2,7 @@
 
 - None
 
-## [v1.0.1.0](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...bugsnag-v1.1.0.0)
+## [v1.1.0.0](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...bugsnag-v1.1.0.0)
 
 - New module: `Network.Bugsnag.MetaData`
 
