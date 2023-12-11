@@ -1,8 +1,7 @@
 {-# LANGUAGE CPP #-}
 
 module Data.Aeson.Compat
-  (
-    -- * Key
+  ( -- * Key
     Key
   , fromText
   , toText
@@ -18,13 +17,13 @@ module Data.Aeson.Compat
 
     -- * Etc.
   , Pair
-  , Value(Object)
+  , Value (Object)
   , Object
   , object
   , (.=)
   ) where
 
-import Data.Aeson.Types (Pair, Value(Object), Object, object, (.=))
+import Data.Aeson.Types (Object, Pair, Value (Object), object, (.=))
 #if MIN_VERSION_aeson(2, 0, 0)
 import Data.Aeson.Key (Key, fromText, toText)
 import Data.Aeson.KeyMap (KeyMap, empty, fromList, null, singleton, toList, unionWith)

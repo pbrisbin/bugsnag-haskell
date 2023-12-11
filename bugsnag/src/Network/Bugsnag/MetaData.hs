@@ -6,7 +6,7 @@ module Network.Bugsnag.MetaData
 
 import Prelude
 
-import Data.Aeson.Compat ((.=), Value(Object), Object, object)
+import Data.Aeson.Compat (Object, Value (Object), object, (.=))
 import qualified Data.Aeson.Compat as Aeson
 
 newtype MetaData = MetaData

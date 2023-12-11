@@ -1,6 +1,7 @@
 {
   inputs = {
     stable.url = "github:nixos/nixpkgs/nixos-23.11";
+    older.url = "github:nixos/nixpkgs/nixos-22.11";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     freckle.url = "github:freckle/flakes?dir=main";
     flake-utils.url = "github:numtide/flake-utils";
@@ -12,6 +13,7 @@
 
         nixpkgs = {
           stable = import inputs.stable nixpkgsArgs;
+          older = import inputs.older nixpkgsArgs;
           unstable = import inputs.unstable nixpkgsArgs;
         };
         freckle = inputs.freckle.packages.${system};
@@ -64,6 +66,7 @@
 
           nativeBuildInputs = with (packages); [
             cabal
+            fourmolu
             ghc
             haskell-language-server
             stack

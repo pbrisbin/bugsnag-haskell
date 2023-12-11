@@ -1,30 +1,30 @@
 module Network.Bugsnag.BeforeNotify
-    ( BeforeNotify
-    , beforeNotify
-    , runBeforeNotify
+  ( BeforeNotify
+  , beforeNotify
+  , runBeforeNotify
 
     -- * Modifying the underlying Exceptions
-    , updateExceptions
-    , filterExceptions
-    , updateStackFrames
-    , filterStackFrames
-    , setStackFramesCode
-    , setStackFramesInProject
-    , setStackFramesInProjectByFile
-    , setStackFramesInProjectBy
+  , updateExceptions
+  , filterExceptions
+  , updateStackFrames
+  , filterStackFrames
+  , setStackFramesCode
+  , setStackFramesInProject
+  , setStackFramesInProjectByFile
+  , setStackFramesInProjectBy
 
     -- * Modifying the Event
-    , updateEvent
-    , updateEventFromOriginalException
-    , setGroupingHash
-    , setGroupingHashBy
-    , setDevice
-    , setContext
-    , setRequest
-    , setWarningSeverity
-    , setErrorSeverity
-    , setInfoSeverity
-    ) where
+  , updateEvent
+  , updateEventFromOriginalException
+  , setGroupingHash
+  , setGroupingHashBy
+  , setDevice
+  , setContext
+  , setRequest
+  , setWarningSeverity
+  , setErrorSeverity
+  , setInfoSeverity
+  ) where
 
 import Prelude
 
@@ -45,57 +45,56 @@ import Network.Bugsnag.StackFrame
 -- 'BeforeNotify' implements 'Semigroup' and 'Monoid', which means the /do
 -- nothing/ 'BeforeNotify' is 'mempty' and two 'BeforeNotify's @doThis@ then
 -- @doThat@ can be implemented as @doThat <> doThis@.
---
 newtype BeforeNotify = BeforeNotify
-    { _unBeforeNotify :: forall e. Exception.Exception e => e -> Event -> Event
-    }
+  { _unBeforeNotify :: forall e. Exception.Exception e => e -> Event -> Event
+  }
 
 instance Semigroup BeforeNotify where
-    BeforeNotify f <> BeforeNotify g = BeforeNotify $ \e -> f e . g e
+  BeforeNotify f <> BeforeNotify g = BeforeNotify $ \e -> f e . g e
 
 instance Monoid BeforeNotify where
-    mempty = BeforeNotify $ const id
+  mempty = BeforeNotify $ const id
 
 beforeNotify
-    :: (forall e . Exception.Exception e => e -> Event -> Event)
-    -> BeforeNotify
+  :: (forall e. Exception.Exception e => e -> Event -> Event)
+  -> BeforeNotify
 beforeNotify = BeforeNotify
 
 runBeforeNotify :: Exception.Exception e => BeforeNotify -> e -> Event -> Event
 runBeforeNotify (BeforeNotify f) = f
 
 updateExceptions :: (Exception -> Exception) -> BeforeNotify
-updateExceptions f = updateEvent
-    $ \event -> event { event_exceptions = map f $ event_exceptions event }
+updateExceptions f = updateEvent $
+  \event -> event {event_exceptions = map f $ event_exceptions event}
 
 filterExceptions :: (Exception -> Bool) -> BeforeNotify
 filterExceptions p = updateEvent $ \event ->
-    event { event_exceptions = filter p $ event_exceptions event }
+  event {event_exceptions = filter p $ event_exceptions event}
 
 updateStackFrames :: (StackFrame -> StackFrame) -> BeforeNotify
-updateStackFrames f = updateExceptions
-    $ \e -> e { exception_stacktrace = map f $ exception_stacktrace e }
+updateStackFrames f = updateExceptions $
+  \e -> e {exception_stacktrace = map f $ exception_stacktrace e}
 
 filterStackFrames :: (StackFrame -> Bool) -> BeforeNotify
-filterStackFrames p = updateExceptions
-    $ \e -> e { exception_stacktrace = filter p $ exception_stacktrace e }
+filterStackFrames p = updateExceptions $
+  \e -> e {exception_stacktrace = filter p $ exception_stacktrace e}
 
 setStackFramesCode :: CodeIndex -> BeforeNotify
 setStackFramesCode =
-    (setStackFramesInProjectBy (isJust . stackFrame_code) <>)
-        . updateStackFrames
-        . attachBugsnagCode
+  (setStackFramesInProjectBy (isJust . stackFrame_code) <>)
+    . updateStackFrames
+    . attachBugsnagCode
 
 setStackFramesInProject :: Bool -> BeforeNotify
 setStackFramesInProject = setStackFramesInProjectBy . const
 
 setStackFramesInProjectByFile :: (FilePath -> Bool) -> BeforeNotify
 setStackFramesInProjectByFile f =
-    setStackFramesInProjectBy $ f . unpack . stackFrame_file
+  setStackFramesInProjectBy $ f . unpack . stackFrame_file
 
 setStackFramesInProjectBy :: (StackFrame -> Bool) -> BeforeNotify
 setStackFramesInProjectBy f =
-    updateStackFrames $ \sf -> sf { stackFrame_inProject = Just $ f sf }
+  updateStackFrames $ \sf -> sf {stackFrame_inProject = Just $ f sf}
 
 updateEvent :: (Event -> Event) -> BeforeNotify
 updateEvent f = beforeNotify $ \_e event -> f event
@@ -125,39 +124,39 @@ updateEvent f = beforeNotify $ \_e event -> f event
 -- If the cast fails, the event is unchanged.
 --
 -- The cast will match either @e@ or @'AnnotatedException' e@.
---
 updateEventFromOriginalException
-    :: forall e . Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
+  :: forall e. Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
 updateEventFromOriginalException f = beforeNotify $ \e event ->
-    let bn = maybe mempty (f . Annotated.exception) $ Exception.fromException $ Exception.toException e
-    in runBeforeNotify bn e event
+  let bn =
+        maybe mempty (f . Annotated.exception) $
+          Exception.fromException $
+            Exception.toException e
+  in  runBeforeNotify bn e event
 
 setGroupingHash :: Text -> BeforeNotify
 setGroupingHash hash = setGroupingHashBy $ const $ Just hash
 
 setGroupingHashBy :: (Event -> Maybe Text) -> BeforeNotify
 setGroupingHashBy f =
-    updateEvent $ \event -> event { event_groupingHash = f event }
+  updateEvent $ \event -> event {event_groupingHash = f event}
 
 -- | Set the Event's Context
 setContext :: Text -> BeforeNotify
 setContext context =
-    updateEvent $ \event -> event { event_context = Just context }
+  updateEvent $ \event -> event {event_context = Just context}
 
 -- | Set the Event's Request
 --
 -- See 'bugsnagRequestFromWaiRequest'
---
 setRequest :: Request -> BeforeNotify
 setRequest request =
-    updateEvent $ \event -> event { event_request = Just request }
+  updateEvent $ \event -> event {event_request = Just request}
 
 -- | Set the Event's Device
 --
 -- See 'bugsnagDeviceFromWaiRequest'
---
 setDevice :: Device -> BeforeNotify
-setDevice device = updateEvent $ \event -> event { event_device = Just device }
+setDevice device = updateEvent $ \event -> event {event_device = Just device}
 
 -- | Set to 'ErrorSeverity'
 setErrorSeverity :: BeforeNotify
@@ -173,4 +172,4 @@ setInfoSeverity = setSeverity infoSeverity
 
 setSeverity :: Severity -> BeforeNotify
 setSeverity severity =
-    updateEvent $ \event -> event { event_severity = Just severity }
+  updateEvent $ \event -> event {event_severity = Just severity}
