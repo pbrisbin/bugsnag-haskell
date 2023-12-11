@@ -1,4 +1,4 @@
-resolver: lts-19.1
+resolver: lts-21.11
 
 packages:
   - bugsnag
@@ -17,6 +17,7 @@ ghc-options:
     -Wno-all-missed-specialisations
     -Wno-missing-exported-signatures
     -Wno-missing-import-lists
+    -Wno-missing-kind-signatures
     -Wno-missing-safe-haskell-mode
     -Wno-prepositive-qualified-module
     -Wno-safe

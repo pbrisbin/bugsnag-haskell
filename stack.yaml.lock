@@ -4,16 +4,23 @@
 #   https://docs.haskellstack.org/en/stable/lock_files
 
 packages:
-- completed:
-    hackage: algebraic-graphs-0.5@sha256:6eeec5ed1687ff7aa916e7bf9f02f51aaabde6f314dc0b7b1a84156974d7da73,8071
-    pantry-tree:
-      size: 4128
-      sha256: cca4a0348bb126506cacd8436948a68aad62e75d45df8c71f4090a00e69b45ee
-  original:
-    hackage: algebraic-graphs-0.5
+  - completed:
+      hackage: annotated-exception-0.2.0.5@sha256:d8d343f556e67ac38c8b5c8b9a1d551dd8005f6d28fe9c2accd606c5f9070e24,1785
+      pantry-tree:
+        sha256: 7e8f91d0899402a6ede549e6a47b169fdc9bb9877f4fe52471c2f43ef05eb167
+        size: 776
+    original:
+      hackage: annotated-exception-0.2.0.5
+  - completed:
+      hackage: algebraic-graphs-0.5@sha256:6eeec5ed1687ff7aa916e7bf9f02f51aaabde6f314dc0b7b1a84156974d7da73,8071
+      pantry-tree:
+        sha256: cca4a0348bb126506cacd8436948a68aad62e75d45df8c71f4090a00e69b45ee
+        size: 4128
+    original:
+      hackage: algebraic-graphs-0.5
 snapshots:
-- completed:
-    size: 617355
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/1.yaml
-    sha256: cbd5e8593869445794924668479b5bd9f1738d075898623dceacc13b2576b6e3
-  original: lts-19.1
+  - completed:
+      sha256: 64d66303f927e87ffe6b8ccf736229bf608731e80d7afdf62bdd63c59f857740
+      size: 640037
+      url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/21/11.yaml
+    original: lts-21.11

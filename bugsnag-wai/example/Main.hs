@@ -1,6 +1,6 @@
 module Main
-    ( main
-    ) where
+  ( main
+  ) where
 
 import Prelude
 
@@ -11,14 +11,16 @@ import Network.Wai.Handler.Warp
 
 main :: IO ()
 main = do
-    settings <- warpSettings
-    runSettings settings app
+  settings <- warpSettings
+  runSettings settings app
 
 warpSettings :: IO Settings
 warpSettings = do
-    let settings = Bugsnag.defaultSettings "BUGSNAG_API_KEY"
+  let settings = Bugsnag.defaultSettings "BUGSNAG_API_KEY"
 
-    pure $ setPort 3000 $ setOnException
+  pure $
+    setPort 3000 $
+      setOnException
         (bugsnagOnException settings)
         defaultSettings
 

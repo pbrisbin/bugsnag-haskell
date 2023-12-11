@@ -1,13 +1,10 @@
-remote_files:
-  - url: https://raw.githubusercontent.com/pbrisbin/dotfiles/master/config/brittany/config.yaml
-    path: brittany.yaml
-  - url: https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
-    path: .hlint.yaml
-
-restylers_version: dev
-
 restylers:
-  - hlint
-  - stylish-haskell
-  - brittany
-  - "*"
+  - fourmolu:
+      image: restyled/restyler-fourmolu:v0.13.0.0
+      include:
+        - "/**/*.hs"
+
+request_review: author
+
+labels:
+  - restyled
