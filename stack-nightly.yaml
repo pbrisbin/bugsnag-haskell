@@ -1,4 +1,4 @@
-resolver: nightly-2023-11-01
+resolver: nightly-2024-01-02
 packages:
   - bugsnag
   - bugsnag-wai
