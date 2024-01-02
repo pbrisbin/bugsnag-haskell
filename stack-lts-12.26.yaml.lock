@@ -5,22 +5,29 @@
 
 packages:
 - completed:
+    hackage: annotated-exception-0.2.0.2@sha256:cb55b4b9f5797219935a9047d5534fd4cb5ae9f3f153108908a4d737192afe83,1785
+    pantry-tree:
+      sha256: 5f840fc82d58ab1d8a81e1ae3a2350d62a19d5a17056fe7db15dfebebe486011
+      size: 776
+  original:
+    hackage: annotated-exception-0.2.0.2
+- completed:
     hackage: bugsnag-hs-0.2.0.8@sha256:978e699292a3910040f1525335284fb066c1c81f82130769df146c134dfecc64,1525
     pantry-tree:
-      size: 456
       sha256: b3959ee9116623e6a44a842521bd8a4396549d22c118d249d77ebc02c6ab8630
+      size: 456
   original:
     hackage: bugsnag-hs-0.2.0.8
 - completed:
     hackage: ua-parser-0.7.7.0@sha256:c79b871fe57109afe988c965fddfeaf21892afbe38b5644519d898768f742cb2,2651
     pantry-tree:
-      size: 1390
       sha256: 6f38f1c6aa6130c23847be326ab50bbdb257bd347c74b61ffc95981facf692f9
+      size: 1390
   original:
     hackage: ua-parser-0.7.7.0
 snapshots:
 - completed:
+    sha256: 95f014df58d0679b1c4a2b7bf2b652b61da8d30de5f571abb0d59015ef678646
     size: 509471
     url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/12/26.yaml
-    sha256: 95f014df58d0679b1c4a2b7bf2b652b61da8d30de5f571abb0d59015ef678646
   original: lts-12.26

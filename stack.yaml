@@ -5,11 +5,6 @@ packages:
   - bugsnag-wai
   - bugsnag-yesod
 
-extra-deps:
-  - annotated-exception-0.2.0.5
-  # For weeder
-  - algebraic-graphs-0.5
-
 ghc-options:
   "$locals": >
     -fwrite-ide-info
