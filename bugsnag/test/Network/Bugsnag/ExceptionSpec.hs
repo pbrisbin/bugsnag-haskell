@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-x-partial #-}
+
 module Network.Bugsnag.ExceptionSpec
   ( spec
   ) where
