@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-x-partial #-}
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
 module Network.Bugsnag.ExceptionSpec
   ( spec
@@ -22,7 +22,7 @@ spec = do
       exception_message ex `shouldBe` Just "Something exploded"
       exception_stacktrace ex `shouldSatisfy` (not . null)
 
-      let frame = head $ exception_stacktrace ex
+      let (frame : _) = exception_stacktrace ex
       stackFrame_file frame `shouldBe` "test/Examples.hs"
       stackFrame_lineNumber frame `shouldBe` 28
       -- different versions of GHC disagree on where splices start
@@ -49,7 +49,7 @@ spec = do
       exception_message ex `shouldBe` Just "empty list"
       exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
 
-      let frame = head $ exception_stacktrace ex
+      let (frame : _) = exception_stacktrace ex
       stackFrame_file frame `shouldBe` "test/Examples.hs"
       stackFrame_lineNumber frame `shouldBe` 36
       stackFrame_columnNumber frame `shouldBe` Just 15
@@ -66,7 +66,7 @@ spec = do
       exception_message ex `shouldBe` Just "empty list"
       exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
 
-      let frame = head $ exception_stacktrace ex
+      let (frame : _) = exception_stacktrace ex
       stackFrame_file frame `shouldBe` "test/Examples.hs"
       stackFrame_lineNumber frame `shouldBe` 43
       stackFrame_columnNumber frame `shouldBe` Just 16
@@ -85,7 +85,7 @@ spec = do
           "empty list\n and message with newlines\n\n"
       exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
 
-      let frame = head $ exception_stacktrace ex
+      let (frame : _) = exception_stacktrace ex
       stackFrame_file frame `shouldBe` "test/Examples.hs"
       stackFrame_lineNumber frame `shouldBe` 50
       stackFrame_columnNumber frame `shouldBe` Just 17
@@ -105,7 +105,7 @@ spec = do
       exception_message ex `shouldBe` Just "empty list"
       exception_stacktrace ex `shouldSatisfy` ((== 2) . length)
 
-      let frame = head $ exception_stacktrace ex
+      let (frame : _) = exception_stacktrace ex
       stackFrame_file frame `shouldBe` "test/Examples.hs"
       stackFrame_lineNumber frame `shouldBe` 53
       stackFrame_columnNumber frame `shouldBe` Just 27
