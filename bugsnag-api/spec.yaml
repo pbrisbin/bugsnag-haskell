@@ -1,0 +1,197 @@
+openapi: 3.0.0
+
+servers:
+  - url: https://notify.bugsnag.com/
+
+info:
+  title: Bugsnag Error Reporting API
+  version: 0.0.0
+  description: |
+    Bugsnag provides a simple JSON based API to notify us of errors. `POST` the
+    JSON Payload to https://notify.bugsnag.com and Bugsnag will process the
+    error.
+
+    If for some reason you cannot make HTTPS requests, you can use the non-https
+    URL http://notify.bugsnag.com
+
+    Make sure you set the HTTP `Content-Type` header to be `application/json`.
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  "/":
+    post:
+      summary: Send error reports
+      description: |
+        The endpoint for sending error reports to Bugsnag.
+
+        Bugsnag doesn’t parse or analyze requests synchronously, so we only use
+        three response codes.
+      operationId: notify
+      responses:
+        '200':
+          description: |
+            The payload was accepted and will be processed asynchronously. This
+            doesn't imply that your payload was valid, just that it was enqueued
+            to be processed.
+        '400':
+          description: |
+            The payload was empty or too large (greater than 1MB).
+        '408':
+          description: |
+            The payload took too long (>30s) to read from the network.
+
+      parameters:
+        - in: header
+          name: Bugsnag-Api-Key
+          description: |
+            The API Key associated with the project. Informs Bugsnag which
+            project has generated this error.
+          schema:
+            type: string
+            example: YOUR-NOTIFIER-API-KEY
+        - in: header
+          name: Bugsnag-Payload-Version
+          description: |
+            The version number of the payload. Must be set to `5`.
+          schema:
+            type: string
+            example: "5"
+        - in: header
+          name: Bugsnag-Sent-At
+          description: |
+            The time (in ISO 8601 format) that the event payload is being sent.
+          schema:
+            type: string
+            format: date-time
+            example: "2018-01-01T15:00:00.000Z"
+
+      requestBody:
+        "$ref": "#/components/requestBodies/ErrorReport"
+
+components:
+  requestBodies:
+    ErrorReport:
+      content:
+        application/json:
+          schema:
+            properties:
+              apiKey:
+                type: string
+                description: |
+                  The API Key associated with the project. Informs Bugsnag which
+                  project has generated this error.
+
+                  This is provided for legacy notifiers. It is preferable to use
+                  the `Bugsnag-Api-Key` header instead.
+                example: YOUR-NOTIFIER-API-KEY
+              payloadVersion:
+                type: string
+                description: |
+                  The version number of the payload. This is currently `5`.
+
+                  The `Bugsnag-Payload-Version` header should be included as well, for compatibility reasons.
+                example: "5"
+              notifier:
+                "$ref": "#/components/schemas/MultiNotifier"
+              events:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Event"
+            required:
+              - payloadVersion
+              - notifier
+              - events
+
+  schemas:
+    MultiNotifier:
+      allOf:
+        - "$ref": "#/components/schemas/Notifier"
+        - type: object
+          properties:
+            dependencies:
+              type: array
+              description: |
+                For platforms where multiple notifiers are used to capture an event,
+                an optional array containing the details of the additional notifiers
+                can be specified.
+              items:
+                "$ref": "#/components/schemas/Notifier"
+    Notifier:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The notifier name
+          example: Bugsnag Ruby
+        version:
+          type: string
+          description: The notifier's current version
+          example: 1.0.11
+        url:
+          type: string
+          description: The URL associated with the notifier
+          example: https://github.com/bugsnag/bugsnag-ruby
+      required:
+        - name
+        - version
+        - url
+
+    Event:
+      type: object
+      properties:
+        exceptions:
+        breadcrumbes:
+        request:
+        threads:
+        context:
+        groupingHash:
+        unhandled:
+        severity:
+          type: string
+          enum:
+            - error
+            - warning
+            - info
+          example: error
+        severityReason:
+          "$ref": "#/components/schemas/SeverityReason"
+        projectPackages:
+          type: array
+          items:
+            type: string
+          example:
+            - com.example.package1
+            - com.example.package2
+        user:
+          "$ref": "#/components/schemas/User"
+        app:
+          "$ref": "#/components/schemas/App"
+        device:
+          "$ref": "#/components/schemas/Device"
+        session:
+          "$ref": "#/components/schemas/Session"
+        featureFlags:
+          type: array
+          description: |
+            Details of the feature flags (experiments) and associated variants
+            that were active when the error occurred.
+          items:
+            "$ref": "#/components/schemas/FeatureFlag"
+        metaData:
+          type: object
+          decription: |
+            An object containing any further data you wish to attach to this
+            error event. This should contain one or more objects, with each
+            object being displayed in its own tab on the event details on
+            Bugsnag.
+          additionalProperties: true
+      required:
+        - exceptions
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: Bugsnag-Api-Key
+      in: header
