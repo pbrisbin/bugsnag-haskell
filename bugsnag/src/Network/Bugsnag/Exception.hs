@@ -56,9 +56,8 @@ bugsnagExceptionFromAnnotatedAsException = unAsException . Annotated.exception
 -- | When a 'StringException' is thrown, we use its message and trace.
 bugsnagExceptionFromStringException :: StringException -> Exception
 bugsnagExceptionFromStringException (StringException message stack) =
-  defaultException
+  (mkException $ Just $ T.pack message)
     { exception_errorClass = typeName @StringException
-    , exception_message = Just $ T.pack message
     , exception_stacktrace = callStackToStackFrames stack
     }
 
@@ -69,9 +68,8 @@ bugsnagExceptionFromStringException (StringException message stack) =
 bugsnagExceptionFromAnnotatedStringException
   :: AnnotatedException StringException -> Exception
 bugsnagExceptionFromAnnotatedStringException ae@AnnotatedException {exception = StringException message stringExceptionStack} =
-  defaultException
+  (mkException $ Just $ T.pack message)
     { exception_errorClass = typeName @StringException
-    , exception_message = Just $ T.pack message
     , exception_stacktrace =
         maybe
           (callStackToStackFrames stringExceptionStack)
@@ -88,35 +86,40 @@ bugsnagExceptionFromAnnotatedException
 bugsnagExceptionFromAnnotatedException ae =
   case annotatedExceptionCallStack ae of
     Just stack ->
-      defaultException
+      (mkException $ Just $ T.pack $ displayException $ Annotated.exception ae)
         { exception_errorClass = exErrorClass $ Annotated.exception ae
-        , exception_message =
-            Just $ T.pack $ displayException $ Annotated.exception ae
         , exception_stacktrace = callStackToStackFrames stack
         }
     Nothing ->
-      let parseResult =
-            asum
-              [ fromException (Annotated.exception ae)
-                  >>= (either (const Nothing) Just . parseErrorCall)
-              , either (const Nothing) Just $
-                  parseStringException (Annotated.exception ae)
-              ]
-      in  defaultException
-            { exception_errorClass =
-                exErrorClass $
-                  Annotated.exception ae
-            , exception_message =
-                asum
-                  [ mwsfMessage <$> parseResult
-                  , Just $
-                      T.pack $
-                        displayException $
-                          Annotated.exception
-                            ae
-                  ]
-            , exception_stacktrace = foldMap mwsfStackFrames parseResult
-            }
+      let
+        parseResult =
+          asum
+            [ fromException (Annotated.exception ae)
+                >>= (either (const Nothing) Just . parseErrorCall)
+            , either (const Nothing) Just $
+                parseStringException (Annotated.exception ae)
+            ]
+
+        mmessage =
+          asum
+            [ mwsfMessage <$> parseResult
+            , Just $
+                T.pack $
+                  displayException $
+                    Annotated.exception
+                      ae
+            ]
+      in
+        (mkException mmessage)
+          { exception_errorClass = exErrorClass $ Annotated.exception ae
+          , exception_stacktrace = foldMap mwsfStackFrames parseResult
+          }
+
+mkException :: Maybe Text -> Exception
+mkException mmsg =
+  defaultException
+    { exception_message = T.dropWhileEnd (== '\n') <$> mmsg
+    }
 
 -- | Unwrap the 'SomeException' newtype to get the actual underlying type name
 exErrorClass :: SomeException -> Text
