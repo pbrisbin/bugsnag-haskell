@@ -34,7 +34,7 @@ jobs:
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
           stack-arguments: --coverage
-          compiler-tools: hpc-lcov
+          compiler-tools: ${{ matrix.stack-yaml == 'stack.yaml' && 'hpc-lcov' }}
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
