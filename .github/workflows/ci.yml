@@ -30,13 +30,13 @@ jobs:
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
           stack-arguments: --coverage
+          compiler-tools: hpc-lcov
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
         run: |
           tix='${{ steps.stack.outputs.local-hpc-root }}/combined/all/all.tix'
-          stack --resolver lts-18.28 --no-terminal install --copy-compiler-tool hpc-lcov
-          stack --resolver lts-18.28 --no-terminal exec -- hpc-lcov --file "$tix"
+          stack exec -- hpc-lcov --file "$tix"
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Upload coverage
