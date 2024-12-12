@@ -6,22 +6,22 @@ on:
     branches: main
 
 jobs:
-  test:
+  generate:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: generate
+        uses: freckle/stack-action/generate-matrix@v5
+    outputs:
+      stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
 
+  test:
+    needs: generate
     strategy:
       matrix:
-        stack-yaml:
-          - stack-nightly.yaml   # ghc-9.8
-          - stack.yaml           # ghc-9.6
-          - stack-lts-21.25.yaml # ghc-9.4
-          - stack-lts-20.26.yaml # ghc-9.2
-          - stack-lts-18.28.yaml # ghc-9.0
-          - stack-lts-16.31.yaml # ghc-8.8
-          - stack-lts-14.27.yaml # ghc-8.6
-          - stack-lts-12.26.yaml # ghc-8.4
+        stack-yaml: ${{ fromJSON(needs.generate.outputs.stack-yamls) }}
       fail-fast: false
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,7 @@ jobs:
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Upload coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v5
         with:
           files: ./lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -48,12 +48,8 @@ jobs:
   hlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: haskell/actions/hlint-setup@v2
-        with:
-          version: 3.5
-      - run: |
-          curl -o .hlint.yaml https://raw.githubusercontent.com/pbrisbin/dotfiles/master/hlint.yaml
-      - uses: haskell/actions/hlint-run@v2
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/hlint-setup@v2
+      - uses: haskell-actions/hlint-run@v2
         with:
           fail-on: warning
