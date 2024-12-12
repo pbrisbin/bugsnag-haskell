@@ -1,6 +1,9 @@
-## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.1.0.0...main)
+## [_Unreleased_](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.1.0.1...main)
 
-- None
+## [v1.1.0.1](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.1.0.0...bugsnag-v1.1.0.1)
+
+- Strip trailing newlines when constructing `Bugsnag.Exception` messages from
+  `displayException` values.
 
 ## [v1.1.0.0](https://github.com/pbrisbin/bugsnag-haskell/compare/bugsnag-v1.0.0.0...bugsnag-v1.1.0.0)
 
