@@ -30,4 +30,4 @@ jobs:
         run: stack upload --pvp-bounds lower ${{ matrix.package }}
         env:
           HACKAGE_KEY: ${{ secrets.HACKAGE_API_KEY }}
-          STACK_YAML: stack-lts-12.26.yaml
+          STACK_YAML: stack-lts12.yaml
