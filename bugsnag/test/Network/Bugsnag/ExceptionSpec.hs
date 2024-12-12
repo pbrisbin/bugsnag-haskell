@@ -81,8 +81,7 @@ spec = do
       let ex = bugsnagExceptionFromSomeException e
       exception_errorClass ex `shouldBe` "StringException"
       exception_message ex
-        `shouldBe` Just
-          "empty list\n and message with newlines\n\n"
+        `shouldBe` Just "empty list\n and message with newlines"
       exception_stacktrace ex `shouldSatisfy` ((== 3) . length)
 
       let (frame : _) = exception_stacktrace ex
