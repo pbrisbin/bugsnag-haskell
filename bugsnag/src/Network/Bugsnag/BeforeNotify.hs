@@ -28,6 +28,7 @@ module Network.Bugsnag.BeforeNotify
 
 import Prelude
 
+import Control.Exception (SomeException)
 import qualified Control.Exception as Exception
 import qualified Control.Exception.Annotated as Annotated
 import Data.Bugsnag
@@ -46,7 +47,7 @@ import Network.Bugsnag.StackFrame
 -- nothing/ 'BeforeNotify' is 'mempty' and two 'BeforeNotify's @doThis@ then
 -- @doThat@ can be implemented as @doThat <> doThis@.
 newtype BeforeNotify = BeforeNotify
-  { _unBeforeNotify :: forall e. Exception.Exception e => e -> Event -> Event
+  { _unBeforeNotify :: SomeException -> Event -> Event
   }
 
 instance Semigroup BeforeNotify where
@@ -55,13 +56,11 @@ instance Semigroup BeforeNotify where
 instance Monoid BeforeNotify where
   mempty = BeforeNotify $ const id
 
-beforeNotify
-  :: (forall e. Exception.Exception e => e -> Event -> Event)
-  -> BeforeNotify
+beforeNotify :: (SomeException -> Event -> Event) -> BeforeNotify
 beforeNotify = BeforeNotify
 
 runBeforeNotify :: Exception.Exception e => BeforeNotify -> e -> Event -> Event
-runBeforeNotify (BeforeNotify f) = f
+runBeforeNotify (BeforeNotify f) = f . Exception.toException
 
 updateExceptions :: (Exception -> Exception) -> BeforeNotify
 updateExceptions f = updateEvent $
@@ -127,10 +126,7 @@ updateEvent f = beforeNotify $ \_e event -> f event
 updateEventFromOriginalException
   :: forall e. Exception.Exception e => (e -> BeforeNotify) -> BeforeNotify
 updateEventFromOriginalException f = beforeNotify $ \e event ->
-  let bn =
-        maybe mempty (f . Annotated.exception) $
-          Exception.fromException $
-            Exception.toException e
+  let bn = maybe mempty (f . Annotated.exception) $ Exception.fromException e
   in  runBeforeNotify bn e event
 
 setGroupingHash :: Text -> BeforeNotify
