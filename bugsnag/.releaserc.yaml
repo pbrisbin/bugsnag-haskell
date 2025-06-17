@@ -1,0 +1,21 @@
+tagFormat: "bugsnag-v1.${version}" # package-PVP prefixed
+
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - preset: "conventionalcommits"
+      releaseRules:
+        - {scope: bugsnag-wai, release: false}
+        - {scope: bugsnag-yesod, release: false}
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/github"
+    - successCommentCondition: false
+      failCommentCondition: false
+  - - "semantic-release-stack-upload"
+    - item: bugsnag
+      pvpBounds: lower
+      stripSuffix: true
+
+branches:
+  - main
+  - name: rc/*
+    prerelease: '${name.replace(/^rc\//, "rc-")}'

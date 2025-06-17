@@ -2,7 +2,9 @@ name: Release
 
 on:
   push:
-    branches: main
+    branches:
+      - main
+      - rc/*
 
 jobs:
   release:
@@ -18,16 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: tag
-        uses: freckle/haskell-tag-action@v1
-        with:
-          package-yaml: ${{ matrix.package }}/package.yaml
-          tag-prefix: ${{ matrix.package }}-v
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          cp -v ${{ matrix.package }}/.releaserc.yml ./.releaserc.yaml
 
-      - if: steps.tag.outputs.tag
-        run: stack upload --pvp-bounds lower ${{ matrix.package }}
+      - id: release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: |
+            conventional-changelog-conventionalcommits
+            semantic-release-stack-upload
         env:
+          FORCE_COLOR: 1
+          GITHUB_TOKEN: ${{ github.token }}
           HACKAGE_KEY: ${{ secrets.HACKAGE_API_KEY }}
           STACK_YAML: stack-lts12.yaml
