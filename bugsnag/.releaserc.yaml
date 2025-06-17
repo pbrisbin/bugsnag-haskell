@@ -6,7 +6,8 @@ plugins:
       releaseRules:
         - {scope: bugsnag-wai, release: false}
         - {scope: bugsnag-yesod, release: false}
-  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/release-notes-generator"
+    - preset: "conventionalcommits"
   - - "@semantic-release/github"
     - successCommentCondition: false
       failCommentCondition: false
