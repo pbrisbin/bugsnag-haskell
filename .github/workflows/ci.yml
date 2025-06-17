@@ -25,6 +25,9 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
+      - name: System dependencies
+        run: sudo apt-get install --assume-yes --no-install-recommends libpcre3-dev
+
       - uses: actions/checkout@v4
 
       - id: stack

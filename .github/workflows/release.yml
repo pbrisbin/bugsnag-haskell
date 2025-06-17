@@ -16,6 +16,7 @@ jobs:
           - bugsnag
           - bugsnag-wai
           - bugsnag-yesod
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v4
