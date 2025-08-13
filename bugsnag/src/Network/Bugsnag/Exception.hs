@@ -95,6 +95,8 @@ bugsnagExceptionFromAnnotatedException ae =
         parseResult =
           asum
             [ fromException (Annotated.exception ae)
+                >>= (either (const Nothing) Just . parseExceptionWithContext)
+            , fromException (Annotated.exception ae)
                 >>= (either (const Nothing) Just . parseErrorCall)
             , either (const Nothing) Just $
                 parseStringException (Annotated.exception ae)
