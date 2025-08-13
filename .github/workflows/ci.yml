@@ -33,9 +33,10 @@ jobs:
       - id: stack
         uses: freckle/stack-action@v5
         with:
-          stack-yaml: ${{ matrix.stack-yaml }}
           stack-arguments: --coverage
           compiler-tools: ${{ matrix.stack-yaml == 'stack.yaml' && 'hpc-lcov'  || '' }}
+        env:
+          STACK_YAML: ${{ matrix.stack-yaml }}
 
       - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
         name: Reformat coverage
