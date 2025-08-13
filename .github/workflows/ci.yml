@@ -34,17 +34,17 @@ jobs:
         uses: freckle/stack-action@v5
         with:
           stack-arguments: --coverage
-          compiler-tools: ${{ matrix.stack-yaml == 'stack.yaml' && 'hpc-lcov'  || '' }}
+          compiler-tools: ${{ matrix.stack-yaml == 'stack-lts24.yaml' && 'hpc-lcov'  || '' }}
         env:
           STACK_YAML: ${{ matrix.stack-yaml }}
 
-      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
+      - if: ${{ matrix.stack-yaml == 'stack-lts24.yaml' }}
         name: Reformat coverage
         run: |
           tix='${{ steps.stack.outputs.local-hpc-root }}/combined/all/all.tix'
           stack exec -- hpc-lcov --file "$tix"
 
-      - if: ${{ matrix.stack-yaml == 'stack.yaml' }}
+      - if: ${{ matrix.stack-yaml == 'stack-lts24.yaml' }}
         name: Upload coverage
         uses: codecov/codecov-action@v5
         with:
