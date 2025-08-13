@@ -4,20 +4,18 @@
 module Network.Bugsnag.Exception.Parse
   ( MessageWithStackFrames (..)
   , parseErrorCall
+  , parseExceptionWithContext
   , parseStringException
   ) where
 
 import Prelude
 
-import qualified Control.Exception as Exception
-  ( ErrorCall
-  , Exception
-  , SomeException
-  )
+import qualified Control.Exception as Exception (ErrorCall, SomeException)
 import Control.Monad (void)
 import Data.Bifunctor (first)
 import Data.Bugsnag
 import Data.Text (Text, pack)
+import qualified Network.Bugsnag.Exception.Context as Exception
 import Text.Parsec
 import Text.Parsec.String
 
@@ -28,7 +26,13 @@ data MessageWithStackFrames = MessageWithStackFrames
 
 -- | Parse an @'ErrorCall'@ for @'HasCallStack'@ information
 parseErrorCall :: Exception.ErrorCall -> Either String MessageWithStackFrames
-parseErrorCall = parse' errorCallParser
+parseErrorCall = parse' errorCallParser . show
+
+parseExceptionWithContext
+  :: Exception.ExceptionWithContext Exception.SomeException
+  -> Either String MessageWithStackFrames
+parseExceptionWithContext =
+  parse' backtraceParser . Exception.displayExceptionWithContext
 
 -- | Parse a @'StringException'@ for @'HasCallStack'@ information
 --
@@ -37,7 +41,7 @@ parseErrorCall = parse' errorCallParser
 -- sigh.)
 parseStringException
   :: Exception.SomeException -> Either String MessageWithStackFrames
-parseStringException = parse' stringExceptionParser
+parseStringException = parse' stringExceptionParser . show
 
 -- brittany-disable-next-binding
 
@@ -45,27 +49,38 @@ errorCallParser :: Parser MessageWithStackFrames
 errorCallParser =
   MessageWithStackFrames
     <$> messageParser
-    <*> manyTill stackFrameParser eof
+    <*> manyTill hasCallStackStackFrameParser eof
  where
   messageParser :: Parser Text
   messageParser = do
     msg <- pack <$> manyTill anyChar eol
     msg <$ (string "CallStack (from HasCallStack):" *> eol)
 
-  stackFrameParser :: Parser StackFrame
-  stackFrameParser = do
-    func <- stackFrameFunctionTill $ string ", called at "
-    (path, ln, cl) <- stackFrameLocationTill $ eol <|> eof
+backtraceParser :: Parser MessageWithStackFrames
+backtraceParser =
+  MessageWithStackFrames
+    <$> messageParser
+    <*> manyTill hasCallStackStackFrameParser eof
+ where
+  messageParser :: Parser Text
+  messageParser = do
+    msg <- pack <$> manyTill anyChar eol
+    msg <$ (string "HasCallStack backtrace:" *> eol)
 
-    pure
-      defaultStackFrame
-        { stackFrame_file = pack path
-        , stackFrame_lineNumber = ln
-        , stackFrame_columnNumber = Just cl
-        , stackFrame_method = func
-        , stackFrame_inProject = Just True
-        , stackFrame_code = Nothing
-        }
+hasCallStackStackFrameParser :: Parser StackFrame
+hasCallStackStackFrameParser = do
+  func <- stackFrameFunctionTill $ string ", called at "
+  (path, ln, cl) <- stackFrameLocationTill $ eol <|> eof
+
+  pure
+    defaultStackFrame
+      { stackFrame_file = pack path
+      , stackFrame_lineNumber = ln
+      , stackFrame_columnNumber = Just cl
+      , stackFrame_method = func
+      , stackFrame_inProject = Just True
+      , stackFrame_code = Nothing
+      }
 
 -- brittany-disable-next-binding
 
@@ -114,11 +129,10 @@ stackFrameLocationTill p = do
   pure result
 
 parse'
-  :: Exception.Exception e
-  => Parser MessageWithStackFrames
-  -> e
+  :: Parser MessageWithStackFrames
+  -> String
   -> Either String MessageWithStackFrames
-parse' p = first show . parse (p <* eof) "<error>" . show
+parse' p = first show . parse (p <* eof) "<error>"
 
 eol :: Parser ()
 eol = void endOfLine
