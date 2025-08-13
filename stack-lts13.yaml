@@ -1,9 +1,8 @@
-resolver: lts-12.26
+resolver: lts-13.30
 packages:
   - bugsnag
   - bugsnag-wai
   - bugsnag-yesod
 extra-deps:
-  - annotated-exception-0.2.0.2
+  - annotated-exception-0.2.0.3
   - bugsnag-hs-0.2.0.8
-  - ua-parser-0.7.7.0

@@ -1,5 +1,8 @@
-resolver: nightly-2024-12-12
+resolver: nightly-2025-07-18
 packages:
   - bugsnag
   - bugsnag-wai
   - bugsnag-yesod
+ghc-options:
+  "$locals": >
+    -Wno-missing-role-annotations
